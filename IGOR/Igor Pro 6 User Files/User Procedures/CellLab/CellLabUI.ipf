@@ -20,7 +20,7 @@
 //  History:
 //    DV-120320 - Created. Dmytro Velychko, 20.03.2012. dmytro.velychko@uni-tuebingen.de
 //    DV-120415 - Moved data to separate wave-specific folder; bugfixes in Clean; lots of refactoring
-//
+//    DV-120612 - Added cells sorting for the report wave according to scanline order
 
 #pragma rtGlobals=1		// Use modern global access method.
 #include <Resize Controls>
@@ -212,6 +212,8 @@ function UpdateControlsToRecognizedCells(sWaveName)
 	NVAR iCell  = $(CurrentCellIDName(sWaveName))
 	
 	if (iCell > 0)
+		// delete the old cell mask
+		wCellMask[][] = ((wCellMask[p][q] == iCell)? 0 : wCellMask[p][q])
 		// make a border around selection
 		wCellMask[][] = ((wCellMaskDisplay[p][q][3] > 0) || (wCellMaskDisplay[p+1][q][3] > 0) || (wCellMaskDisplay[p-1][q][3] > 0) || (wCellMaskDisplay[p][q+1][3] > 0) || (wCellMaskDisplay[p][q-1][3] > 0)? 0 : wCellMask[p][q])
 		// transfer the cell mask
@@ -318,6 +320,36 @@ function EditCurrentCellsProc(s) : SetVariableControl
 	endif
 end
 
+function/Wave MakeCellOrderMap(wCellMask)
+	Wave wCellMask
+	
+	Variable nCells = WaveMax(wCellMask)
+	Variable dimX = DimSize(wCellMask, 0)
+	Variable dimY = DimSize(wCellMask, 1)
+	Make /O/Free /N=(nCells) wCellXMin, wCellXMax, wCellYMin, wCellYMax, wCellX, wCellY, wCellOrder, wNonCellPreSort
+	wCellXMin = Inf
+	wCellYMin = Inf
+	Variable k, k1, k2
+	for (k1 = 0; k1<dimX; k1+=1)
+		for (k2 = 0; k2<dimY; k2+=1)
+			k = wCellMask[k1][k2]
+			wCellXMin[k] = min(k1, wCellXMin[k])
+			wCellYMin[k] = min(k2, wCellYMin[k])
+			wCellXMax[k] = max(k1, wCellXMax[k])
+			wCellYMax[k] = max(k2, wCellYMax[k])
+		endfor
+	endfor
+	
+	// Sort the cells in the scanline order
+	wCellX[] = (wCellXMax[p] + wCellXMin[p])/2
+	wCellY[] = (wCellYMax[p] + wCellYMin[p])/2
+	wCellOrder[] = p
+	wNonCellPreSort[] = 0
+	wNonCellPreSort[0] = 1 
+	Sort {wNonCellPreSort, wCellY, wCellX}, wCellOrder
+	return wCellOrder
+end
+
 function MakeSARFIAMask(sWaveName)
 	String sWaveName
 	UpdateControlsToRecognizedCells(sWaveName)	
@@ -345,7 +377,7 @@ function MakeSARFIAMask(sWaveName)
 	Variable nCells
 	nCells = WaveMax(wCellMask)
 	string sReportName = CellReportName(sWaveName)
-	Make /O /N=(nCells+1, 5) $(sReportName)
+	Make /O /N=(nCells, 5) $(sReportName)
 	Wave wReport = $(sReportName)
 	Make /Free /N=(nCells) wCellXMin, wCellXMax, wCellYMin, wCellYMax, wCellSize
 	wCellXMin = Inf
@@ -362,13 +394,16 @@ function MakeSARFIAMask(sWaveName)
 		endfor
 	endfor
 	
+	// Sort the cells in the scanline order
+	Wave wCellOrder = MakeCellOrderMap(wCellMask)
+	
 	NVAR experimentNumber = $(ELFolderFromWave(sWaveName) + G_EXPERIMENT_NUMBER)
 	
 	wReport[][0] = experimentNumber
-	wReport[][1] = p
-	wReport[][2] = wCellSize[p]
-	wReport[][3] = (wCellXMax[p] + wCellXMin[p])/2
-	wReport[][4] = (wCellYMax[p] + wCellYMin[p])/2
+	wReport[][1] = wCellOrder[p]
+	wReport[][2] = wCellSize[wCellOrder[p]]
+	wReport[][3] = (wCellXMax[wCellOrder[p]] + wCellXMin[wCellOrder[p]])/2
+	wReport[][4] = (wCellYMax[wCellOrder[p]] + wCellYMin[wCellOrder[p]])/2
 end
 
 function OnRecognizeCells(sWaveName)
