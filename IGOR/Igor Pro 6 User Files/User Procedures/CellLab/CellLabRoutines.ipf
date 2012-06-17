@@ -24,7 +24,7 @@ function/Wave ELWatershed(scan, neighbors, approxRadiusHint)
 	Variable wi = DimSize(scan, 1)
 	Make /O/FREE/N=(he, wi) clusterID = 0
 	
-	Duplicate /O scan imgVect	
+	Duplicate /O/FREE scan imgVect	
 	Make /O/FREE/N=(he,wi) orderX, orderY
 	Make /O/FREE/N=(he*wi) clusterCenterX, clusterCenterY
 	

@@ -21,7 +21,8 @@
 //    DV-120320 - Created. Dmytro Velychko, 20.03.2012. dmytro.velychko@student.uni-tuebingen.de
 //    DV-120415 - Moved data to separate wave-specific folder; bugfixes in Clean; lots of refactoring
 //    DV-120612 - Added cells sorting for the report wave according to scanline order
-//    DV-120617 - Added cells regions clean-up if 4-connected region is less then provided
+//    DV-120617 - Added cells regions clean-up if 4-connected region is less then provided, SARFIA 
+//				mask is sorted in scanline order
 
 #pragma rtGlobals=1		// Use modern global access method.
 #include <Resize Controls>
@@ -69,6 +70,7 @@ StrConstant G_MARGIN_RIGHT 		= ":gMarginRight"
 StrConstant G_MIN_CELL_SIZE 		= ":gMinCellSize"
 StrConstant G_LAST_EDITED_CELL 	= ":gLastEditedCell"
 StrConstant G_CELL_IMAGE_NAME 	= ":gCellImageName"
+StrConstant G_CELL_IMAGE_FOLDER = ":gCellImageFolder"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -153,14 +155,17 @@ end
 
 function/s SARFIAMaskName(sWaveName)
 	string sWaveName
-	SVAR   sName = $(ELFolderFromWave(sWaveName) + G_TARGET_ROI_NAME)
-	return sName
+	
+	SVAR   sName1 =  $(ELFolderFromWave(sWaveName) + G_CELL_IMAGE_FOLDER) 
+	SVAR   sName2 =  $(ELFolderFromWave(sWaveName) + G_TARGET_ROI_NAME)
+	return sName1 + sName2
 end
 
 function/s CellReportName(sWaveName)
 	string sWaveName
-	SVAR   sName = $(ELFolderFromWave(sWaveName) + G_TARGET_REPORT_NAME)
-	return sName
+	SVAR   sName1 = $(ELFolderFromWave(sWaveName) + G_CELL_IMAGE_FOLDER)
+	SVAR   sName2 = $(ELFolderFromWave(sWaveName) + G_TARGET_REPORT_NAME)
+	return sName1 + sName2
 end
 
 function/s CellsTotalNumberName(sWaveName)
@@ -185,6 +190,16 @@ function/s ELActiveImageNameByWindow(sWinName)
 	return sName
 end
 
+function/Wave ELActiveImageWaveByWindow(sWinName)
+	String sWinName
+	string sImages = ImageNameList(sWinName, ";")
+	string sName = StringFromList(0, sImages, ";")
+	if (cmpstr(sName[0], "'") == 0)
+		sName = sName[1, strlen(sName)-2]
+	endif
+	return ImageNameToWaveRef(sWinName, sName)
+end
+
 function SliceSliderProc(sa) : SliderControl
 	STRUCT WMSliderAction &sa
 	string sImage = sa.UserData
@@ -195,18 +210,21 @@ end
 
 function PrepadeDataFolders(sWaveName)
 	String sWaveName
+	String savedDataFolder = GetDataFolder(1)
 	SetDataFolder("root:")
 	NewDataFolder/O $(CELL_LAB_ROOT_2D)
 	KillDataFolder/Z $(ELFolderFromWave(sWaveName))
 	NewDataFolder/O $(ELFolderFromWave(sWaveName))
 	NewDataFolder/O $(ELWavesFolderFromWave(sWaveName))
+	SetDataFolder(savedDataFolder)
 end
 
-function UpdateControlsToRecognizedCells(sWaveName)
-	String sWaveName
-	if (strlen(sWaveName) == 0)
+function UpdateControlsToRecognizedCells(sWaveNameFull)
+	String sWaveNameFull
+	if (strlen(sWaveNameFull) == 0)
 		return 0
 	endif
+	String sWaveName = NameOfWave($(sWaveNameFull))
 	Wave wCellMask = $(CellLabelingMaskName(sWaveName))
 	Wave wCellMaskDisplay = $(CellDisplayMaskName(sWaveName))
 	NVAR nCells = $(CellsTotalNumberName(sWaveName))
@@ -222,11 +240,12 @@ function UpdateControlsToRecognizedCells(sWaveName)
 	endif	
 end
 
-function UpdateRecognizedCellsToControls(sWaveName)
-	String sWaveName
-	if (strlen(sWaveName) == 0)
+function UpdateRecognizedCellsToControls(sWaveNameFull)
+	String sWaveNameFull
+	if (strlen(sWaveNameFull) == 0)
 		return 0
 	endif
+	String sWaveName = NameOfWave($(sWaveNameFull))
 	Wave wCellMask = $(CellLabelingMaskName(sWaveName))
 	Wave wCellMaskDisplay = $(CellDisplayMaskName(sWaveName))
 	NVAR nCells = $(CellsTotalNumberName(sWaveName))
@@ -252,46 +271,50 @@ function UpdateRecognizedCellsToControls(sWaveName)
 end
 
 
-function ShowAllCells(sWaveName)
-	String sWaveName
-	if (strlen(sWaveName) == 0)
+function ShowAllCells(sWaveNameFull)
+	String sWaveNameFull
+	if (strlen(sWaveNameFull) == 0)
 		return 0
 	endif
-	UpdateControlsToRecognizedCells(sWaveName)	
+	String sWaveName = NameOfWave($(sWaveNameFull))
+	UpdateControlsToRecognizedCells(sWaveNameFull)	
 	
 	NVAR iCell  = $(CurrentCellIDName(sWaveName))
 	iCell = 0
-	UpdateRecognizedCellsToControls(sWaveName)
+	UpdateRecognizedCellsToControls(sWaveNameFull)
 end
 
-function PickCellSelection(sWaveName, x, y)
-	String sWaveName
+function PickCellSelection(sWaveNameFull, x, y)
+	String sWaveNameFull
 	Variable x
 	Variable y
-	if (strlen(sWaveName) == 0)
+	if (strlen(sWaveNameFull) == 0)
 		return 0
 	endif
+	String sWaveName = NameOfWave($(sWaveNameFull))
 	Wave wCellMask = $(CellLabelingMaskName(sWaveName))
 	Variable iPickedCell = wCellMask[x][y]		
 	if (iPickedCell > 0)
 		NVAR iCell  = $(CurrentCellIDName(sWaveName))
 		iCell = iPickedCell
-		UpdateRecognizedCellsToControls(sWaveName)
+		UpdateRecognizedCellsToControls(sWaveNameFull)
 	endif
 end
 
-function AddCells(sWaveName)
-	String sWaveName
-	UpdateControlsToRecognizedCells(sWaveName)	
+function AddCells(sWaveNameFull)
+	String sWaveNameFull
+	String sWaveName = NameOfWave($(sWaveNameFull))
+	UpdateControlsToRecognizedCells(sWaveNameFull)	
 	NVAR nCells = $(CellsTotalNumberName(sWaveName))
 	NVAR iCell  = $(CurrentCellIDName(sWaveName))
 	nCells +=1;
 	iCell = nCells	
-	UpdateRecognizedCellsToControls(sWaveName)
+	UpdateRecognizedCellsToControls(sWaveNameFull)
 end
 
-function RemoveCells(sWaveName)	
-	String sWaveName
+function RemoveCells(sWaveNameFull)	
+	String sWaveNameFull
+	String sWaveName = NameOfWave($(sWaveNameFull))
 	NVAR nCells = $(CellsTotalNumberName(sWaveName))
 	NVAR iCell  = $(CurrentCellIDName(sWaveName))
 	Wave wCellMask = $(CellLabelingMaskName(sWaveName))
@@ -300,7 +323,7 @@ function RemoveCells(sWaveName)
 		wCellMask[][] = ((wCellMask[p][q] > iCell)? wCellMask[p][q] - 1 : wCellMask[p][q]) // decrement other cells markings
 		nCells -=1;
 		iCell = nCells
-		UpdateRecognizedCellsToControls(sWaveName)
+		UpdateRecognizedCellsToControls(sWaveNameFull)
 	endif	
 end
 
@@ -327,7 +350,7 @@ function/Wave MakeCellOrderMap(wCellMask)
 	Variable nCells = WaveMax(wCellMask)
 	Variable dimX = DimSize(wCellMask, 0)
 	Variable dimY = DimSize(wCellMask, 1)
-	Make /O/Free /N=(nCells) wCellXMin, wCellXMax, wCellYMin, wCellYMax, wCellX, wCellY, wCellOrder, wNonCellPreSort
+	Make /O/Free /N=(nCells+1) wCellXMin, wCellXMax, wCellYMin, wCellYMax, wCellX, wCellY, wCellOrder, wNonCellPreSort
 	wCellXMin = Inf
 	wCellYMin = Inf
 	Variable k, k1, k2
@@ -345,15 +368,16 @@ function/Wave MakeCellOrderMap(wCellMask)
 	wCellX[] = (wCellXMax[p] + wCellXMin[p])/2
 	wCellY[] = (wCellYMax[p] + wCellYMin[p])/2
 	wCellOrder[] = p
-	wNonCellPreSort[] = 0
-	wNonCellPreSort[0] = 1 
+	wNonCellPreSort[] = 1
+	wNonCellPreSort[0] = 0 
 	Sort {wNonCellPreSort, wCellY, wCellX}, wCellOrder
 	return wCellOrder
 end
 
-function MakeSARFIAMask(sWaveName)
-	String sWaveName
-	UpdateControlsToRecognizedCells(sWaveName)	
+function MakeSARFIAMask(sWaveNameFull)
+	String sWaveNameFull
+	String sWaveName = NameOfWave($(sWaveNameFull))
+	UpdateControlsToRecognizedCells(sWaveNameFull)	
 	Wave wCellMask = $(CellLabelingMaskName(sWaveName))
 	Wave wRescaleImage = $(GetRescaleImageName(sWaveName))
 	string sSARFIAMaskName = SARFIAMaskName(sWaveName)
@@ -378,9 +402,9 @@ function MakeSARFIAMask(sWaveName)
 	Variable nCells
 	nCells = WaveMax(wCellMask)
 	string sReportName = CellReportName(sWaveName)
-	Make /O /N=(nCells, 5) $(sReportName)
+	Make /O /N=(nCells+1, 5) $(sReportName)
 	Wave wReport = $(sReportName)
-	Make /Free /N=(nCells) wCellXMin, wCellXMax, wCellYMin, wCellYMax, wCellSize
+	Make /Free /N=(nCells+1) wCellXMin, wCellXMax, wCellYMin, wCellYMax, wCellSize
 	wCellXMin = Inf
 	wCellYMin = Inf
 	Variable k, k1, k2
@@ -397,7 +421,11 @@ function MakeSARFIAMask(sWaveName)
 	
 	// Sort the cells in the scanline order
 	Wave wCellOrder = MakeCellOrderMap(wCellMask)
-	wSARFIAMask[][] = ((wSARFIAMask[p][q] < 0)? -wCellOrder[-wCellMask[p][q]]: 1) 
+	Duplicate /Free wCellOrder wCellOrderInverse
+	for (k1 = 0; k1<=nCells; k1+=1)
+		wCellOrderInverse[wCellOrder[k1]] = k1
+	endfor
+	wSARFIAMask[][] = ((wSARFIAMask[p][q] < 0)? -wCellOrderInverse[-wSARFIAMask[p][q]]: 1) 
 	
 	NVAR experimentNumber = $(ELFolderFromWave(sWaveName) + G_EXPERIMENT_NUMBER)
 	
@@ -408,12 +436,13 @@ function MakeSARFIAMask(sWaveName)
 	wReport[][4] = (wCellYMax[wCellOrder[p]] + wCellYMin[wCellOrder[p]])/2
 end
 
-function OnRecognizeCells(sWaveName)
-	String sWaveName
-	Wave wImage = $(sWaveName)
+function OnRecognizeCells(sWaveNameFull)
+	String sWaveNameFull
+	Wave wImage = $(sWaveNameFull)
 	if (!WaveExists(wImage))
 		return 0
 	endif
+	String sWaveName = NameOfWave($(sWaveNameFull))
 	Wave wCellMask = $(CellLabelingMaskName(sWaveName))
 	NVAR nCells = $(CellsTotalNumberName(sWaveName))
 	NVAR approxRadiusHint = $(ELFolderFromWave(sWaveName) + G_APPROX_CELL_RADIUS)
@@ -434,8 +463,8 @@ function OnRecognizeCells(sWaveName)
 	wCellMask = 0; 
 	wCellMask[][] = ((p>=marginLeft) && (p<dimX-marginRight) && (q>=marginBottom) && (p<dimY-marginTop) ? wCellMaskCropped[p-marginLeft][q-marginBottom] : 0)
 	
-	UpdateRecognizedCellsToControls(sWaveName)
-	ShowAllCells(sWaveName)
+	UpdateRecognizedCellsToControls(sWaveNameFull)
+	ShowAllCells(sWaveNameFull)
 end
 
 function/Wave GetFloodRegion(wImg, xStart, yStart)
@@ -485,9 +514,10 @@ function/Wave GetFloodRegion(wImg, xStart, yStart)
 	return wPointsRes
 end 
 
-function CleanSmallCells(sWaveName)
-	String sWaveName
+function CleanSmallCells(sWaveNameFull)
+	String sWaveNameFull
 	
+	String sWaveName = NameOfWave($(sWaveNameFull))
 	NVAR nCells = $(CellsTotalNumberName(sWaveName))
 	NVAR iCell  = $(CurrentCellIDName(sWaveName))
 	Wave wCellMask = $(CellLabelingMaskName(sWaveName))
@@ -536,8 +566,8 @@ function CleanSmallCells(sWaveName)
 	wCellMask[][] = (wCellMask[p][q] - wDecrementFactor[wCellMask[p][q]])
 	nCells = WaveMax(wCellMask)
 	iCell = nCells
-	UpdateRecognizedCellsToControls(sWaveName)
-	ShowAllCells(sWaveName)
+	UpdateRecognizedCellsToControls(sWaveNameFull)
+	ShowAllCells(sWaveNameFull)
 end
 
 function ButtonHandlerProc(ba) : ButtonControl
@@ -628,32 +658,34 @@ function CellImageWindowHook(s)
 	Variable rval = 0
 	//print s
 	
-	String sWaveName
-	sWaveName = ELActiveImageNameByWindow(s.winName)
+	//String sWaveName
+	Wave wWave = ELActiveImageWaveByWindow(s.winName)
 	
-	if (strlen(sWaveName) > 0)
+	if (WaveExists(wWave))
+		String sWaveName = NameOfWave(wWave)
+		string sWaveNameFull = GetWavesDataFolder(wWave, 2)
 		if (cmpstr(s.eventName, "keyboard") == 0)
 			if (s.keycode == char2num("s"))
 				NVAR iCell  = $(CurrentCellIDName(sWaveName))
 				NVAR iLastEditedCell = $(ELFolderFromWave(sWaveName) + G_LAST_EDITED_CELL)
 				if ((iCell == 0) && (iLastEditedCell != 0))
-					SetCurrentCell(sWaveName, iLastEditedCell);
-					UpdateRecognizedCellsToControls(sWaveName)
+					SetCurrentCell(sWaveNameFull, iLastEditedCell);
+					UpdateRecognizedCellsToControls(sWaveNameFull)
 				else
 					
 					iLastEditedCell = iCell
-					ShowAllCells(sWaveName)
+					ShowAllCells(sWaveNameFull)
 				endif
 			elseif (s.keycode == char2num("d"))
-				UpdateControlsToRecognizedCells(sWaveName)
-				RemoveCells(sWaveName)
-				ShowAllCells(sWaveName)
+				UpdateControlsToRecognizedCells(sWaveNameFull)
+				RemoveCells(sWaveNameFull)
+				ShowAllCells(sWaveNameFull)
 			elseif (s.keycode == char2num("a"))
-				AddCells(sWaveName)
+				AddCells(sWaveNameFull)
 			elseif (s.keycode == char2num("r"))
-				OnRecognizeCells(sWaveName)
+				OnRecognizeCells(sWaveNameFull)
 			elseif (s.keycode == char2num("c"))	
-				CleanSmallCells(sWaveName)
+				CleanSmallCells(sWaveNameFull)
 			endif
 			
 		endif
@@ -674,7 +706,7 @@ function CellImageWindowHook(s)
 					endif
 					break						
 				case MODE_SELECT:
-					PickCellSelection(sWaveName, xx,yy)
+					PickCellSelection(sWaveNameFull, xx,yy)
 					break						
 			endswitch
 			rval = 1					
@@ -720,7 +752,7 @@ end
 function EditMarginsProc(s) : SetVariableControl
 	STRUCT WMSetVariableAction &s
 	
-	String sWaveName = s.userData
+	String sWaveName = NameOfWave($(s.userData))
 	String sFolder = ELFolderFromWave(sWaveName)
 	
 	NVAR marginTop = $(sFolder + G_MARGIN_TOP)
@@ -742,6 +774,8 @@ function RecognizeCellsUI(wCellImage, sTargetROIName, sTargetReportName)
 	string sTargetROIName
 	string sTargetReportName
 	string sWaveName = NameOfWave(wCellImage)
+	string sWaveFolder = GetWavesDataFolder(wCellImage, 1)
+	string sWaveFullName = GetWavesDataFolder(wCellImage, 2)
 	
 	if (cmpstr(sTargetROIName, "") == 0)
 		sTargetROIName = sWaveName + SARFIA_ROI_SUFFIX
@@ -755,6 +789,7 @@ function RecognizeCellsUI(wCellImage, sTargetROIName, sTargetReportName)
 	String sFolder = ELFolderFromWave(sWaveName)
 	
 	String/G   $(sFolder + G_CELL_IMAGE_NAME) = sWaveName
+	String/G   $(sFolder + G_CELL_IMAGE_FOLDER) = sWaveFolder
 	Variable/G $(sFolder + G_CELL_TOTAL_NUMBER) = 0
 	Variable/G $(sFolder + G_CURRENT_CELL_ID) = 0
 	Variable/G $(sFolder + G_CURRENT_CELL) = 0
@@ -780,56 +815,56 @@ function RecognizeCellsUI(wCellImage, sTargetROIName, sTargetReportName)
 	DrawText 30,30,"Margins"
 	SetVariable edtMarginTop pos={115,20},size={80,20}; DelayUpdate
 	SetVariable edtMarginTop limits={0,100,1}, value=$(sFolder + G_MARGIN_TOP)
-	SetVariable edtMarginTop title="Top", proc=EditMarginsProc, userData = sWaveName
+	SetVariable edtMarginTop title="Top", proc=EditMarginsProc, userData = sWaveFullName
 	
 	SetVariable edtMarginBottom pos={115,45},size={80,20}; DelayUpdate
 	SetVariable edtMarginBottom limits={0,100,1}, value=$(sFolder + G_MARGIN_BOTTOM)
-	SetVariable edtMarginBottom title="Bot.", proc=EditMarginsProc, userData = sWaveName
+	SetVariable edtMarginBottom title="Bot.", proc=EditMarginsProc, userData = sWaveFullName
 	
 	SetVariable edtMarginLeft pos={30,33},size={80,20}; DelayUpdate
 	SetVariable edtMarginLeft limits={0,100,1}, value=$(sFolder + G_MARGIN_LEFT)
-	SetVariable edtMarginLeft title="Left", proc=EditMarginsProc, userData = sWaveName
+	SetVariable edtMarginLeft title="Left", proc=EditMarginsProc, userData = sWaveFullName
 	
 	SetVariable edtMarginRight pos={205,33},size={80,20}; DelayUpdate
 	SetVariable edtMarginRight limits={0,100,1}, value=$(sFolder + G_MARGIN_RIGHT)
-	SetVariable edtMarginRight title="Right", proc=EditMarginsProc, userData = sWaveName
+	SetVariable edtMarginRight title="Right", proc=EditMarginsProc, userData = sWaveFullName
 	
 	DrawText 20,100,"Brush"
-	Slider sliderBrushRadius,pos={70,80},size={230,70}, userData = sWaveName
+	Slider sliderBrushRadius,pos={70,80},size={230,70}, userData = sWaveFullName
 	Slider sliderBrushRadius,limits={1,25,1},variable=$(sFolder + G_BRUSH_RADIUS),vert=0,proc=BrushRadiusSliderProc 
 	
-	Button btnAddCells title="Add cell",pos={20,130},size={180,20},proc=ButtonHandlerProc, userData = sWaveName
-	Button btnRemoveCells title="Remove",pos={220,130},size={80,20},proc=ButtonHandlerProc, userData = sWaveName
+	Button btnAddCells title="Add cell",pos={20,130},size={180,20},proc=ButtonHandlerProc, userData = sWaveFullName
+	Button btnRemoveCells title="Remove",pos={220,130},size={80,20},proc=ButtonHandlerProc, userData = sWaveFullName
 	
 	SetVariable edtCurrentCell pos={20,170},size={140,20}; DelayUpdate
 	SetVariable edtCurrentCell limits={0,1000,1}, value=$(sFolder + G_CURRENT_CELL)
-	SetVariable edtCurrentCell title="Current cell", proc=EditCurrentCellsProc, userData = sWaveName
+	SetVariable edtCurrentCell title="Current cell", proc=EditCurrentCellsProc, userData = sWaveFullName
 	
-	ValDisplay valdispNumberCells pos={170,170},size={35,20},value=_NUM:0, userData = sWaveName
+	ValDisplay valdispNumberCells pos={170,170},size={35,20},value=_NUM:0, userData = sWaveFullName
 	
-	Button btnShowAllCells title="Show all", pos={220,170}, size={80,20}, proc=ButtonHandlerProc, userData = sWaveName
+	Button btnShowAllCells title="Show all", pos={220,170}, size={80,20}, proc=ButtonHandlerProc, userData = sWaveFullName
 	
 	SetVariable edtApproxCellRadius pos={20,200},size={190,20}; DelayUpdate
 	SetVariable edtApproxCellRadius limits={2,100,1}, value=$(sFolder + G_APPROX_CELL_RADIUS)
-	SetVariable edtApproxCellRadius title="Radius hint for auto, pix", userData = sWaveName
+	SetVariable edtApproxCellRadius title="Radius hint for auto, pix", userData = sWaveFullName
 	
-	Button btnRecognizeCells title="Recognize",pos={220,200},size={80,20},proc=ButtonHandlerProc, userData = sWaveName
+	Button btnRecognizeCells title="Recognize",pos={220,200},size={80,20},proc=ButtonHandlerProc, userData = sWaveFullName
 	
 	SetVariable edtMinCellSize pos={20,230},size={190,20}; DelayUpdate
 	SetVariable edtMinCellSize limits={0,100,1}, value=$(sFolder + G_MIN_CELL_SIZE)
-	SetVariable edtMinCellSize title="Cell min pixels count", userData = sWaveName
+	SetVariable edtMinCellSize title="Cell min pixels count", userData = sWaveFullName
 	
-	Button btnCleanSmallCells title="Clean",pos={220,230},size={80,20}, proc=ButtonHandlerProc, userData = sWaveName
+	Button btnCleanSmallCells title="Clean",pos={220,230},size={80,20}, proc=ButtonHandlerProc, userData = sWaveFullName
 	
 	GroupBox groupFinal pos={20,260},size={300,100}
 	
 	SetVariable edtExperiment pos={30,270},size={180,20}; DelayUpdate
 	SetVariable edtExperiment limits={0,10000,1}, value=$(sFolder + G_EXPERIMENT_NUMBER)
-	SetVariable edtExperiment title="Experiment number", userData = sWaveName
+	SetVariable edtExperiment title="Experiment number", userData = sWaveFullName
 
-	Popupmenu menuRescaleTo pos={220, 300},bodywidth=180,mode=1,proc = PopupMeunProc, title="Rescale to", popvalue="none", value=WaveList("*",";","TEXT:0,DIMS:3"), userData = sWaveName
+	Popupmenu menuRescaleTo pos={220, 300},bodywidth=180,mode=1,proc = PopupMeunProc, title="Rescale to", popvalue="none", value=WaveList("*",";","TEXT:0,DIMS:3"), userData = sWaveFullName
 	
-	Button btnMakeSARFIAMask title="Make SARFIA Mask",pos={30,330},size={270,20},proc=ButtonHandlerProc, userData = sWaveName
+	Button btnMakeSARFIAMask title="Make SARFIA Mask",pos={30,330},size={270,20},proc=ButtonHandlerProc, userData = sWaveFullName
 	
 	
 	CreateMaskWaves(wCellImage)
