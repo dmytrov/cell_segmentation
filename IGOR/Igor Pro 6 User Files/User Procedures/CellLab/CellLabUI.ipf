@@ -18,9 +18,10 @@
 //     
 //  
 //  History:
-//    DV-120320 - Created. Dmytro Velychko, 20.03.2012. dmytro.velychko@uni-tuebingen.de
+//    DV-120320 - Created. Dmytro Velychko, 20.03.2012. dmytro.velychko@student.uni-tuebingen.de
 //    DV-120415 - Moved data to separate wave-specific folder; bugfixes in Clean; lots of refactoring
 //    DV-120612 - Added cells sorting for the report wave according to scanline order
+//    DV-120617 - Added cells regions clean-up if 4-connected region is less then provided
 
 #pragma rtGlobals=1		// Use modern global access method.
 #include <Resize Controls>
@@ -33,7 +34,7 @@
 // User-adjustable constants
 Constant SHOW_ALL_ALPHA 		= 100
 Constant MARGIN_ALPHA 			= 200
-Constant SINGLE_CELL_ALPHA 	= 30
+Constant SINGLE_CELL_ALPHA 	= 50
 Constant PAINT_CELL_ALPHA 	= 100
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -396,6 +397,7 @@ function MakeSARFIAMask(sWaveName)
 	
 	// Sort the cells in the scanline order
 	Wave wCellOrder = MakeCellOrderMap(wCellMask)
+	wSARFIAMask[][] = ((wSARFIAMask[p][q] < 0)? -wCellOrder[-wCellMask[p][q]]: 1) 
 	
 	NVAR experimentNumber = $(ELFolderFromWave(sWaveName) + G_EXPERIMENT_NUMBER)
 	
@@ -436,6 +438,53 @@ function OnRecognizeCells(sWaveName)
 	ShowAllCells(sWaveName)
 end
 
+function/Wave GetFloodRegion(wImg, xStart, yStart)
+	Wave wImg
+	Variable xStart, yStart
+	
+	Variable dimX = DimSize(wImg, 0)
+	Variable dimY = DimSize(wImg, 1)
+	Make /Free /N = (dimX * dimY, 2) wPoints
+	Duplicate /Free wImg, wImgVisited
+	Variable val = wImg[xStart][yStart]
+	wPoints[0][0] = xStart
+	wPoints[0][1] = yStart
+	Variable nPoints = 1
+	Variable kIter = 0
+	do
+		Variable x = wPoints[kIter][0] 
+		Variable y = wPoints[kIter][1] 
+		if ((x > 0) && (wImgVisited[x-1][y] == val))
+			wImgVisited[x-1][y] = val-1
+			wPoints[nPoints][0] = x-1
+			wPoints[nPoints][1] = y
+			nPoints = nPoints + 1
+		endif
+		if ((x < dimX-1) && (wImgVisited[x+1][y] == val))
+			wImgVisited[x+1][y] = val-1
+			wPoints[nPoints][0] = x+1
+			wPoints[nPoints][1] = y
+			nPoints = nPoints + 1
+		endif
+		if ((y > 0) && (wImgVisited[x][y-1] == val))
+			wImgVisited[x][y-1] = val-1
+			wPoints[nPoints][0] = x
+			wPoints[nPoints][1] = y-1
+			nPoints = nPoints + 1
+		endif
+		if ((y < dimY-1) && (wImgVisited[x][y+1] == val))
+			wImgVisited[x][y+1] = val-1
+			wPoints[nPoints][0] = x
+			wPoints[nPoints][1] = y+1
+			nPoints = nPoints + 1
+		endif
+		kIter = kIter + 1
+	while (kIter < nPoints)
+	
+	Duplicate /FREE /R=(0, nPoints-1)(0, 1) wPoints, wPointsRes
+	return wPointsRes
+end 
+
 function CleanSmallCells(sWaveName)
 	String sWaveName
 	
@@ -447,10 +496,28 @@ function CleanSmallCells(sWaveName)
 	Variable dimX = DimSize(wCellMask, 0)
 	Variable dimY = DimSize(wCellMask, 1)
 	
+	Duplicate /FREE wCellMask, wVisited
+	Variable k, k1, k2, k3
+	for (k1 = 0; k1<dimX; k1+=1)
+		for (k2 = 0; k2<dimY; k2+=1)
+			if (wVisited[k1][k2] > 0)
+				Wave wRegion = GetFloodRegion(wCellMask, k1, k2)
+				Variable dimRegion = DimSize(wRegion, 0)
+				if (dimRegion < minCellSize)
+					for (k3 = 0; k3<dimRegion; k3+=1)
+						wCellMask[wRegion[k3][0]][wRegion[k3][1]] = 0
+					endfor
+				endif
+				for (k3 = 0; k3<dimRegion; k3+=1)
+					wVisited[wRegion[k3][0]][wRegion[k3][1]] = 0
+				endfor
+			endif
+		endfor
+	endfor
+	
 	nCells = WaveMax(wCellMask)
 	Make /Free /N=(nCells+1) wCellSize= 0
 	Make /Free /N=(nCells+1) wDecrementFactor= 0
-	Variable k, k1, k2
 	for (k1 = 0; k1<dimX; k1+=1)
 		for (k2 = 0; k2<dimY; k2+=1)
 			wCellSize[wCellMask[k1][k2]] += 1
