@@ -8,7 +8,7 @@ WatershedUtils.Invoke();
 load('img_ws.mat');
 
 %% Load the data
-fileName = '..\..\..\Data\Q5 512.tif';
+fileName = '..\..\Data\Q5 512.tif';
 info = imfinfo(fileName);
 %imgToLoad = 1:50;
 imgToLoad = 1:numel(info);
@@ -105,6 +105,7 @@ ws = watershed(-imgConv, 18); % 6, 18, 26
 fprintf(' done\n');
 
 %% Plot one image slice and a slice of the watershed
+kSlice = 20;
 figure;
 kSlice = kSlice + 1;
 slice = squeeze(imgConv(:, :, kSlice));

@@ -1,7 +1,7 @@
 %close all;
 
 %% Load the data
-fileName = '..\..\..\Data\Q5 512.tif';
+fileName = '..\..\Data\Q5 512.tif';
 info = imfinfo(fileName);
 %imgToLoad = 1:50;
 imgToLoad = 1:numel(info);
@@ -28,7 +28,7 @@ figure(1);
 fx = ELClamp(fx, -1, 1);
 fy = ELClamp(fy, -1, 1);
 
-kSlice = 20;
+kSlice = 26;
 subplot(2, 3, 1), imagesc(scan(:, :, kSlice));
 set(gca,'YDir','normal');
 subplot(2, 3, 2), quiver(x(:, :, kSlice), y(:, :, kSlice), fx(:, :, kSlice), fy(:, :, kSlice));
