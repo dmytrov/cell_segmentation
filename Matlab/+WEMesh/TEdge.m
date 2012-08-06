@@ -3,6 +3,8 @@ classdef TEdge < handle
         eNext; 
         eOpposite;
         vertex;
+        facet;
+        tag;
     end
     
     methods
@@ -12,6 +14,8 @@ classdef TEdge < handle
             obj.eNext = nan;
             obj.eOpposite = nan;
             obj.vertex = nan;
+            obj.facet = nan;
+            obj.tag = nan;
         end
     end
 end

@@ -55,11 +55,11 @@ classdef TModel < handle
                 edges(k).vertex.lEdges(end+1) = edges(k);
             end
             % Add facet
-            nFacets = size(obj.lFacets, 2);
-            obj.lFacets(nFacets + 1).lEdges = edges;
+            obj.lFacets(end+1).lEdges = edges;           
             % Set opposite half-edges links
             for k = 1:3
                 edge = edges(k); 
+                edge.facet = obj.lFacets(end);
                 ve1 = edge.vertex;
                 ve2 = edge.eNext.vertex;                
                 for vertHalfEdge = ve2.lEdges
@@ -73,6 +73,52 @@ classdef TModel < handle
             end
         end
         
+        function DivideAllEdges(obj)
+            for edge = obj.lEdges
+                edge.tag = 0;
+            end
+            nEdges = size(obj.lEdges, 2);
+            for k = 1:nEdges
+                e1 = obj.lEdges(k);
+                if (e1.tag == 0)
+                    e2 = e1.eOpposite;
+                    DivideEdge(obj, e1);
+                    e1.tag = 1;
+                    e2.tag = 1;
+                end
+            end
+        end
+        
+        function DivideEdge(obj, edge)
+            e1 = edge;
+            e2 = edge.eOpposite;
+            v1 = e1.vertex;
+            v2 = e2.vertex;
+            % Add new point
+            obj.lVertices(end + 1).pt = mean([v1.pt, v2.pt], 2);
+            vNew = obj.lVertices(end);
+            % Add new edge for e1
+            obj.lEdges(end + 1).vertex = vNew;
+            e1New = obj.lEdges(end);
+            e1New.eNext = e1.eNext;
+            e1.eNext = e1New;
+            e1New.facet = e1.facet;
+            e1New.facet.lEdges(end + 1) = e1New;
+            % Add new edge for e2
+            obj.lEdges(end + 1).vertex = vNew;
+            e2New = obj.lEdges(end);
+            e2New.eNext = e2.eNext;
+            e2.eNext = e2New;
+            e2New.facet = e2.facet;
+            e2New.facet.lEdges(end + 1) = e2New;
+            % Set mutual links for edges opponents
+            e1.eOpposite = e2New;
+            e2New.eOpposite = e1;
+            e2.eOpposite = e1New;
+            e1New.eOpposite = e2;
+            
+        end
+        
         function plot(obj)
             nVerts = size(obj.lVertices, 2);
             lPts = nan(3, nVerts);
@@ -83,11 +129,20 @@ classdef TModel < handle
             hold on;
             nFacets = size(obj.lFacets, 2);
             for k = 1:nFacets
-                edge = obj.lFacets(k).lEdges(1);
-                lPts = [edge.vertex.pt, edge.eNext.vertex.pt, edge.eNext.eNext.vertex.pt];
+                nEdges = size(obj.lFacets(k).lEdges, 2);
+                lPts = nan(3, nEdges+1);
+                edgeCurrent = obj.lFacets(k).lEdges(1);
+                for k2 = 1:nEdges+1
+                    lPts(:, k2) = edgeCurrent.vertex.pt;
+                    edgeCurrent = edgeCurrent.eNext;
+                end
+                lPts(:, end) = lPts(:, 1);
                 vn = cross((lPts(:, 3) - lPts(:, 2)), (lPts(:, 1) - lPts(:, 2)));
                 vn = vn / norm(vn);
-                lPts = [lPts, edge.vertex.pt] + 0.05 * repmat(vn, 1, 4);
+                if (any(isnan(vn)))
+                    vn = [0, 0, 0]';
+                end
+                lPts = lPts + 0.05 * repmat(vn, 1, nEdges + 1);
                 plot3(lPts(1, :), lPts(2, :), lPts(3, :));
             end
         end

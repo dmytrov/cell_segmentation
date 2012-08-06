@@ -1,6 +1,7 @@
 classdef TFacet < handle
     properties (SetAccess = public)        
         lEdges;
+        tag;
     end
     
     methods
@@ -8,6 +9,7 @@ classdef TFacet < handle
             if (nargin ~= 0)
             end
             obj.lEdges = WEMesh.TEdge.empty;
+            obj.tag = nan;
         end
     end
 end

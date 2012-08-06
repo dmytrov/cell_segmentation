@@ -2,6 +2,7 @@ classdef TVertex < handle
     properties (SetAccess = public)
         pt; 
         lEdges;
+        tag;
     end
     
     methods
@@ -10,6 +11,7 @@ classdef TVertex < handle
             end
             obj.pt = [0, 0, 0]';
             obj.lEdges = WEMesh.TEdge.empty; 
+            obj.tag = nan;
         end
     end
 end
