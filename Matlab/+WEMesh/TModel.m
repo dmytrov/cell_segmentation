@@ -74,15 +74,9 @@ classdef TModel < handle
         end
         
         function TriangulateAllFacets(obj)
-            for facet = obj.lFacets
-                facet.tag = 0;                
-            end
             flOld = obj.lFacets;
             for facet = flOld
-                if (facet.tag == 0)
-                    TriangulateFacet(obj, facet);
-                    facet.tag = 1;
-                end
+                TriangulateFacet(obj, facet);
             end
         end
         
@@ -143,9 +137,6 @@ classdef TModel < handle
         function DivideAllEdges(obj)
             SetTags(obj.lEdges, 0);
             SetTags(obj.lVertices, 0);
-%             for edge = obj.lEdges
-%                 edge.tag = 0;
-%             end
             nEdges = size(obj.lEdges, 2);
             for k = 1:nEdges
                 e1 = obj.lEdges(k);
