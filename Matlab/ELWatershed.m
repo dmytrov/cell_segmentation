@@ -1,6 +1,5 @@
-
-
-function clusterID = ELWatershed(scan, Neighbors)
+% Modified watershed clustering
+function clusterID = ELWatershed(scan, Neighbors, cellDiameterHint)
     [he, wi] = size(scan);
     clusterID = zeros(size(scan));
     
@@ -17,7 +16,7 @@ function clusterID = ELWatershed(scan, Neighbors)
         order(k1).y = mod(sortOrder(k1),wi) + 1;
     end
 
-    % "Watershed" clustering
+    % A bit modofied "Watershed" clustering
     k1 = 1;
     nClusters = 0;
     while (k1 <= length(order))
@@ -48,7 +47,7 @@ function clusterID = ELWatershed(scan, Neighbors)
                         closest.dist = distToCluster;
                     end
                 end
-                if (closest.dist <= 8) % < sqrt(8)
+                if (closest.dist <= (cellDiameterHint/2)^2) % < sqrt(8)
                     clusterID(x,y) = clusterID(closest.x, closest.y);
                 else            
                     nClusters = nClusters + 1;
@@ -66,10 +65,6 @@ function clusterID = ELWatershed(scan, Neighbors)
             end
         end
         k1 = k1 + 1;
-        % Make a plot at 30% of the processing
-        %if (k1 == floor(0.3*length(order)))
-        %    subplot 223, imagesc(clusterID), axis image;
-        %end    
     end
 end
 

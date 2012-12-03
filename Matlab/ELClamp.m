@@ -1,3 +1,4 @@
+% Clamp value to range
 function res = ELClamp(x, v1, v2)
     res = x;
     res = (res-v1).*(res>v1) + v1;

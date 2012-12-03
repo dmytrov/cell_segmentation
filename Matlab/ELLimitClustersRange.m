@@ -1,3 +1,4 @@
+% Remove pixels by cluster dynamic range threshold
 function res = ELLimitClustersRange(scan, clusterID, thresh)
     res = clusterID;
     [he, wi] = size(scan);

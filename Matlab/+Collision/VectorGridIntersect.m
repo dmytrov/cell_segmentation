@@ -16,13 +16,16 @@ function ptIntersectX = VectorGridIntersect(ptVec, vVec, ptGrid, radGrid, stepGr
         end
     end
     
+    
+    [ptIntersectX, ~, ~] = unique(ptIntersectX', 'rows');
+    ptIntersectX = ptIntersectX';
+    
     dists = nan(1, size(ptIntersectX, 2));
     for k =1:size(dists, 2)
         dists(k) = dot(vVec, ptIntersectX(:, k));
     end
+    
     [~, sortIdx] = sort(dists, 'ascend');
     ptIntersectX = ptIntersectX(:, sortIdx);
-    [ptIntersectX, uniqueIdx, ~] = unique(ptIntersectX', 'rows');
-    ptIntersectX = ptIntersectX';
     
 end

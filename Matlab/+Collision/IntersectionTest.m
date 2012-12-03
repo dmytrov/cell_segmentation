@@ -13,13 +13,13 @@ function VectorImageIntersect()
     
     pt1 = [10, 10, 10]';
     pt2 = [10, 10, 20]';
-    [ptIntersectRes, valAtPt] = Collision.VectorImageIntersect(pt1, pt2, img);
+    [ptIntersectRes, imgCoords, imgValAtPt] = Collision.VectorImageIntersect(pt1, pt2, img);
     figure;
-    plot(valAtPt);
+    plot(imgValAtPt);
     pt2 = [10, 10, 0]';
-    [ptIntersectRes, valAtPt] = Collision.VectorImageIntersect(pt1, pt2, img);
+    [ptIntersectRes, imgCoords, imgValAtPt] = Collision.VectorImageIntersect(pt1, pt2, img);
     figure;
-    plot(valAtPt);
+    plot(imgValAtPt);
 end
 
 function VectorGridIntersectTest()

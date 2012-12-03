@@ -1,5 +1,4 @@
-% Vector field convergence by kernel
-function res = ELConvergence(fx, fy, kernel)
+function res = Convergence(fx, fy, kernel)
     res = zeros(size(fx'));
     [kx, ky] = size(kernel);        
     halfX = (kx-1)/2;

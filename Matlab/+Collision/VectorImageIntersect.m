@@ -1,4 +1,4 @@
-function [ptIntersectRes, valAtPt] = VectorImageIntersect(pt1, pt2, img)
+function [ptIntersectRes, imgCoords, imgValAtPt] = VectorImageIntersect(pt1, pt2, img)
     ptVec = pt1;
     vVec = pt2-pt1;
     ptGrid = [0, 0, 0]';
@@ -7,25 +7,27 @@ function [ptIntersectRes, valAtPt] = VectorImageIntersect(pt1, pt2, img)
     ptIntersectX = Collision.VectorGridIntersect(ptVec, vVec, ptGrid, radGrid, stepGrid);
     sImg = size(img);
     ptIntersectRes = nan(3, 0);
+    imgCoords = nan(3, 0);
     %valAtPt = nan(0, 0);
     for k = 1:size(ptIntersectX, 2)
         pt = ptIntersectX(:, k);        
         for k2 = 1:3
             if (vVec(k2) < 0)
-                pt(k2) = ceil(pt(k2));
+                pt(k2) = floor(pt(k2)+1);
             else
-                pt(k2) = floor(pt(k2));
+                pt(k2) = ceil(pt(k2));
             end
         end
         if (all(pt>=1) && all(pt<=sImg'))
-            ptIntersectRes = [ptIntersectRes, pt];
+            ptIntersectRes = [ptIntersectRes, ptIntersectX(:, k)];
+            imgCoords = [imgCoords, pt];
         end
     end
     
     nPt = size(ptIntersectRes, 2);
-    valAtPt = nan(1, nPt);
+    imgValAtPt = nan(1, nPt);
     for k = 1:nPt
-        valAtPt(k) = img(ptIntersectRes(1,k), ptIntersectRes(2,k), ptIntersectRes(3,k));
+        imgValAtPt(k) = img(imgCoords(1,k), imgCoords(2,k), imgCoords(3,k));
     end
     
 end
