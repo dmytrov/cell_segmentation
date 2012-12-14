@@ -6,7 +6,7 @@ classdef StackViewer < UI.Form
         btnChangeAxis;
         chboxGlobalScale;
         framePosition = [1, 1, 1];
-        axisIndex = 1;
+        axisIndex = 3;
         imDynamicRange = [];
     end
     
@@ -18,32 +18,35 @@ classdef StackViewer < UI.Form
             end
             
             winPos = get(obj.h, 'Position');
-            %winSize = [winPos(3) - winPos(1), winPos(4) - winPos(2)];
+            set(obj.h, 'Position', [winPos(1:2), 800, 600]);
+            winPos = get(obj.h, 'Position');
             
             obj.sliderFrame = uicontrol('style', 'slide', ...                                        
                 'unit', 'pix', ...                           
-                'position', [20, 20, winPos(3)-140, 20], ...
+                ...%'position', [20, 20, winPos(3)-140, 20], ...
                 'min', 1, ...
                 'max', size(obj.imStack, obj.axisIndex), ...
                 'val', obj.framePosition(obj.axisIndex), ...
                 'SliderStep', [1/size(obj.imStack, obj.axisIndex), 1/size(obj.imStack, obj.axisIndex)]);
             
-            obj.btnChangeAxis = uicontrol('style', 'pushbutton',  ...
+            obj.btnChangeAxis = uicontrol('style', 'pushbutton', ...
                 'unit', 'pix', ...
-                'position', [winPos(3)-100, 20, 80, 20], ...
+                ...%'position', [winPos(3)-100, 20, 80, 20], ...
                 'String', ['Axis ', num2str(obj.axisIndex)], ...
                 'Callback', @(o, e)(OnChangeAxis(obj, o, e)));
             
             obj.chboxGlobalScale = uicontrol('style', 'checkbox',  ...
                 'unit', 'pix', ...
-                'position', [winPos(3)-100, 60, 80, 20], ...
+                ...%'position', [winPos(3)-100, 60, 80, 20], ...
                 'String', 'Fix scale', ...
                 'Callback', @(o, e)(OnGlobalScale(obj, o, e)));            
             
             obj.canvas = axes('units','pixels',...                                            
-                'position', [40, 60, winPos(3)-80, winPos(4)-100], ...
+                ...%'position', [40, 60, winPos(3)-80, winPos(4)-100], ...
                 'fontsize', 10, ...
                 'nextplot', 'replacechildren');
+            
+            obj.DoLayout();
             
             imagesc(obj.imStack(:, :, 1));
             colorbar;
@@ -58,9 +61,21 @@ classdef StackViewer < UI.Form
         function delete(obj)
             
         end
-    end
+    %end
     
-    methods (Access = private)
+    %methods
+        function OnResizeFcn(obj, src, event)
+            obj.DoLayout();
+        end
+        
+        function DoLayout(obj)
+            winPos = get(obj.h, 'Position');
+            set(obj.sliderFrame, 'position', [20, 20, winPos(3)-140, 20]);
+            set(obj.btnChangeAxis, 'position', [winPos(3)-100, 20, 80, 20]);
+            set(obj.chboxGlobalScale, 'position', [winPos(3)-100, 60, 80, 20]);
+            set(obj.canvas, 'position', [40, 60, winPos(3)-80, winPos(4)-100]);
+        end
+        
         function OnSlider(obj, handle, eventData)
             obj.framePosition(obj.axisIndex) = round(get(obj.sliderFrame, 'Value'));
             obj.ImageToScreen();

@@ -10,9 +10,9 @@ psfFiltered = ImageUtils.FastConvolution3D(psfDec, k);
 
 % Limit by threshold value
 densityThreshold = 2;
-psfFiltered(psfFiltered < densityThreshold) = 0;
+psfFiltered = psfFiltered - densityThreshold;
 psfFiltered = ImageUtils.CropZeroes(psfFiltered);
-
+psfFiltered(psfFiltered < 0) = 0;
 %%
 viewer = UI.StackViewer(psfFiltered);
 
@@ -23,12 +23,6 @@ scan(:, 1:3, :) = 0;
 
 %scan = permute(scan, [3, 2, 1]);
 scanViewer = UI.StackViewer(scan);
-
-%%
-k = ImageUtils.Make3DGaussKernel(21, 21, 11, 7, 7, 3);
-scanConv = ImageUtils.FastConvolution3D(ImageUtils.Downsample2X(scan), k);
-scanDiv = del2(-scanConv);
-scanViewer = UI.StackViewer(scanDiv);
 
 %%
 % MU1 = [1 2];
@@ -76,8 +70,8 @@ ws = watershed(-co, 6); % 6, 18, 26
 wsViewer = UI.StackViewer(ws);
 
 %% PSF and deconvolution
-decXY = round(38.05 / 1.41 / 2);
-decZ  = round(1/0.1 / 2);
+decXY = round(38.05 / 1.41 / 1);
+decZ  = round(1/0.1 / 1);
 decPSF = ImageUtils.SumDecimate(psfFiltered, decXY, decXY, decZ);
 scanDeconv = deconvlucy(scan, decPSF, 10);
 decViewer = UI.StackViewer(scanDeconv);

@@ -3,22 +3,15 @@ classdef Form < handle
         h
     end
     
-    methods
+    methods (Access = public)
         function obj = Form()
             obj.h = figure();
-            set(obj.h, 'Position', [200, 200, 800, 500]);
+            set(obj.h, 'Position', [200, 200, 800, 600]);
             %set(obj.h, 'CloseRequestFcn', @(src, event)(OnCloseRequest(obj, src, event)));
             set(obj.h, 'DeleteFcn', @(src, event)(OnDeleteFcn(obj, src, event)));
+            set(obj.h, 'ResizeFcn', @(src, event)(OnResizeFcn(obj, src, event)));
         end
 
-%         function OnCloseRequest(obj, src, event)
-%             return 
-%         end
-
-        function OnDeleteFcn(obj, src, event)
-            obj.h = [];
-        end
-        
         function delete(obj)
             try
                 if (~isempty(obj.h))
@@ -27,6 +20,21 @@ classdef Form < handle
             catch err
             end
         end
+    %end
+    
+    %methods 
+%         function OnCloseRequest(obj, src, event)
+%             return 
+%         end
+
+        function OnDeleteFcn(obj, src, event)
+            obj.h = [];
+        end
+        
+        function OnResizeFcn(obj, src, event)
+            % to be overloaded in derived classes
+        end
+        
     end
     
 end
