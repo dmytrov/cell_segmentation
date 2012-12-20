@@ -23,6 +23,8 @@ scan(:, 1:3, :) = 0;
 
 %scan = permute(scan, [3, 2, 1]);
 scanViewer = UI.StackViewer(scan);
+%%
+scanViewer = UI.StackProfileViewer(scan);
 
 %%
 % MU1 = [1 2];

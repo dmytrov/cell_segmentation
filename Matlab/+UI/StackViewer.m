@@ -1,7 +1,8 @@
 classdef StackViewer < UI.Form
-    properties (SetAccess = private, GetAccess = public)
+    properties (SetAccess = protected, GetAccess = public)
         imStack = zeros(3,3,3);
         canvas;
+        hImage;
         sliderFrame;
         btnChangeAxis;
         chboxGlobalScale;
@@ -19,7 +20,7 @@ classdef StackViewer < UI.Form
             
             winPos = get(obj.h, 'Position');
             set(obj.h, 'Position', [winPos(1:2), 800, 600]);
-            winPos = get(obj.h, 'Position');
+            %winPos = get(obj.h, 'Position');
             
             obj.sliderFrame = uicontrol('style', 'slide', ...                                        
                 'unit', 'pix', ...                           
@@ -41,14 +42,14 @@ classdef StackViewer < UI.Form
                 'String', 'Fix scale', ...
                 'Callback', @(o, e)(OnGlobalScale(obj, o, e)));            
             
-            obj.canvas = axes('units','pixels',...                                            
+            obj.canvas(1) = axes('units','pixels',...                                            
                 ...%'position', [40, 60, winPos(3)-80, winPos(4)-100], ...
                 'fontsize', 10, ...
                 'nextplot', 'replacechildren');
             
             obj.DoLayout();
             
-            imagesc(obj.imStack(:, :, 1));
+            obj.hImage = imagesc(obj.imStack(:, :, 1));
             colorbar;
             axis image;
             
@@ -72,8 +73,13 @@ classdef StackViewer < UI.Form
             winPos = get(obj.h, 'Position');
             set(obj.sliderFrame, 'position', [20, 20, winPos(3)-140, 20]);
             set(obj.btnChangeAxis, 'position', [winPos(3)-100, 20, 80, 20]);
-            set(obj.chboxGlobalScale, 'position', [winPos(3)-100, 60, 80, 20]);
-            set(obj.canvas, 'position', [40, 60, winPos(3)-80, winPos(4)-100]);
+            set(obj.chboxGlobalScale, 'position', [winPos(3)-100, 50, 80, 20]);
+            nCanvas = length(obj.canvas);
+            q1 = linspace(0, winPos(3)-20, nCanvas + 1);
+            for k = 1:nCanvas
+                set(obj.canvas(k), 'position', [q1(k)+20, 90, ...
+                                                q1(2)-20, winPos(4)-100]);
+            end
         end
         
         function OnSlider(obj, handle, eventData)
@@ -82,26 +88,24 @@ classdef StackViewer < UI.Form
         end
         
         function ImageToScreen(obj)
+            clickFcn = get(obj.hImage, 'ButtonDownFcn');
+            hitTest  = get(obj.hImage, 'HitTest');
             frameIndex = obj.framePosition(obj.axisIndex);
-            if (isempty(obj.imDynamicRange))
-                switch obj.axisIndex
-                    case 1
-                        imagesc(squeeze(obj.imStack(frameIndex, :, :)));
-                    case 2
-                        imagesc(squeeze(obj.imStack(:, frameIndex, :)));
-                    case 3
-                        imagesc(squeeze(obj.imStack(:, :, frameIndex)));    
-                end
-            else
-                switch obj.axisIndex
-                    case 1
-                        imagesc(squeeze(obj.imStack(frameIndex, :, :)), obj.imDynamicRange);
-                    case 2
-                        imagesc(squeeze(obj.imStack(:, frameIndex, :)), obj.imDynamicRange);
-                    case 3
-                        imagesc(squeeze(obj.imStack(:, :, frameIndex)), obj.imDynamicRange);    
-                end
+            switch obj.axisIndex
+                case 1
+                    slice = squeeze(obj.imStack(frameIndex, :, :));
+                case 2
+                    slice = squeeze(obj.imStack(:, frameIndex, :));
+                case 3
+                    slice = squeeze(obj.imStack(:, :, frameIndex));    
             end
+            if (isempty(obj.imDynamicRange))
+                obj.hImage = imagesc(slice, 'Parent', obj.canvas(1));
+            else
+                obj.hImage = imagesc(slice, 'Parent', obj.canvas(1), obj.imDynamicRange);
+            end
+            set(obj.hImage, 'ButtonDownFcn', clickFcn);
+            set(obj.hImage, 'HitTest', hitTest);
             axis image;
         end
         
