@@ -27,11 +27,12 @@ classdef StackProfileViewer < UI.StackViewer
                 case 3
                     obj.ray = squeeze(obj.imStack(x, y, :));    
             end
-            plot(obj.canvas(2), obj.ray, 'Parent', obj.canvas(2));
-            checked = get(obj.chboxGlobalScale, 'Value');
-            if (checked)
-                ylim(obj.canvas(2), obj.imDynamicRange);
-            end
+            plot(obj.canvas(2), [obj.ray, gradient(obj.ray)], 'Parent', obj.canvas(2));
+            if (obj.IsGlobalScale)
+                ylim(obj.canvas(2), obj.imDynamicRange + [-10, 0]);
+            else
+                ylim(obj.canvas(2), 'auto');
+            end            
         end
     end
 end

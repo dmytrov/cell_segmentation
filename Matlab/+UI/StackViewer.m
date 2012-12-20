@@ -118,9 +118,12 @@ classdef StackViewer < UI.Form
             obj.ImageToScreen();
         end
         
+        function res = IsGlobalScale(obj)
+            res = get(obj.chboxGlobalScale, 'Value');
+        end
+        
         function OnGlobalScale(obj, handle, eventData)
-            checked = get(obj.chboxGlobalScale, 'Value');
-            if (checked)
+            if (obj.IsGlobalScale())
                 obj.imDynamicRange = [min(obj.imStack(:)), max(obj.imStack(:))];
             else
                 obj.imDynamicRange = [];
