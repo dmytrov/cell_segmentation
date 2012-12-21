@@ -27,7 +27,17 @@ classdef StackProfileViewer < UI.StackViewer
                 case 3
                     obj.ray = squeeze(obj.imStack(x, y, :));    
             end
-            plot(obj.canvas(2), [obj.ray, gradient(obj.ray)], 'Parent', obj.canvas(2));
+            obj.ray = obj.ray(:);
+            rayGrad = gradient(obj.ray);
+            sigma = 5;
+            x = -3*sigma:3*sigma;
+            mu = 0;
+            k = normpdf(x, mu, sigma);
+            rayConv = conv(rayGrad, k, 'same');
+            %rayConv2 = gradient(conv(obj.ray, k, 'same'));
+            profiles = [obj.ray, rayGrad, rayConv];
+            plot(obj.canvas(2), profiles, 'Parent', obj.canvas(2));
+            legend(obj.canvas(2), 'ray', 'ray grad', 'ray grad conv');
             if (obj.IsGlobalScale)
                 ylim(obj.canvas(2), obj.imDynamicRange + [-10, 0]);
             else

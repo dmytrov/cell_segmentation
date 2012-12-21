@@ -4,7 +4,7 @@ function ptIntersectX = VectorGridIntersect(ptVec, vVec, ptGrid, radGrid, stepGr
     
     ptIntersectX = nan(3, 0);
     for k = 1:3
-        gridX = ptGrid(1) - nFullGrids:stepGrid:ptGrid(1) + nFullGrids;
+        gridX = ptGrid(k) - nFullGrids:stepGrid:ptGrid(k) + nFullGrids;
         gridSetK = repmat(ptGrid, 1, numel(gridX));
         gridSetK(k,:) = gridX;
         vnPlane = ([1, 2, 3]' == k);

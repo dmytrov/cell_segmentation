@@ -1,10 +1,20 @@
-function [ptIntersectRes, imgCoords, imgValAtPt] = VectorImageIntersect(pt1, pt2, img)
+function [ptIntersectRes, imgCoords, imgValAtPt] = VectorImageIntersect(pt1, pt2, img, vectorLenMin, vectorLenMax)
     ptVec = pt1;
     vVec = pt2-pt1;
-    ptGrid = [0, 0, 0]';
-    radGrid = max(size(img));
+    vVec = vVec / norm(vVec);
+    ptGrid = round(pt1);
+    if (nargin == 3)
+        vectorLenMin = 0;
+        vectorLenMax = max(size(img));
+    end
+    radGrid = max(abs([vectorLenMin, vectorLenMax]));
     stepGrid = 1;
     ptIntersectX = Collision.VectorGridIntersect(ptVec, vVec, ptGrid, radGrid, stepGrid);
+    
+    % Check min-max vector len    
+    distOnRay = vVec' * (ptIntersectX - repmat(ptVec, 1, size(ptIntersectX, 2)));
+    ptIntersectX = ptIntersectX(:, (distOnRay >= vectorLenMin) & (distOnRay <= vectorLenMax));
+    
     sImg = size(img);
     ptIntersectRes = nan(3, 0);
     imgCoords = nan(3, 0);
