@@ -10,6 +10,10 @@ classdef StackViewer < UI.Form
         axisIndex = 3;
         imDynamicRange = [];
     end
+    properties (Access = public)
+        model;
+        settings;
+    end
     
     methods (Access = public)
         function obj = StackViewer(imStack)
@@ -90,6 +94,7 @@ classdef StackViewer < UI.Form
         function ImageToScreen(obj)
             clickFcn = get(obj.hImage, 'ButtonDownFcn');
             hitTest  = get(obj.hImage, 'HitTest');
+            btnDownFcn = get(obj.canvas(1), 'ButtonDownFcn');
             frameIndex = obj.framePosition(obj.axisIndex);
             switch obj.axisIndex
                 case 1
@@ -100,13 +105,28 @@ classdef StackViewer < UI.Form
                     slice = squeeze(obj.imStack(:, :, frameIndex));    
             end
             if (isempty(obj.imDynamicRange))
-                obj.hImage = imagesc(slice, 'Parent', obj.canvas(1));
+                obj.hImage = imagesc(slice', 'Parent', obj.canvas(1));
             else
-                obj.hImage = imagesc(slice, 'Parent', obj.canvas(1), obj.imDynamicRange);
+                obj.hImage = imagesc(slice', 'Parent', obj.canvas(1), obj.imDynamicRange);
             end
             set(obj.hImage, 'ButtonDownFcn', clickFcn);
             set(obj.hImage, 'HitTest', hitTest);
+            set(obj.canvas(1), 'ButtonDownFcn', btnDownFcn);
             axis image;
+            set(gca,'YDir','normal');
+            hold on;
+            
+            if (~isempty(obj.model) && ~isempty(obj.settings))
+                vnPlane = [0, 0, 0]';
+                vnPlane(obj.axisIndex) = 1;
+                ptPlane = vnPlane * frameIndex .* obj.settings.InvAnisotropy;
+                section = Collision.MeshPlaneIntersect(obj.model, ptPlane, vnPlane);
+                section = section .* repmat(obj.settings.Anisotropy', [2, 1, size(section, 3)]);
+                section(:, obj.axisIndex, :) = [];
+                h = plot(obj.canvas(1), squeeze(section(:,1,:)), squeeze(section(:,2,:)), 'color', 'm');
+                set(h, 'HitTest', hitTest);            
+            end
+            hold off;
         end
         
         function OnChangeAxis(obj, handle, eventData)

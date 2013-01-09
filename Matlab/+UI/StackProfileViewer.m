@@ -9,6 +9,7 @@ classdef StackProfileViewer < UI.StackViewer
             obj.canvas(2) = axes('units','pixels',...                                            
                 'fontsize', 10, ...
                 'nextplot', 'replacechildren');
+            plot(obj.canvas(2), [], 'Parent', obj.canvas(2));
             set(obj.hImage, 'HitTest', 'off');
             set(obj.canvas(1), 'ButtonDownFcn',  @(s,e) (obj.OnImageClick(s, e)));
             %set(obj.canvas(1), 'ButtonDownFcn',  @(s,e) (obj.OnImageClick(s, e)));
@@ -17,8 +18,8 @@ classdef StackProfileViewer < UI.StackViewer
         
         function OnImageClick(obj, src, event)
             pos = get(obj.canvas(1), 'CurrentPoint');
-            x = round(pos(1, 2));
-            y = round(pos(1, 1));
+            x = round(pos(1, 1));
+            y = round(pos(1, 2));
             switch obj.axisIndex
                 case 1
                     obj.ray = squeeze(obj.imStack(:, x, y));

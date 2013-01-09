@@ -3,6 +3,7 @@ classdef TModel < handle
         lVertices;
         lEdges;
         lFacets;
+        ptCenter = [0, 0, 0]';
     end
     
     methods
