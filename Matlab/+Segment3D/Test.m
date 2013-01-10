@@ -1,10 +1,18 @@
 function Test()
+    %  TODO: Use priors for:
+    %   - cell radius
+    %   - isosurface (same boundary values in neighboring rays)
+    %   - prior for boundary intensity (say 20% of cell max or center)
+    %   - surface curvature
+    %   - optimization priority (lateral rays boundaries have higher
+    %   evidence)
 	settings = Segment3D.TSettings();
     sScanFileName = '../../Data/Q5 512.tif';
     scan = ImageUtils.LoadTIFF(sScanFileName);
     scan(:, 1:3, :) = 0;
+    scanAligned = ImageUtils.AlignSlices(scan);
     clear viewer;
-    viewer = UI.StackProfileViewer(scan);
+    viewer = UI.StackProfileViewer(scanAligned);
     
     model = Segment3D.CreateTriangulatedSphere();
     %model = TestCreateTriangulatedSphere();
@@ -18,9 +26,11 @@ function Test()
     viewer.model = model;
     viewer.settings = settings;
     
-    values = TestFindRaysValues(settings, model, scan, distances);
+    values = TestFindRaysValues(settings, model, scanAligned, distances);
+    figure;
+    plot(values);
     
-    sigma = 5;
+    sigma = 20;
     x = -3*sigma:3*sigma;
     mu = 0;
     kern = normpdf(x, mu, sigma)';    
@@ -42,6 +52,9 @@ function Test()
         k = k + 1;
     end
     
+	figure; opengl hardware;
+    plot(model);
+    
     %collisions = TestFindRaysCollisions(model, scan, ptCenter);    
     %TestEstimateCellBoundary(model, ptCenter, collisions);
     %%
@@ -55,16 +68,26 @@ function Test()
     %%
 end
 
-function values = TestFindRaysValues(settings, model, scan, distances)
+function values = TestFindRaysValues(settings, model, scanAligned, distances)
     values = nan(length(distances), length(model.lVertices));
-    regressor = Regression.LinearStackRegressor(scan, settings);
+    regressor = Regression.LinearStackRegressor(scanAligned, settings);
+
+    % Pack points into an array for batch processing
+    allPts = nan(3, length(distances), length(model.lVertices));
     k = 1;
     for ve = model.lVertices
-        pts = bsxfun(@times, (ve.pt - model.ptCenter), distances );
+        pts = bsxfun(@times, Collision.VectorUnit(ve.pt - model.ptCenter), distances );
         pts = bsxfun(@plus, pts, model.ptCenter);
-        ve.tag = regressor.Value(pts);
-        values(:, k) = ve.tag;
-        k = k + 1
+        allPts(:, :, k) = pts;
+        k = k + 1;
+    end
+    % Find all poins values
+    values = reshape(regressor.Value(reshape(allPts, 3, [])), size(values));
+    % Fill the vertices tags
+    k = 1;
+    for ve = model.lVertices    
+        ve.tag = values(:, k);
+        k = k + 1;
     end
 end
 
