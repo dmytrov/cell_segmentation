@@ -1,19 +1,24 @@
-function EstimateCellBoundary(model, ptCenter, collisions)
-    sigma = 6;
+function EstimateCellBoundary(settings, model, distances, values)
+    sigma = settings.RayKernelVariance/settings.RayStep;
     x = -3*sigma:3*sigma;
-    mu = 0;
-    kern = normpdf(x, mu, sigma);
-    figure; hold on;
+    kern = normpdf(x, 0, sigma)';
+    [~, raysGrad]= gradient(values);
+    raysGradConv = conv2(raysGrad, kern, 'same');
+    figure;
+    plot(raysGradConv);
+    
     k = 1;
-    for rayIntersection = collisions
-        rayGrad = -gradient(rayIntersection.imgValAtPt);
-        rayConv = conv(rayGrad, kern, 'same');
-        plot(rayIntersection.dist, rayConv);
-        [peaks, peakIndex] = findpeaks(rayConv);
-        model.lVertices(k).pt = rayIntersection.ptIntersectRes(:, peakIndex(1));
+    for ray = raysGradConv
+        posteriorRay = ray .* settings.RadiusPrior.ValueAt(distances)';
+        [peak, peakIndex] = min(posteriorRay);
+        %[peaks, peakIndex] = findpeaks(-ray);
+        if (numel(peakIndex) >= 1)
+            dist = distances(peakIndex(1));
+            vRay = model.lVertices(k).pt - model.ptCenter;
+            vRay = dist * vRay/norm(vRay);
+            model.lVertices(k).pt = model.ptCenter + vRay;        
+        end
         k = k + 1;
     end
     
-    figure;
-    plot(model);
 end

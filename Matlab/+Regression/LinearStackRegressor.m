@@ -9,9 +9,9 @@ classdef LinearStackRegressor < Regression.StackRegressor
         function obj = LinearStackRegressor(stack, settings)
             obj = obj@Regression.StackRegressor(stack);
             [obj.x, obj.y, obj.z] = meshgrid(1:size(stack, 1), 1:size(stack, 2), 1:size(stack, 3));
-            obj.x = obj.x * settings.InvAnisotropy(1);
-            obj.y = obj.y * settings.InvAnisotropy(2);
-            obj.z = obj.z * settings.InvAnisotropy(3);
+            obj.x = obj.x * settings.Resolution(1); % * settings.InvAnisotropy(1);
+            obj.y = obj.y * settings.Resolution(2); % * settings.InvAnisotropy(2);
+            obj.z = obj.z * settings.Resolution(3); % * settings.InvAnisotropy(3);
         end
                 
         function res = Value(obj, pt)

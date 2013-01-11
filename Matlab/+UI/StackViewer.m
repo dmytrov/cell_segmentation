@@ -119,9 +119,9 @@ classdef StackViewer < UI.Form
             if (~isempty(obj.model) && ~isempty(obj.settings))
                 vnPlane = [0, 0, 0]';
                 vnPlane(obj.axisIndex) = 1;
-                ptPlane = vnPlane * frameIndex .* obj.settings.InvAnisotropy;
+                ptPlane = obj.settings.PixToMicron(vnPlane * frameIndex);
                 section = Collision.MeshPlaneIntersect(obj.model, ptPlane, vnPlane);
-                section = section .* repmat(obj.settings.Anisotropy', [2, 1, size(section, 3)]);
+                section = section ./ repmat(obj.settings.Resolution', [2, 1, size(section, 3)]);
                 section(:, obj.axisIndex, :) = [];
                 h = plot(obj.canvas(1), squeeze(section(:,1,:)), squeeze(section(:,2,:)), 'color', 'm');
                 set(h, 'HitTest', hitTest);            
