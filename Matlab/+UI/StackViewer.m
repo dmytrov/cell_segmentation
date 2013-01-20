@@ -79,10 +79,10 @@ classdef StackViewer < UI.Form
             set(obj.btnChangeAxis, 'position', [winPos(3)-100, 20, 80, 20]);
             set(obj.chboxGlobalScale, 'position', [winPos(3)-100, 50, 80, 20]);
             nCanvas = length(obj.canvas);
-            q1 = linspace(0, winPos(3)-20, nCanvas + 1);
+            q1 = linspace(0, winPos(3)-30, nCanvas + 1);
             for k = 1:nCanvas
-                set(obj.canvas(k), 'position', [q1(k)+20, 90, ...
-                                                q1(2)-20, winPos(4)-100]);
+                set(obj.canvas(k), 'position', [q1(k)+30, 90, ...
+                                                q1(2)-30, winPos(4)-120]);
             end
         end
         

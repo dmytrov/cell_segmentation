@@ -16,7 +16,9 @@ function Test()
     
     model = Segment3D.CreateTriangulatedSphere();
     %cellsCenters = TestFindCellsCenters(scan);
-    ptCenter = settings.PixToMicron([321, 131, 16]');
+    ptCenter = [398, 165, 18]';
+    %pt = [321, 131, 16]';
+    ptCenter = settings.PixToMicron(ptCenter);
     MeshUtils.ProjectOnSphere(model, [0, 0, 0]', 1);
     MeshUtils.Translate(model, ptCenter);
     distances = 0:settings.RayStep:settings.RayRadius;
