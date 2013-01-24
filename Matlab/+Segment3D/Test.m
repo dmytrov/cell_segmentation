@@ -1,4 +1,6 @@
 function Test()
+    % cd 'D:\EulersLab\Code\Matlab'
+    
     %  TODO: Use priors for:
     %   - cell radius
     %   - isosurface (same boundary values in neighboring rays)
@@ -6,30 +8,37 @@ function Test()
     %   - surface curvature
     %   - optimization priority (lateral rays boundaries have higher
     %   evidence)
+    clear all;
 	settings = Segment3D.TSettings();
     sScanFileName = '../../Data/Q5 512.tif';
     scan = ImageUtils.LoadTIFF(sScanFileName);
     scan(:, 1:3, :) = 0;
     scanAligned = ImageUtils.AlignSlices(scan);
-    clear viewer;
-    viewer = UI.StackProfileViewer(scanAligned);
+    
+    cellsRegions = Segment3D.FindCellsRegions(settings, scanAligned);
+    %pt = [321, 131, 16]';
+    ptCenter = [398, 165, 18]';
+    ptCenter = settings.PixToMicron(ptCenter);
+    [ptCenter, cellID] = cellsRegions.NearestPoint(ptCenter);
+    ptCenter = cellsRegions.RegionDesc(cellID).Center;
     
     model = Segment3D.CreateTriangulatedSphere();
-    %cellsCenters = TestFindCellsCenters(scan);
-    ptCenter = [398, 165, 18]';
-    %pt = [321, 131, 16]';
-    ptCenter = settings.PixToMicron(ptCenter);
     MeshUtils.ProjectOnSphere(model, [0, 0, 0]', 1);
     MeshUtils.Translate(model, ptCenter);
     distances = 0:settings.RayStep:settings.RayRadius;
-    viewer.model = model;
-    viewer.settings = settings;
     
-    values = Segment3D.FindRaysValues(settings, model, scanAligned, distances);
+%     clear viewer;
+%     viewer = UI.StackProfileViewer(scanAligned);
+%     viewer.model = model;
+%     viewer.settings = settings;
+    
+    rayTraces = Segment3D.FindRaysValues(settings, model, scanAligned, distances);
     figure;
-    plot(values);
+    plot(rayTraces);
     
-    Segment3D.EstimateCellBoundary(settings, model, distances, values)
+    [distToNearest, nearestCellID, distPrior] = Segment3D.FindRaysNearestRegions(settings, model, cellID, cellsRegions, distances);
+    
+    Segment3D.EstimateCellBoundary(settings, model, distances, rayTraces)
     
 	figure; opengl hardware;
     plot(model);

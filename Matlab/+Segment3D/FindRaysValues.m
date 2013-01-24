@@ -11,12 +11,14 @@ function values = FindRaysValues(settings, model, scanAligned, distances)
         allPts(:, :, k) = pts;
         k = k + 1;
     end
-    % Find all poins values
+    
+    % Find all points values
     values = reshape(regressor.Value(reshape(allPts, 3, [])), size(values));
+    
     % Fill the vertices tags
     k = 1;
     for ve = model.lVertices    
-        ve.tag = values(:, k);
+        ve.tag.scanValues = values(:, k);
         k = k + 1;
     end
 end

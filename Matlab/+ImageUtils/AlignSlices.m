@@ -1,7 +1,7 @@
 function res = AlignSlices(scan)
     % Due to some instability in mechanics/tissue/perfusion the slices may
     % be slightly shifted. 
-    % Calculates the PCA of slices correlation; realign the slices.
+    % Calculate slices correlation, realign the slices.
     
     res = scan;
     [sx, sy, sz] = size(scan);
@@ -25,6 +25,7 @@ function res = AlignSlices(scan)
         displFullY = displFullY + displY;
         res(:,:,k) = interp2(imgGridX, imgGridY, scan(:,:,k), imgGridX + displFullX, imgGridY + displFullY, 'linear');
     end
+    res(isnan(res)) = 0;
 end
 
 function res = ImageCorrelation(img1, img2, corrSize)
