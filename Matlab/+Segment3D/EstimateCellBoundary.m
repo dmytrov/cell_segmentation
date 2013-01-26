@@ -1,21 +1,27 @@
-function EstimateCellBoundary(settings, model, distances, values)
+function EstimateCellBoundary(settings, model, distances, rayTraces, distPrior)
     sigma = settings.RayKernelVariance/settings.RayStep;
     x = -3*sigma:3*sigma;
     kern = normpdf(x, 0, sigma)';
-    [~, raysGrad]= gradient(values);
+    [~, raysGrad]= gradient(rayTraces);
     raysGradConv = conv2(raysGrad, kern, 'same');
     %figure;
     %plot(raysGradConv);
     
-    s = Segment3D.TSettings();
-    nIterations = 1;
+    radiusPrior = settings.RadiusPrior.ValueAt(distances)';
+    
+    %s = Segment3D.TSettings();
+    nIterations = 10;
     for i = 1:nIterations
         k = 1;
         nDist = 0;
         distSum = 0;
+        %for ve = model.lVertices
+        %    ve.tag.scanValues
+        %end
+            
         for ray = raysGradConv
-            % Shape with the prior, find the MAP value
-            posteriorRay = ray .* s.RadiusPrior.ValueAt(distances)';
+            % Shape with the priors, find the MAP value
+            posteriorRay = ray .* radiusPrior .* model.lVertices(k).tag.distPrior;
             [peak, peakIndex] = min(posteriorRay);
             %[peaks, peakIndex] = findpeaks(-ray);
             if (numel(peakIndex) >= 1)

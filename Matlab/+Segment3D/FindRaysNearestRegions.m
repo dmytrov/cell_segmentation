@@ -23,11 +23,17 @@ function [distToNearest, nearestCellID, distPrior] = FindRaysNearestRegions(sett
     % Calculate the proximity based priors
     distPrior = distToNearest ./ distToCurrent;
     distPrior(nearestCellID == cellID) = 1;
+    distPrior(nearestCellID ~= cellID) = 0; % very strong prior!
     
     % Reshape everything back
     distToNearest = reshape(distToNearest, length(distances), length(model.lVertices));
     nearestCellID = reshape(nearestCellID, length(distances), length(model.lVertices));
     distPrior = reshape(distPrior, length(distances), length(model.lVertices));
+    
+%     % Distance prior must be monotonic
+%     for k = 2:length(distances)
+%         distPrior(k, :) = min(distPrior(k-1, :), distPrior(k, :));
+%     end
     
     % Fill the vertices tags
     k = 1;

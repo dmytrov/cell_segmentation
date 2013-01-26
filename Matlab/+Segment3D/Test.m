@@ -10,6 +10,7 @@ function Test()
     %   evidence)
     clear all;
 	settings = Segment3D.TSettings();
+    settings.IsDebug = 1;
     sScanFileName = '../../Data/Q5 512.tif';
     scan = ImageUtils.LoadTIFF(sScanFileName);
     scan(:, 1:3, :) = 0;
@@ -27,10 +28,12 @@ function Test()
     MeshUtils.Translate(model, ptCenter);
     distances = 0:settings.RayStep:settings.RayRadius;
     
-%     clear viewer;
-%     viewer = UI.StackProfileViewer(scanAligned);
-%     viewer.model = model;
-%     viewer.settings = settings;
+    if (settings.IsDebug)
+        clear viewer;
+        viewer = UI.StackProfileViewer(scanAligned);
+        viewer.model = model;
+        viewer.settings = settings;
+    end
     
     rayTraces = Segment3D.FindRaysValues(settings, model, scanAligned, distances);
     figure;
@@ -38,7 +41,7 @@ function Test()
     
     [distToNearest, nearestCellID, distPrior] = Segment3D.FindRaysNearestRegions(settings, model, cellID, cellsRegions, distances);
     
-    Segment3D.EstimateCellBoundary(settings, model, distances, rayTraces)
+    Segment3D.EstimateCellBoundary(settings, model, distances, rayTraces, distPrior);
     
 	figure; opengl hardware;
     plot(model);

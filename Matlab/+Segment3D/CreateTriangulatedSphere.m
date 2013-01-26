@@ -1,6 +1,6 @@
 function model = CreateTriangulatedSphere()
-    model = WEMesh.TModel;
-    model.MakeTetrahedron();
+    model = WEMesh.TModel();
+    MeshUtils.MakeIcosahedron(model);
 
     ptCenter = MeshUtils.GetCenter(model);
     fRadius = 1;
@@ -18,7 +18,7 @@ function model = CreateTriangulatedSphere()
     end
     meanEdgeLen = edgesLen / length(model.lEdges);
     
-    nIterations = 100;
+    nIterations = 1;
     relaxFactor = 0.1;
     for kIteration = 1:nIterations
         for kVertex = model.lVertices

@@ -8,8 +8,6 @@ classdef TModel < handle
     
     methods
         function obj = TModel()
-            if (nargin ~= 0)
-            end
             Init(obj)
         end
         
@@ -17,26 +15,7 @@ classdef TModel < handle
             obj.lVertices = WEMesh.TVertex.empty;
             obj.lEdges = WEMesh.TEdge.empty;
             obj.lFacets = WEMesh.TFacet.empty;
-        end
-        
-        function MakeTetrahedron(obj)
-            Init(obj);
-            
-            % Add vertices
-            obj.lVertices(4).pt = [ 1,  0, -1/sqrt(2)]';
-            obj.lVertices(3).pt = [-1,  0, -1/sqrt(2)]';
-            obj.lVertices(2).pt = [ 0,  1,  1/sqrt(2)]';
-            obj.lVertices(1).pt = [ 0, -1,  1/sqrt(2)]';
-            v4 = obj.lVertices(4);
-            v3 = obj.lVertices(3);
-            v2 = obj.lVertices(2);
-            v1 = obj.lVertices(1);
-            
-            % Add faces
-            AddFacet(obj, v1, v4, v2);
-            AddFacet(obj, v3, v2, v4);
-            AddFacet(obj, v3, v4, v1);
-            AddFacet(obj, v1, v2, v3);  
+            obj.ptCenter = [0, 0, 0]';
         end
         
         function AddFacet(obj, v1, v2, v3)

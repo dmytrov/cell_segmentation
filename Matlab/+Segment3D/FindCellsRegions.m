@@ -19,11 +19,14 @@ function regions = FindCellsRegions(settings, scan)
     % Threshold
     coMax = max(co(:));
     thresh = 0.5 * coMax;
-%     % Visualise the thresholded convergence 
-%     coThreshInd = co < thresh;
-%     coThresh = co;
-%     coThresh(coThreshInd) = co(coThreshInd) - coMax;
-%     convViewer = UI.StackViewer(coThresh);
+    
+    if (settings.IsDebug)
+        % Visualise the thresholded convergence 
+        coThreshInd = co > thresh;
+        coThresh = co;
+        coThresh(coThreshInd) = co(coThreshInd) + coMax;
+        convViewer = UI.StackViewer(coThresh);
+    end
 
     coThresh = co > thresh;
         
@@ -46,8 +49,12 @@ function regions = FindCellsRegions(settings, scan)
         end
         
         regions.AddRegionDesc( ...
-            settings.PixToMicron(pixelList(k).PixelList'), ...
-            settings.PixToMicron(centroids(k).Centroid'), ...
+            settings.PixToMicron(FixMatlabDimentionsOrder(pixelList(k).PixelList')), ...
+            settings.PixToMicron(FixMatlabDimentionsOrder(centroids(k).Centroid')), ...
             type);
     end
+end
+
+function res = FixMatlabDimentionsOrder(x)
+    res =  x([2, 1, 3], :);
 end

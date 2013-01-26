@@ -28,7 +28,7 @@ classdef TSettings
         % Constructor
         
         function obj = TSettings()
-            obj.IsDebug = 1;
+            obj.IsDebug = 0;
             
             radius = 6.5; % typical cell raduis, micron
             
