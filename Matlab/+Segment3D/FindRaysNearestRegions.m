@@ -1,11 +1,8 @@
 function [distToNearest, nearestCellID, distPrior] = FindRaysNearestRegions(settings, model, cellID, cellsRegions, distances)
-    %dist = nan(length(distances), length(model.lVertices));
-    %IDs = nan(length(distances), length(model.lVertices));
-
     % Pack points into an array for batch processing
-    allPts = nan(3, length(distances), length(model.lVertices));
+    allPts = nan(3, length(distances), model.nVertices);
     k = 1;
-    for ve = model.lVertices
+    for ve = model.lVertices(1:model.nVertices)
         pts = bsxfun(@times, Collision.VectorUnit(ve.pt - model.ptCenter), distances);
         pts = bsxfun(@plus, pts, model.ptCenter);
         allPts(:, :, k) = pts;
@@ -21,23 +18,23 @@ function [distToNearest, nearestCellID, distPrior] = FindRaysNearestRegions(sett
     % Calculate distances to the current cell    
     distToCurrent = VectorLen(allPtsReshaped - cellsRegions.RegionDesc(cellID).NearestPoint(allPtsReshaped));
     % Calculate the proximity based priors
-    distPrior = distToNearest ./ distToCurrent;
+    distPrior = (distToNearest ./ distToCurrent).^2; % square makes fast non-linear decay
     distPrior(nearestCellID == cellID) = 1;
-    distPrior(nearestCellID ~= cellID) = 0; % very strong prior!
+    %distPrior(nearestCellID ~= cellID) = 0; % very strong prior!
     
     % Reshape everything back
-    distToNearest = reshape(distToNearest, length(distances), length(model.lVertices));
-    nearestCellID = reshape(nearestCellID, length(distances), length(model.lVertices));
-    distPrior = reshape(distPrior, length(distances), length(model.lVertices));
+    distToNearest = reshape(distToNearest, length(distances), model.nVertices);
+    nearestCellID = reshape(nearestCellID, length(distances), model.nVertices);
+    distPrior = reshape(distPrior, length(distances), model.nVertices);
     
-%     % Distance prior must be monotonic
-%     for k = 2:length(distances)
-%         distPrior(k, :) = min(distPrior(k-1, :), distPrior(k, :));
-%     end
+    % Distance prior must be monotonic
+    for k = 2:length(distances)
+        distPrior(k, :) = min(distPrior(k-1, :), distPrior(k, :));
+    end
     
     % Fill the vertices tags
     k = 1;
-    for ve = model.lVertices    
+    for ve = model.lVertices(1:model.nVertices)
         ve.tag.distToNearest = distToNearest(:, k);
         ve.tag.nearestCellID = nearestCellID(:, k);
         ve.tag.distPrior = distPrior(:, k);

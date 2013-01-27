@@ -36,6 +36,6 @@ function EstimateCellBoundary(settings, model, distances, rayTraces, distPrior)
         % Add some EM flavour here. Factor 1.2 is used to avoid
         % concentrating on the inner boundary (close to nuclei)
         s.RadiusPrior.mean = 1.2 * distSum / nDist;
-        model.ptCenter = MeshUtils.GetCenter(model);
+        %model.ptCenter = MeshUtils.GetCenter(model);
     end
 end

@@ -18,18 +18,19 @@ function MakeIcosahedron(model)
     model.lVertices(3).pt = [ phi, 0, -1]';
     model.lVertices(2).pt = [-phi, 0,  1]';
     model.lVertices(1).pt = [ phi, 0,  1]';
+    model.nVertices = 12;
         
-    pts = nan(3, length(model.lVertices));
-    for k = 1:length(model.lVertices)
+    pts = nan(3, model.nVertices);
+    for k = 1:model.nVertices
         pts(:, k) = model.lVertices(k).pt;
     end
     
     % Add faces
     v = model.lVertices;
-    addedFacets = zeros(1, length(v));
-    for k1 = 1:length(v)
-        for k2 = 1:length(v)
-            for k3 = 1:length(v)
+    addedFacets = zeros(1, model.nVertices);
+    for k1 = 1:model.nVertices
+        for k2 = 1:model.nVertices
+            for k3 = 1:model.nVertices
                 if ((k1 ~= k2) && (k2 ~= k3) && (k1 ~= k3) && (all(addedFacets([k1, k2, k3]) < 5)))
                     ptsShifted = bsxfun(@minus, pts, v(k1).pt);
                     dotprod = cross((v(k2).pt-v(k1).pt), (v(k3).pt-v(k1).pt))' * ptsShifted;

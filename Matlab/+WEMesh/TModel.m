@@ -1,31 +1,56 @@
 classdef TModel < handle
     properties (SetAccess = public)        
+        nVerticesPreallocate;
         lVertices;
+        nVertices;
         lEdges;
+        nEdges;
         lFacets;
+        nFacets;
         ptCenter = [0, 0, 0]';
     end
     
     methods
-        function obj = TModel()
+        function obj = TModel(verticesPreallocate)
+            obj.nVerticesPreallocate = verticesPreallocate;
             Init(obj)
         end
         
         function Init(obj)
+            % Preallocate the lists
             obj.lVertices = WEMesh.TVertex.empty;
+            obj.lVertices(obj.nVerticesPreallocate) = WEMesh.TVertex;
+%             for k = 1:length(obj.lVertices)
+%                 obj.lVertices(k) = WEMesh.TVertex;
+%             end
+            obj.nVertices = 0;
+            
             obj.lEdges = WEMesh.TEdge.empty;
+            obj.lEdges(6 * obj.nVerticesPreallocate) = WEMesh.TEdge;
+%             for k = 1:length(obj.lEdges)
+%                 obj.lEdges(k) = WEMesh.TEdge;
+%             end
+            obj.nEdges = 0;
+            
             obj.lFacets = WEMesh.TFacet.empty;
+            obj.lFacets(2 * obj.nVerticesPreallocate) = WEMesh.TFacet;
+%             for k = 1:length(obj.lFacets)
+%                 obj.lFacets(k) = WEMesh.TFacet;
+%             end
+            obj.nFacets = 0;
+            
             obj.ptCenter = [0, 0, 0]';
         end
         
         function AddFacet(obj, v1, v2, v3)
-            nEdges = size(obj.lEdges, 2);
+            nEdgesOld = obj.nEdges;
             vert = [v1, v2, v3];
             % Add edges
             for k = 3:-1:1
-                obj.lEdges(nEdges + k).vertex = vert(k);
+                obj.lEdges(nEdgesOld + k).vertex = vert(k);
             end
-            edges = obj.lEdges(nEdges + 1:nEdges + 3);
+            obj.nEdges = obj.nEdges + 3;
+            edges = obj.lEdges(nEdgesOld + 1:nEdgesOld + 3);
             for k = 3:-1:1            
                 % Add edges to vertices links
                 edges(k).vertex = vert(k);
@@ -35,11 +60,12 @@ classdef TModel < handle
                 edges(k).vertex.lEdges(end+1) = edges(k);
             end
             % Add facet
-            obj.lFacets(end+1).lEdges = edges;           
+            obj.nFacets = obj.nFacets + 1;
+            obj.lFacets(obj.nFacets).lEdges = edges;           
             % Set opposite half-edges links
             for k = 1:3
                 edge = edges(k); 
-                edge.facet = obj.lFacets(end);
+                edge.facet = obj.lFacets(obj.nFacets);
                 ve1 = edge.vertex;
                 ve2 = edge.eNext.vertex;                
                 for vertHalfEdge = ve2.lEdges
@@ -61,16 +87,16 @@ classdef TModel < handle
         end
         
         function TriangulateFacet(obj, facet)
-            SetTags(facet.lEdges, nan);
-            nEdges = size(facet.lEdges, 2);
+            SetTags(facet.lEdges, length(facet.lEdges), nan);
+            nFacetEdges = size(facet.lEdges, 2);
             
             bFinished = 0;
-            while (nEdges > 3) && (~bFinished)
+            while (nFacetEdges > 3) && (~bFinished)
                 bFinished = 1;
                 k = 1;
                 edge = facet.lEdges(k);
                 bFound = 0;
-                while (~bFound) && (k <= nEdges)
+                while (~bFound) && (k <= nFacetEdges)
                     v1 = edge.eNext.vertex;
                     v2 = edge.eNext.eNext.vertex;
                     v3 = edge.eNext.eNext.eNext.vertex;
@@ -84,10 +110,14 @@ classdef TModel < handle
                 if bFound
                     bFinished = 0;
                     % Add 2 half-edges to make a triange
-                    obj.lEdges(end + 1).eNext = e1;
-                    e3 = obj.lEdges(end);
-                    obj.lEdges(end + 1).eNext = e2.eNext;
-                    eOther = obj.lEdges(end);
+                    obj.nEdges = obj.nEdges + 1;
+                    eLast = obj.lEdges(obj.nEdges);
+                    eLast.eNext = e1;
+                    e3 = obj.lEdges(obj.nEdges);
+                    obj.nEdges = obj.nEdges + 1;
+                    eLast = obj.lEdges(obj.nEdges);
+                    eLast.eNext = e2.eNext;
+                    eOther = obj.lEdges(obj.nEdges);
                     e0.eNext = eOther;
                     eOther.eOpposite = e3;
                     e3.eOpposite = eOther;
@@ -96,29 +126,27 @@ classdef TModel < handle
                     eOther.vertex = v1;
                     eOther.facet = facet;
                     % Add new facet
-                    obj.lFacets(end+1).lEdges = [e1, e2, e3]; 
-                    faNew = obj.lFacets(end);
+                    obj.nFacets = obj.nFacets + 1;
+                    faLast = obj.lFacets(obj.nFacets);
+                    faLast.lEdges = [e1, e2, e3]; 
+                    faNew = obj.lFacets(obj.nFacets);
                     e1.facet = faNew;
                     e2.facet = faNew;
                     e3.facet = faNew;
                     % Remove e1 and e2 form the current facet edge list
-                    nEdges = size(facet.lEdges, 2);
-                    bOld = nan(1, nEdges);
-                    for k = 1:nEdges
-                        bOld(k) = (facet.lEdges(k) == e1) || (facet.lEdges(k) == e2);
-                    end
+                    bOld = (facet.lEdges == e1) | (facet.lEdges == e2);
                     facet.lEdges = facet.lEdges(~bOld);
                     facet.lEdges(end+1) = eOther;
                 end
-                nEdges = size(facet.lEdges, 2);
+                nFacetEdges = size(facet.lEdges, 2);
             end            
         end
         
         function DivideAllEdges(obj)
-            SetTags(obj.lEdges, 0);
-            SetTags(obj.lVertices, 0);
-            nEdges = size(obj.lEdges, 2);
-            for k = 1:nEdges
+            SetTags(obj.lEdges, obj.nEdges, 0);
+            SetTags(obj.lVertices, obj.nVertices, 0);
+            nEdgesOld = obj.nEdges;
+            for k = 1:nEdgesOld
                 e1 = obj.lEdges(k);
                 if (e1.tag == 0)
                     e2 = e1.eOpposite;
@@ -135,19 +163,24 @@ classdef TModel < handle
             v1 = e1.vertex;
             v2 = e2.vertex;
             % Add new point
-            obj.lVertices(end + 1).pt = mean([v1.pt, v2.pt], 2);
-            vNew = obj.lVertices(end);
+            obj.nVertices = obj.nVertices + 1;
+            obj.lVertices(obj.nVertices).pt = mean([v1.pt, v2.pt], 2);
+            vNew = obj.lVertices(obj.nVertices);
             vNew.tag = 1;
             % Add new edge for e1
-            obj.lEdges(end + 1).vertex = vNew;
-            e1New = obj.lEdges(end);
+            obj.nEdges = obj.nEdges + 1;
+            eLast = obj.lEdges(obj.nEdges);
+            eLast.vertex = vNew;
+            e1New = obj.lEdges(obj.nEdges);
             e1New.eNext = e1.eNext;
             e1.eNext = e1New;
             e1New.facet = e1.facet;
             e1New.facet.lEdges(end + 1) = e1New;
             % Add new edge for e2
-            obj.lEdges(end + 1).vertex = vNew;
-            e2New = obj.lEdges(end);
+            obj.nEdges = obj.nEdges + 1;
+            eLast = obj.lEdges(obj.nEdges);
+            eLast.vertex = vNew;
+            e2New = obj.lEdges(obj.nEdges);
             e2New.eNext = e2.eNext;
             e2.eNext = e2New;
             e2New.facet = e2.facet;
@@ -160,19 +193,17 @@ classdef TModel < handle
         end
         
         function plot(obj)
-            nVerts = size(obj.lVertices, 2);
-            lPts = nan(3, nVerts);
-            for k = 1:nVerts
+            lPts = nan(3, obj.nVertices);
+            for k = 1:obj.nVertices
                 lPts(:, k) = obj.lVertices(k).pt;
             end
             plot3(lPts(1, :), lPts(2, :), lPts(3, :), '.r', 'MarkerSize', 5);
             hold on;
-            nFacets = size(obj.lFacets, 2);
-            for k = 1:nFacets
-                nEdges = size(obj.lFacets(k).lEdges, 2);
-                lPts = nan(3, nEdges+1);
+            for k = 1:obj.nFacets
+                nFacetEdges = size(obj.lFacets(k).lEdges, 2);
+                lPts = nan(3, nFacetEdges+1);
                 edgeCurrent = obj.lFacets(k).lEdges(1);
-                for k2 = 1:nEdges+1
+                for k2 = 1:nFacetEdges+1
                     lPts(:, k2) = edgeCurrent.vertex.pt;
                     edgeCurrent = edgeCurrent.eNext;
                 end
@@ -182,15 +213,15 @@ classdef TModel < handle
                 if (any(isnan(vn)))
                     vn = [0, 0, 0]';
                 end
-                lPts = lPts + 0.05 * repmat(vn, 1, nEdges + 1);
+                lPts = lPts + 0.05 * repmat(vn, 1, nFacetEdges + 1);
                 plot3(lPts(1, :), lPts(2, :), lPts(3, :));
             end
         end
     end
 end
 
-function SetTags(list, value)
-    for item = list
+function SetTags(list, len, value)
+    for item = list(1:len)
         item.tag = value;
     end
 end

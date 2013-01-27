@@ -1,8 +1,7 @@
 function ptIntersect = MeshPlaneIntersect(model, ptPlane, vnPlane)
-    nFacets = length(model.lFacets);
-    ptIntersect = nan(2, 3, nFacets);
+    ptIntersect = nan(2, 3, model.nFacets);
     k = 0;
-    for fa = model.lFacets
+    for fa = model.lFacets(1:model.nFacets)
         [pts, bIntersect] = Collision.TrianglePlaneIntersect(fa.lEdges(1).vertex.pt,...
                                                              fa.lEdges(2).vertex.pt,...
                                                              fa.lEdges(3).vertex.pt,...

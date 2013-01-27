@@ -1,11 +1,11 @@
 function values = FindRaysValues(settings, model, scanAligned, distances)
-    values = nan(length(distances), length(model.lVertices));
+    values = nan(length(distances), model.nVertices);
     regressor = Regression.LinearStackRegressor(scanAligned, settings);
 
     % Pack points into an array for batch processing
-    allPts = nan(3, length(distances), length(model.lVertices));
+    allPts = nan(3, length(distances), model.nVertices);
     k = 1;
-    for ve = model.lVertices
+    for ve = model.lVertices(1:model.nVertices)
         pts = bsxfun(@times, Collision.VectorUnit(ve.pt - model.ptCenter), distances);
         pts = bsxfun(@plus, pts, model.ptCenter);
         allPts(:, :, k) = pts;
@@ -17,7 +17,7 @@ function values = FindRaysValues(settings, model, scanAligned, distances)
     
     % Fill the vertices tags
     k = 1;
-    for ve = model.lVertices    
+    for ve = model.lVertices(1:model.nVertices)   
         ve.tag.scanValues = values(:, k);
         k = k + 1;
     end

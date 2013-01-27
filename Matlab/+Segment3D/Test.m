@@ -23,7 +23,8 @@ function Test()
     [ptCenter, cellID] = cellsRegions.NearestPoint(ptCenter);
     ptCenter = cellsRegions.RegionDesc(cellID).Center;
     
-    model = Segment3D.CreateTriangulatedSphere();
+    tesselationLevel = 2;
+    model = Segment3D.CreateTriangulatedSphere(tesselationLevel);
     MeshUtils.ProjectOnSphere(model, [0, 0, 0]', 1);
     MeshUtils.Translate(model, ptCenter);
     distances = 0:settings.RayStep:settings.RayRadius;
