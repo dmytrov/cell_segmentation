@@ -4,7 +4,7 @@ function PlotRegionsFeatures(settings, cellsRegions)
     feat2 = nan(length(cellsRegions.RegionDesc), 1);
     k = 1;
     for region = cellsRegions.RegionDesc
-        principalAxes = GetPrincipalAxes(region.Pixels);
+        principalAxes = MathUtils.GetPrincipalAxes(region.Pixels);
         %feat1(k) = abs(principalAxes(:, 1)' * [0, 0, 1]');
         feat1(k) = abs(Collision.VectorUnit(principalAxes(:, 1))' * [0, 0, 1]');
         feat2(k) = min(size(region.Pixels, 2), 5000);
@@ -37,18 +37,3 @@ function PlotRegionsFeatures(settings, cellsRegions)
 %     plot(d(1,:) * v(1,1), d(2,:) * v(2,2), 'or');
 %     hold off;
 end
-
-function res = GetPrincipalAxes(x)
-    % Returns pricipal axes (of std length) in descending order
-    res = eye(3, 3);
-    if (size(x, 2) > 1)
-        x = bsxfun(@minus, x, mean(x, 2));
-        [v, d] = eig(x*x'/(size(x,2)-1));
-        d = diag(d);
-        [d, indexes] = sort(d, 'descend');
-        v = v(:, indexes);
-        % d is variance, take sqrt to get the std
-        res = v .* repmat(sqrt(d)', size(v, 1), 1);
-    end
-end
-

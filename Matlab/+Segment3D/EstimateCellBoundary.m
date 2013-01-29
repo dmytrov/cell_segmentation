@@ -5,20 +5,19 @@ function EstimateCellBoundary(settings, model, distances, rayTraces, distPrior)
     [~, raysGrad]= gradient(rayTraces);
     raysGradConv = conv2(raysGrad, kern, 'same');
     %figure;
-    %plot(raysGradConv);
+    %plot(raysGradConv);    
     
-    radiusPrior = settings.RadiusPrior.ValueAt(distances)';
-    
-    %s = Segment3D.TSettings();
-    nIterations = 10;
+    distancesPosteriorFactor = 1; % iteratively updated radius prior
+    nIterations = 3;
     for i = 1:nIterations
-        k = 1;
+        radiusPrior = settings.RadiusPrior.ValueAt(distancesPosteriorFactor * distances)';
         nDist = 0;
         distSum = 0;
         %for ve = model.lVertices
         %    ve.tag.scanValues
         %end
             
+        k = 1;
         for ray = raysGradConv
             % Shape with the priors, find the MAP value
             posteriorRay = ray .* radiusPrior .* model.lVertices(k).tag.distPrior;
@@ -33,9 +32,9 @@ function EstimateCellBoundary(settings, model, distances, rayTraces, distPrior)
             end
             k = k + 1;
         end
-        % Add some EM flavour here. Factor 1.2 is used to avoid
+        % Add some EM flavour here. 
+        % Factor 1.1 is used to avoid
         % concentrating on the inner boundary (close to nuclei)
-        s.RadiusPrior.mean = 1.2 * distSum / nDist;
-        %model.ptCenter = MeshUtils.GetCenter(model);
+        distancesPosteriorFactor = settings.RadiusPrior.mean / (1.1 * distSum / nDist);        
     end
 end

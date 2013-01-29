@@ -35,8 +35,6 @@ function regions = FindCellsRegions(settings, scan)
     centroids = regionprops(connectedComponents, 'centroid');
     volumes = regionprops(connectedComponents, 'area'); % Matlab developers believe that area is equal to volume
     
-    % TODO: classify cells/vessels/axons
-    
     % Create search structures
     pixelList = regionprops(connectedComponents, 'PixelList');
     regions = Segment3D.TRegionDescsList();

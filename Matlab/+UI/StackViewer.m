@@ -11,7 +11,7 @@ classdef StackViewer < UI.Form
         imDynamicRange = [];
     end
     properties (Access = public)
-        model;
+        models;        
         settings;
     end
     
@@ -61,6 +61,8 @@ classdef StackViewer < UI.Form
             %set(obj.slider, 'AdjustmentValueChangedCallback', {@OnSlider, obj})
             %set(obj.slider, 'Callback', {@OnSlider, obj});
             obj.ImageToScreen();
+            
+            models = WEMesh.TModel.empty;
         end
                 
         function delete(obj)
@@ -116,15 +118,17 @@ classdef StackViewer < UI.Form
             set(gca,'YDir','normal');
             hold on;
             
-            if (~isempty(obj.model) && ~isempty(obj.settings))
+            if (~isempty(obj.models) && ~isempty(obj.settings))
                 vnPlane = [0, 0, 0]';
                 vnPlane(obj.axisIndex) = 1;
                 ptPlane = obj.settings.PixToMicron(vnPlane * frameIndex);
-                section = Collision.MeshPlaneIntersect(obj.model, ptPlane, vnPlane);
-                section = section ./ repmat(obj.settings.Resolution', [2, 1, size(section, 3)]);
-                section(:, obj.axisIndex, :) = [];
-                h = plot(obj.canvas(1), squeeze(section(:,1,:)), squeeze(section(:,2,:)), 'color', 'm');
-                set(h, 'HitTest', hitTest);            
+                for model = obj.models
+                    section = Collision.MeshPlaneIntersect(model, ptPlane, vnPlane);
+                    section = section ./ repmat(obj.settings.Resolution', [2, 1, size(section, 3)]);
+                    section(:, obj.axisIndex, :) = [];
+                    h = plot(obj.canvas(1), squeeze(section(:,1,:)), squeeze(section(:,2,:)), 'color', 'm');
+                    set(h, 'HitTest', hitTest);            
+                end
             end
             hold off;
         end

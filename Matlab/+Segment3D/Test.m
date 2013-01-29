@@ -1,3 +1,8 @@
+% 1. precalculate cross-sections
+% 2. All models in 3D on the right
+% 3. map 64x64 image (correlation based), map 2D ROIs on the models
+% 4. extract volume, skew (assymetricity), log-likelihood
+
 function Test()
     % cd 'D:\EulersLab\Code\Matlab'
     
@@ -17,32 +22,49 @@ function Test()
     scanAligned = ImageUtils.AlignSlices(scan);
     
     cellsRegions = Segment3D.FindCellsRegions(settings, scanAligned);
-    %pt = [321, 131, 16]';
-    ptCenter = [398, 165, 18]';
-    ptCenter = settings.PixToMicron(ptCenter);
-    [ptCenter, cellID] = cellsRegions.NearestPoint(ptCenter);
-    ptCenter = cellsRegions.RegionDesc(cellID).Center;
-    
-    tesselationLevel = 2;
-    model = Segment3D.CreateTriangulatedSphere(tesselationLevel);
-    MeshUtils.ProjectOnSphere(model, [0, 0, 0]', 1);
-    MeshUtils.Translate(model, ptCenter);
-    distances = 0:settings.RayStep:settings.RayRadius;
+    Segment3D.ClassifyRegions(settings, cellsRegions);
     
     if (settings.IsDebug)
         clear viewer;
         viewer = UI.StackProfileViewer(scanAligned);
-        viewer.model = model;
         viewer.settings = settings;
+        viewer.models = [];
     end
     
-    rayTraces = Segment3D.FindRaysValues(settings, model, scanAligned, distances);
-    figure;
-    plot(rayTraces);
-    
-    [distToNearest, nearestCellID, distPrior] = Segment3D.FindRaysNearestRegions(settings, model, cellID, cellsRegions, distances);
-    
-    Segment3D.EstimateCellBoundary(settings, model, distances, rayTraces, distPrior);
+	distances = 0:settings.RayStep:settings.RayRadius;
+	tesselationLevel = 1;
+    k = 1;
+    for region = cellsRegions.RegionDesc    
+        if (region.Type == Segment3D.TRegionDesc.CELL)
+            %pt = [321, 131, 16]';            
+%             ptCenter = [398, 165, 18]';
+%             ptCenter = settings.PixToMicron(ptCenter);
+%             [ptCenter, cellID] = cellsRegions.NearestPoint(ptCenter);
+%             ptCenter = cellsRegions.RegionDesc(cellID).Center;
+
+            ptCenter = region.Center;
+            cellID = k;
+
+            model = Segment3D.CreateTriangulatedSphere(tesselationLevel);
+            MeshUtils.ProjectOnSphere(model, [0, 0, 0]', 1);
+            MeshUtils.Translate(model, ptCenter);
+
+            rayTraces = Segment3D.FindRaysValues(settings, model, scanAligned, distances);
+            %figure;
+            %plot(rayTraces);
+
+            [distToNearest, nearestCellID, distPrior] = Segment3D.FindRaysNearestRegions(settings, model, cellID, cellsRegions, distances);
+            Segment3D.EstimateCellBoundary(settings, model, distances, rayTraces, distPrior);
+            
+            if (settings.IsDebug)
+                viewer.models = [viewer.models, model];
+            end
+        end
+        k = k + 1
+        if (k == 30)
+            %break
+        end
+    end
     
 	figure; opengl hardware;
     plot(model);

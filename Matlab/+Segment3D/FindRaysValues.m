@@ -14,6 +14,7 @@ function values = FindRaysValues(settings, model, scanAligned, distances)
     
     % Find all points values
     values = reshape(regressor.Value(reshape(allPts, 3, [])), size(values));
+    values(isnan(values)) = 0;
     
     % Fill the vertices tags
     k = 1;
