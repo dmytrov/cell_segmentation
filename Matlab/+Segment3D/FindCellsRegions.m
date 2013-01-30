@@ -25,7 +25,7 @@ function regions = FindCellsRegions(settings, scan)
         coThreshInd = co > thresh;
         coThresh = co;
         coThresh(coThreshInd) = co(coThreshInd) + coMax;
-        convViewer = UI.StackViewer(coThresh);
+        convViewer = UI.StackViewer(cat(1, co, coThresh));
     end
 
     coThresh = co > thresh;

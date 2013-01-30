@@ -192,7 +192,11 @@ classdef TModel < handle
             e1New.eOpposite = e2;
         end
         
-        function plot(obj)
+        function plot(obj, canvas)
+            if (nargin < 2)
+                canvas = gca;
+            end
+            axes(canvas);
             lPts = nan(3, obj.nVertices);
             for k = 1:obj.nVertices
                 lPts(:, k) = obj.lVertices(k).pt;

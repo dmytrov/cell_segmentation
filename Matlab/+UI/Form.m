@@ -6,6 +6,7 @@ classdef Form < handle
     methods (Access = public)
         function obj = Form()
             obj.h = figure();
+            set(obj.h, 'ToolBar', 'figure');
             set(obj.h, 'Position', [200, 200, 800, 600]);
             %set(obj.h, 'CloseRequestFcn', @(src, event)(OnCloseRequest(obj, src, event)));
             set(obj.h, 'DeleteFcn', @(src, event)(OnDeleteFcn(obj, src, event)));

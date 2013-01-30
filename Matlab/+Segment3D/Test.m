@@ -1,19 +1,20 @@
+% TODO:
 % 1. precalculate cross-sections
 % 2. All models in 3D on the right
 % 3. map 64x64 image (correlation based), map 2D ROIs on the models
-% 4. extract volume, skew (assymetricity), log-likelihood
+% 4. extract volume, skew (asymmetricity), log-likelihood
 
+%  TODO: Use priors for:
+%   - cell radius
+%   - isosurface (same boundary values in neighboring rays)
+%   - prior for boundary intensity (say 20% of cell max of center)
+%   - surface curvature
+%   - optimization priority (lateral rays boundaries have higher
+%   evidence)
+    
 function Test()
     % cd 'D:\EulersLab\Code\Matlab'
-    
-    %  TODO: Use priors for:
-    %   - cell radius
-    %   - isosurface (same boundary values in neighboring rays)
-    %   - prior for boundary intensity (say 20% of cell max or center)
-    %   - surface curvature
-    %   - optimization priority (lateral rays boundaries have higher
-    %   evidence)
-    clear all;
+    clear classes;
 	settings = Segment3D.TSettings();
     settings.IsDebug = 1;
     sScanFileName = '../../Data/Q5 512.tif';
@@ -24,24 +25,21 @@ function Test()
     cellsRegions = Segment3D.FindCellsRegions(settings, scanAligned);
     Segment3D.ClassifyRegions(settings, cellsRegions);
     
-    if (settings.IsDebug)
-        clear viewer;
-        viewer = UI.StackProfileViewer(scanAligned);
-        viewer.settings = settings;
-        viewer.models = [];
+    tic;
+    nCells = 0;
+    for region = cellsRegions.RegionDesc    
+        if (region.Type == Segment3D.TRegionDesc.CELL)
+            nCells = nCells + 1;
+        end
     end
-    
+	models = [];
 	distances = 0:settings.RayStep:settings.RayRadius;
 	tesselationLevel = 1;
     k = 1;
+    kCell = 1;
     for region = cellsRegions.RegionDesc    
         if (region.Type == Segment3D.TRegionDesc.CELL)
-            %pt = [321, 131, 16]';            
-%             ptCenter = [398, 165, 18]';
-%             ptCenter = settings.PixToMicron(ptCenter);
-%             [ptCenter, cellID] = cellsRegions.NearestPoint(ptCenter);
-%             ptCenter = cellsRegions.RegionDesc(cellID).Center;
-
+            fprintf('Cell %d of %d\n', kCell, nCells);
             ptCenter = region.Center;
             cellID = k;
 
@@ -50,34 +48,34 @@ function Test()
             MeshUtils.Translate(model, ptCenter);
 
             rayTraces = Segment3D.FindRaysValues(settings, model, scanAligned, distances);
-            %figure;
-            %plot(rayTraces);
 
             [distToNearest, nearestCellID, distPrior] = Segment3D.FindRaysNearestRegions(settings, model, cellID, cellsRegions, distances);
             Segment3D.EstimateCellBoundary(settings, model, distances, rayTraces, distPrior);
             
-            if (settings.IsDebug)
-                viewer.models = [viewer.models, model];
-            end
+            models = [models, model];
+            kCell = kCell + 1;
         end
-        k = k + 1
-        if (k == 30)
+        k = k + 1;
+        if (k == 60)
             %break
         end
     end
+    toc;
     
-	figure; opengl hardware;
-    plot(model);
+	if (settings.IsDebug)
+        clear viewer;
+        viewer = UI.StackProfileViewer(scanAligned);
+        viewer.settings = settings;
     
-%     %%
-%     surf(squeeze(scan(300:end,300:end,7)))
-%     %%
-%     s = scan(:,:,7);
-%     [sx, sy] = gradient(s);
-%     sxy = abs(sx) + abs (sy);
-%     %figure
-%     imagesc(sxy)
-%     %%
+        clear stackSliceViewer;
+        stackSliceViewer = UI.StackModelSliceViewer(scanAligned);
+        stackSliceViewer.settings = settings;
+        stackSliceViewer.SetModels(models);
+
+        clear modelViewer;
+        modelViewer = UI.ModelViewer;
+        modelViewer.SetModels(models);        
+	end
 end
 
 function values = TestFindRaysValues(settings, model, scanAligned, distances)

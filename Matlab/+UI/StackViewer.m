@@ -54,7 +54,7 @@ classdef StackViewer < UI.Form
             obj.DoLayout();
             
             obj.hImage = imagesc(obj.imStack(:, :, 1));
-            colorbar;
+            %colorbar;
             axis image;
             
             addlistener(obj.sliderFrame, 'Value', 'PostSet', @(s,e) (obj.OnSlider(s, e)));
@@ -93,11 +93,11 @@ classdef StackViewer < UI.Form
             obj.ImageToScreen();
         end
         
-        function ImageToScreen(obj)
+        function DrawStack(obj)
+            frameIndex = obj.framePosition(obj.axisIndex);
             clickFcn = get(obj.hImage, 'ButtonDownFcn');
             hitTest  = get(obj.hImage, 'HitTest');
             btnDownFcn = get(obj.canvas(1), 'ButtonDownFcn');
-            frameIndex = obj.framePosition(obj.axisIndex);
             switch obj.axisIndex
                 case 1
                     slice = squeeze(obj.imStack(frameIndex, :, :));
@@ -111,13 +111,17 @@ classdef StackViewer < UI.Form
             else
                 obj.hImage = imagesc(slice', 'Parent', obj.canvas(1), obj.imDynamicRange);
             end
+            axis(obj.canvas(1), 'image');
             set(obj.hImage, 'ButtonDownFcn', clickFcn);
             set(obj.hImage, 'HitTest', hitTest);
             set(obj.canvas(1), 'ButtonDownFcn', btnDownFcn);
-            axis image;
             set(gca,'YDir','normal');
+        end
+        
+        function DrawModels(obj)
+            frameIndex = obj.framePosition(obj.axisIndex);
+            hitTest  = get(obj.hImage, 'HitTest');
             hold on;
-            
             if (~isempty(obj.models) && ~isempty(obj.settings))
                 vnPlane = [0, 0, 0]';
                 vnPlane(obj.axisIndex) = 1;
@@ -131,6 +135,11 @@ classdef StackViewer < UI.Form
                 end
             end
             hold off;
+        end
+        
+        function ImageToScreen(obj)
+            DrawStack(obj);
+            DrawModels(obj);
         end
         
         function OnChangeAxis(obj, handle, eventData)
