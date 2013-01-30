@@ -1,9 +1,14 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 classdef TRegionDesc < handle
     properties (Constant = true)
-        CELL    = 0;
-        VESSEL  = 1;
-        AXON    = 2;
-        NOISE   = 3;
+        UNCLASSIFIED    = 0;
+        CELL            = 1;
+        VESSEL          = 2;
+        AXON            = 3;
+        NOISE           = 4;
     end
     
     properties (Access = public)

@@ -1,28 +1,25 @@
-function EstimateCellBoundary(settings, model, distances, rayTraces, distPrior)
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
+function EstimateCellBoundary(settings, model, distances, rayTraces)
     sigma = settings.RayKernelVariance/settings.RayStep;
     x = -3*sigma:3*sigma;
     kern = normpdf(x, 0, sigma)';
     [~, raysGrad]= gradient(rayTraces);
     raysGradConv = conv2(raysGrad, kern, 'same');
-    %figure;
-    %plot(raysGradConv);    
     
-    distancesPosteriorFactor = 1; % iteratively updated radius prior
-    nIterations = 3;
-    for i = 1:nIterations
+    distancesPosteriorFactor = 1; % iteratively updated radius prior    
+    for i = 1:settings.BoundaryEstimationIterations
         radiusPrior = settings.RadiusPrior.ValueAt(distancesPosteriorFactor * distances)';
         nDist = 0;
         distSum = 0;
-        %for ve = model.lVertices
-        %    ve.tag.scanValues
-        %end
             
         k = 1;
         for ray = raysGradConv
-            % Shape with the priors, find the MAP value
+            % Shape with the priors, find the first peak (MAP value)
             posteriorRay = ray .* radiusPrior .* model.lVertices(k).tag.distPrior;
             [peak, peakIndex] = min(posteriorRay);
-            %[peaks, peakIndex] = findpeaks(-ray);
             if (numel(peakIndex) >= 1)
                 dist = distances(peakIndex(1));
                 vRay = Collision.VectorUnit(model.lVertices(k).pt - model.ptCenter);

@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function res = FastConvergence3D(fx, fy, fz, kernel)
     sx = size(kernel, 1); midx = (sx+1)/2;
     sy = size(kernel, 2); midy = (sy+1)/2;

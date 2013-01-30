@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function [ptIntersect, bIntersect] = TrianglePlaneIntersect(pt1, pt2, pt3, ptPlane, vnPlane)
     ptIntersect = nan(3, 3);
     bIntersect = nan(1, 3);

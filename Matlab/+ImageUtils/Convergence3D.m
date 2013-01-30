@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function res = Convergence3D(fx, fy, fz, kernel)
     res = zeros(size(fx));
     [kx, ky, kz] = size(kernel);        

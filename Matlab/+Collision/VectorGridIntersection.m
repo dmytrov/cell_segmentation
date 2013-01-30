@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function lPts = VectorGridIntersection(pt, v)
     % Returns list of segment-grid intersections.
     

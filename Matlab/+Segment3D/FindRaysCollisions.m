@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function res = FindRaysCollisions(model, scan, ptCenter)
     %% Rough cell fit
     %pt1 = ptCenter;

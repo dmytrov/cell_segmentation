@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function res = CropZeroes(img)
     d1 = find(squeeze(any(any(img > 0, 2), 3)));
     d1 = [d1(1), d1(end)];

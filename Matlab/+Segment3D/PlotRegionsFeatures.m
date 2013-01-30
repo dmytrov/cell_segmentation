@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 % Max PCA vector vs Z-vector angle    
 function PlotRegionsFeatures(settings, cellsRegions)
     feat1 = nan(length(cellsRegions.RegionDesc), 1);

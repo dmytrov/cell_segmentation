@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 classdef TRegionDescsList < handle
     properties (Access = public)
         RegionDesc;     % Array of TRegionDesc

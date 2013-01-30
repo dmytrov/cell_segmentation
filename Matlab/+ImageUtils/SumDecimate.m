@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function res = SumDecimate(scan, decX, decY, decZ)
     res = nan(ceil(size(scan) ./ [decX, decY, decZ]));
     scanExp = zeros(size(res) .* [decX, decY, decZ]);

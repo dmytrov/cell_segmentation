@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function [distToNearest, nearestCellID, distPrior] = FindRaysNearestRegions(settings, model, cellID, cellsRegions, distances)
     % Pack points into an array for batch processing
     allPts = nan(3, length(distances), model.nVertices);

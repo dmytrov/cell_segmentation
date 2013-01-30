@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function ptIntersect = MeshPlaneIntersect(model, ptPlane, vnPlane)
     ptIntersect = nan(2, 3, model.nFacets);
     k = 0;

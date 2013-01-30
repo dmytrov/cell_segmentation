@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function model = CreateTriangulatedSphere(tesselationLevel)
     model = WEMesh.TModel(12*4^tesselationLevel);
     MeshUtils.MakeIcosahedron(model);

@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function res = AlignSlices(scan)
     % Due to some instability in mechanics/tissue/perfusion the slices may
     % be slightly shifted. 
@@ -5,7 +9,6 @@ function res = AlignSlices(scan)
     
     res = scan;
     [sx, sy, sz] = size(scan);
-    % TODO: Start from the middle slice
     corrSize = 7;
     corrHalfSize = round((corrSize - 1) / 2);
     [corrGridX, corrGridY] = meshgrid(-corrHalfSize:corrHalfSize, -corrHalfSize:corrHalfSize);
@@ -13,6 +16,7 @@ function res = AlignSlices(scan)
     displFullX = 0;
     displFullY = 0;
     for k = 2:sz
+        fprintf('Aligning slice %d of %d\n', k, sz);	
         sliceCorr = ImageCorrelation(scan(:,:,k-1), scan(:,:,k), corrSize);
         sliceCorr = sliceCorr - mean([min(sliceCorr(:)), max(sliceCorr(:))]);
         sliceCorr(sliceCorr < 0) = 0;

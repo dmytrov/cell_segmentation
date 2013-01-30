@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 classdef StackViewer < UI.Form
     properties (SetAccess = protected, GetAccess = public)
         imStack = zeros(3,3,3);

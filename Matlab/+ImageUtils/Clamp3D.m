@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 % Clamp value to range
 function [fxc, fyc, fzc] = Clamp3D(fx, fy, fz, low, high)
     fNorm = sqrt(fx.^2 + fy.^2 + fz.^2);    

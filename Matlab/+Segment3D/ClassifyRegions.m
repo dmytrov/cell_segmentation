@@ -1,4 +1,9 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function ClassifyRegions(settings, cellsRegions)
+    % Compute features
     featZAxisAngle      = nan(length(cellsRegions.RegionDesc), 1);
     featVolume          = nan(length(cellsRegions.RegionDesc), 1);
     featBoundingVolume  = nan(length(cellsRegions.RegionDesc), 1);
@@ -18,7 +23,9 @@ function ClassifyRegions(settings, cellsRegions)
     end
     
     % Rough estimation
-    isCell = (featVolume > 200) & (featVolume < 4000) & (featZAxisAngle < 0.4);
+    isCell = (featVolume > settings.CellMinPixVolumeRough) & ...
+             (featVolume < settings.CellMaxPixVolumeRough) & ...
+             (featZAxisAngle < settings.CellMaxZAxisAngleRough);
     cellsPixels = nan(3, 0);
     k = 1;
     for region = cellsRegions.RegionDesc
@@ -40,12 +47,12 @@ function ClassifyRegions(settings, cellsRegions)
     cellsPixels = nan(3, 0);
     k = 1;
     for region = cellsRegions.RegionDesc
-        isCell(k) = (featVolume(k) > 10) & ...
-                    (featVolume(k) < 10000) & ...
-                    (featZAxisAngle(k) < 0.9) & ...
-                    (featVolume(k) / featBoundingVolume(k) > 0.001) & ...
-                    (featElongation(k) < 5) & ...
-                    (abs(Collision.PointPlaneDist(region.Center, ptPlane, vnPlane)) < 1.5 * settings.RadiusPrior.mean);
+        isCell(k) = (featVolume(k) > settings.CellMinPixVolumeFine) & ...
+                    (featVolume(k) < settings.CellMaxPixVolumeFine) & ...
+                    (featZAxisAngle(k) < settings.CellMaxZAxisAngleFine) & ...
+                    (featVolume(k) / featBoundingVolume(k) > settings.CellVolumeToBoundingVolumeRatio) & ...
+                    (featElongation(k) < settings.CellMaxElongation) & ...
+                    (abs(Collision.PointPlaneDist(region.Center, ptPlane, vnPlane)) < settings.CellMaxDistanceToCellPlane);
         if (isCell(k))
             region.Type = Segment3D.TRegionDesc.CELL;
             cellsPixels = [cellsPixels, region.Pixels];
@@ -54,8 +61,7 @@ function ClassifyRegions(settings, cellsRegions)
         end
         k = k + 1;
     end
-    
-    
+        
     if (settings.IsDebug)
         figure; hold on;
         for region = cellsRegions.RegionDesc    

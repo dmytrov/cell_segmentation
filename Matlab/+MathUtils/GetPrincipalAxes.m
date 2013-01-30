@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function [vAxes, scale] = GetPrincipalAxes(x)
     % Returns pricipal axes (of std length) in descending order
     vAxes = eye(3, 3);

@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function ptIntersectX = VectorGridIntersect(ptVec, vVec, ptGrid, radGrid, stepGrid)
     vVec = vVec/norm(vVec);
     nFullGrids = floor(radGrid/stepGrid);

@@ -1,3 +1,7 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function regions = FindCellsRegions(settings, scan)
     % Blur
     kernelVariance = settings.ConvergenceBlurVariance;
@@ -39,17 +43,10 @@ function regions = FindCellsRegions(settings, scan)
     pixelList = regionprops(connectedComponents, 'PixelList');
     regions = Segment3D.TRegionDescsList();
     for k = 1:length(centroids)
-        % Simple threshold classification        
-        if (volumes(k).Area > settings.ConvergenceVolumeThresold)                
-            type = Segment3D.TRegionDesc.CELL;
-        else
-            type = Segment3D.TRegionDesc.NOISE;
-        end
-        
         regions.AddRegionDesc( ...
             settings.PixToMicron(FixMatlabDimentionsOrder(pixelList(k).PixelList')), ...
             settings.PixToMicron(FixMatlabDimentionsOrder(centroids(k).Centroid')), ...
-            type);
+            Segment3D.TRegionDesc.UNCLASSIFIED);
     end
 end
 

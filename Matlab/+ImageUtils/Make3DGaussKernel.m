@@ -1,5 +1,8 @@
+% History:
+%   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
+%   mailto:dmytro.velychko@student.uni-tuebingen.de
+
 function mdg = Make3DGaussKernel(kSize, kCov)
-    %mdg = nan(sizeX, sizeY, sizeZ);
     mCovar = eye(3);
     mCovar(1,1) = kCov(1)^2;
     mCovar(2,2) = kCov(2)^2;
