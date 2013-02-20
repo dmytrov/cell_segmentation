@@ -44,6 +44,8 @@ classdef TSettings
         %ConvexityPrior;         % local border roughness, convexity
         %BoundaryIntensityPrior; % relative to max/conter of the cell
         %IsosurfacePrior;        % relative to mean lateral boundary intensity
+        
+        FrameRate;
     end
     
     methods (Access = public)
@@ -94,6 +96,8 @@ classdef TSettings
             %     Bayesian.TGaussianPrior(0.2, 0.1);
             % obj.IsosurfacePrior = ...
             %     Bayesian.TGaussianPrior(1, 0.1);
+            
+            obj.FrameRate = 1000/128;
         end
         
         %------------------------------------------------------------------

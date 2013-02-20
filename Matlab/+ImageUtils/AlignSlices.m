@@ -2,22 +2,33 @@
 %   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
 %   mailto:dmytro.velychko@student.uni-tuebingen.de
 
-function res = AlignSlices(scan)
+function res = AlignSlices(scan, kReferenceSlice)
     % Due to some instability in mechanics/tissue/perfusion the slices may
     % be slightly shifted. 
     % Calculate slices correlation, realign the slices.
-    
+    CONTINUOUS = 0;
+    SINGLE_REFERENCE = 1;
     res = scan;
     [sx, sy, sz] = size(scan);
+    if (nargin < 2)
+        %kReferenceSlice = nan;
+        mode = CONTINUOUS;
+        alignOrder = 2:sz;
+        alignReference = 0:sz - 1;
+    else
+        mode = SINGLE_REFERENCE;
+        alignOrder = [1:kReferenceSlice-1, kReferenceSlice+1:sz];
+        alignReference = kReferenceSlice + zeros(1, sz);
+    end
     corrSize = 7;
     corrHalfSize = round((corrSize - 1) / 2);
     [corrGridX, corrGridY] = meshgrid(-corrHalfSize:corrHalfSize, -corrHalfSize:corrHalfSize);
     [imgGridX, imgGridY] = meshgrid(1:sx, 1:sy);
     displFullX = 0;
     displFullY = 0;
-    for k = 2:sz
+    for k = alignOrder
         fprintf('Aligning slice %d of %d\n', k, sz);	
-        sliceCorr = ImageCorrelation(scan(:,:,k-1), scan(:,:,k), corrSize);
+        sliceCorr = ImageCorrelation(scan(:,:,alignReference(k)), scan(:,:,k), corrSize);
         sliceCorr = sliceCorr - mean([min(sliceCorr(:)), max(sliceCorr(:))]);
         sliceCorr(sliceCorr < 0) = 0;
         %sliceCorr(sliceCorr<mean([min(sliceCorr(:)), max(sliceCorr(:))])) = 0;
@@ -25,9 +36,15 @@ function res = AlignSlices(scan)
         % Find center of mass (expected value)
         displX = sum(sum(sliceCorr .* corrGridX));
         displY = sum(sum(sliceCorr .* corrGridY));
-        displFullX = displFullX + displX;        
-        displFullY = displFullY + displY;
-        res(:,:,k) = interp2(imgGridX, imgGridY, scan(:,:,k), imgGridX + displFullX, imgGridY + displFullY, 'linear');
+        if (mode == CONTINUOUS)
+            displFullX = displFullX + displX;        
+            displFullY = displFullY + displY;
+        else
+            displFullX = displX;        
+            displFullY = displY;
+        end
+        % Due to inconsistency in matlab indexing order, X and Y are mixed:
+        res(:,:,k) = interp2(imgGridX, imgGridY, scan(:,:,k)', imgGridX + displFullY, imgGridY + displFullX, 'linear')';
     end
     res(isnan(res)) = 0;
 end

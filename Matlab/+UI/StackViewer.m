@@ -119,7 +119,7 @@ classdef StackViewer < UI.Form
             set(obj.hImage, 'ButtonDownFcn', clickFcn);
             set(obj.hImage, 'HitTest', hitTest);
             set(obj.canvas(1), 'ButtonDownFcn', btnDownFcn);
-            set(gca,'YDir','normal');
+            set(obj.canvas(1),'YDir','normal');
         end
         
         function DrawModels(obj)

@@ -20,7 +20,7 @@
     % cd 'D:\EulersLab\Code\Matlab'
 	settings = Segment3D.TSettings();
     settings.IsDebug = 1;
-    sScanFileName = './Data/Q5 512.tif';
+    sScanFileName = '../Data/Q5 512.tif';
     scan = ImageUtils.LoadTIFF(sScanFileName);
     scan(:, 1:3, :) = 0; % fix the high values on the edge
     
