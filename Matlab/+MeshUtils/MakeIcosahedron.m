@@ -7,17 +7,17 @@ function MakeIcosahedron(model)
 
     phi = (1+sqrt(5))/2;
     % Add vertices
-    % ( 0, ±1, ±?)
+    % ( 0, ±1, ±phi)
     model.lVertices(12).pt = [ 0, -1, -phi]';
     model.lVertices(11).pt = [ 0, -1,  phi]';
     model.lVertices(10).pt = [ 0,  1, -phi]';
     model.lVertices( 9).pt = [ 0,  1,  phi]';
-    % (±1, ±?,  0)
+    % (±1, ±phi,  0)
     model.lVertices(8).pt = [-1, -phi, 0]';
     model.lVertices(7).pt = [-1,  phi, 0]';
     model.lVertices(6).pt = [ 1, -phi, 0]';
     model.lVertices(5).pt = [ 1,  phi, 0]';
-    % (±?,  0, ±1)
+    % (±phi,  0, ±1)
     model.lVertices(4).pt = [-phi, 0, -1]';
     model.lVertices(3).pt = [ phi, 0, -1]';
     model.lVertices(2).pt = [-phi, 0,  1]';

@@ -78,7 +78,7 @@ classdef StackCorrelationViewer < UI.StackViewer
                 set(obj.canvas(2), 'YDir', 'normal');
             end
         end
-            
+        
     end
 end
 
