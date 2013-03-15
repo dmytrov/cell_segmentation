@@ -1,9 +1,11 @@
+//	History:
+//		Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2013
+//		mailto:dmytro.velychko@student.uni-tuebingen.de
+
 package de.unituebingen.cin.celllab;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
-import javax.media.opengl.glu.GLU;
 
 import de.unituebingen.cin.celllab.math.basic3d.*;
 import de.unituebingen.cin.celllab.opengl.*;
@@ -11,10 +13,11 @@ import de.unituebingen.cin.celllab.opengl.*;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-public class Controller implements GLEventListener, MouseListener, MouseWheelListener {
+public class Controller implements GLEventListener, MouseListener, MouseMotionListener, MouseWheelListener {
 	protected SceneLayer scene;
 	protected GLAutoDrawable drawable; // GLEvents producer
 	protected Component component;	// UI component
@@ -41,6 +44,7 @@ public class Controller implements GLEventListener, MouseListener, MouseWheelLis
 		this.component = component;
 		component.addMouseListener(this);
 		component.addMouseWheelListener(this);
+		component.addMouseMotionListener(this);
 	}
 	
 	public void invalidateScene()
@@ -84,8 +88,11 @@ public class Controller implements GLEventListener, MouseListener, MouseWheelLis
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (scene != null) {
+			Vector3d ptView = new Vector3d(0d, 0d ,0d);
+			Vector3d vView = camera.unProject(e.getX(), e.getY());
+    		scene.handleMouseReleased(e, ptView, vView);
+    	}
 	}
 
 	@Override
@@ -111,6 +118,20 @@ public class Controller implements GLEventListener, MouseListener, MouseWheelLis
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		mouseMoved(e);		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		if (scene != null) {
+			Vector3d ptView = new Vector3d(0d, 0d ,0d);
+			Vector3d vView = camera.unProject(e.getX(), e.getY());
+    		scene.handleMouseMove(e, ptView, vView);
+    	}		
 	}
 
 

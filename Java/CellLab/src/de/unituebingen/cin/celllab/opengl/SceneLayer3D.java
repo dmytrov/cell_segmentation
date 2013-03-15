@@ -1,3 +1,7 @@
+//	History:
+//		Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2013
+//		mailto:dmytro.velychko@student.uni-tuebingen.de
+
 package de.unituebingen.cin.celllab.opengl;
 
 import java.awt.event.MouseEvent;
@@ -15,19 +19,19 @@ public class SceneLayer3D extends SceneLayer {
 
 	@Override
 	public void renderAfterChildren(GLAutoDrawable drawable) {
+		//System.out.printf("Rotation matrix: %s", getFullTransform().rotation);
 		GL gl = drawable.getGL();
 		gl.glBegin(GL.GL_TRIANGLES);
         gl.glColor3f(1.0f, 0.0f, 0.0f); gl.glVertex3f(-1.0f, 0.0f, -10.0f);
         gl.glColor3f(0.0f, 1.0f, 0.0f); gl.glVertex3f( 0.0f, 1.0f, -10.0f);
         gl.glColor3f(0.0f, 0.0f, 1.0f); gl.glVertex3f( 1.0f, 0.0f, -10.0f);
-        gl.glEnd();
-                
+        gl.glEnd();               
 	}
 	
 	@Override
-	public boolean handleMousePressed(MouseEvent event, Vector3d ptView, Vector3d vView) {
-		System.out.printf("ptView: (%f, %f, %f)\n", ptView.x, ptView.y, ptView.z);
-		System.out.printf("vView: (%f, %f, %f)\n", vView.x, vView.y, vView.z);
-		return super.handleMousePressed(event, ptView, vView);
+	protected boolean handleMousePressedBeforeChildren(MouseEvent event, Vector3d ptView, Vector3d vView, Vector3d ptViewLocal, Vector3d vViewLocal) {
+		//System.out.printf("ptView: (%f, %f, %f)\n", ptViewLocal.x, ptViewLocal.y, ptViewLocal.z);
+		//System.out.printf("vView: (%f, %f, %f)\n", vViewLocal.x, vViewLocal.y, vViewLocal.z);
+		return false;
 	}
 }

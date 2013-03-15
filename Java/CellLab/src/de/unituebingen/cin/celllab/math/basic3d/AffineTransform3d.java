@@ -1,3 +1,7 @@
+//	History:
+//		Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2013
+//		mailto:dmytro.velychko@student.uni-tuebingen.de
+
 package de.unituebingen.cin.celllab.math.basic3d;
 
 import de.unituebingen.cin.celllab.math.basic3d.Matrix3d;
@@ -76,13 +80,19 @@ public class AffineTransform3d {
 	}
 	
 	public Vector3d transformVector(Vector3d pt) {
-		Vector3d res = new Vector3d();
+		Vector3d res = new Vector3d(pt);
+		rotation.transform(res);
 		return res;
 	}
 	
 	public void invert() {
-		rotation.invert();
-		rotation.clone();
+		// For affine transform X' = AX + B its inverse is:
+		// X = A'X + B'
+		// A' = A^-1
+		// B' = -A^-1 * B
+		// Because A is an orthogonal transformation, inverse is equal to transposed.
+		rotation.transpose(); 
+		translation = rotation.mul(translation);
 		translation.negate();
 	}
 	

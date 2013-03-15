@@ -4,5 +4,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/Program Files/MATLAB/R2012b/java/jarext/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="D:/Program Files/MATLAB/R2012b/java/jarext/jogl.jar"/>
+	<classpathentry kind="lib" path="D:/EulersLab/Code/Java/lib/commons-math3-3.1.1/commons-math3-3.1.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/D:/EulersLab/Code/Java/lib/commons-math3-3.1.1/commons-math3-3.1.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/EulersLab/Code/Java/lib/vecmath/vecmath-1.5.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
