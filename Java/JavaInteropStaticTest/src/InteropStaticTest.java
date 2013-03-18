@@ -36,13 +36,13 @@ public class InteropStaticTest
     
     @SuppressWarnings("unchecked")
 	public void notifyMyTest() {
-        java.util.Vector<MyTestListener> dataCopy;
+        java.util.Vector<MyTestListener> listenersCopy;
         synchronized(this) {
-            dataCopy = (java.util.Vector<MyTestListener>)listeners.clone();
+            listenersCopy = (java.util.Vector<MyTestListener>)listeners.clone();
         }
-        for (int i=0; i<dataCopy.size(); i++) {
+        for (int i=0; i<listenersCopy.size(); i++) {
             MyTestEvent event = new MyTestEvent(this, 0, 1);
-            ((MyTestListener)dataCopy.elementAt(i)).testEvent(event);
+            ((MyTestListener)listenersCopy.elementAt(i)).testEvent(event);
         }
     }
 }

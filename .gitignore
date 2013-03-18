@@ -7,5 +7,7 @@ IGOR/CellLabRelease
 IGOR/CellLab.pxp
 Java/CellLab/bin
 Java/OpenGLTest/bin
+Java/JavaInteropStaticTest/bin
+Java/JavaInteropDynamicTest/bin
 Java/lib
 Data

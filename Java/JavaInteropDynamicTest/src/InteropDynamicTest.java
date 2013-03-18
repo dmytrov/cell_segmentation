@@ -1,5 +1,6 @@
 
 public class InteropDynamicTest {
+	
 	public InteropDynamicTest() {
 		
 	}
@@ -49,4 +50,49 @@ public class InteropDynamicTest {
 		}		
 		return m;
 	}
+	
+	////////////////////////////////////////////////////////////////////////////////////
+	//						Events test
+	////////////////////////////////////////////////////////////////////////////////////
+	
+	// Internal class definition
+    public class MyTestEvent2 extends java.util.EventObject {
+        private static final long serialVersionUID = 1L;
+        public float oldValue, newValue;        
+        
+        MyTestEvent2(Object obj, float oldValue, float newValue) {
+            super(obj);
+            this.oldValue = oldValue;
+            this.newValue = newValue;
+        }
+    }
+    
+    // Internal interface definition
+    public interface MyTestListener2 extends java.util.EventListener {
+        void testEvent(MyTestEvent2 event); //  visible to matlab as TestEventCallback
+    }
+
+    private java.util.Vector<MyTestListener2> listeners = new java.util.Vector<MyTestListener2>();	   
+    
+    // Add an event subscription. Used by matlab
+    public synchronized void addMyTestListener2(MyTestListener2 lis) {
+        listeners.addElement(lis);
+    }
+    
+    // Remove the event subscription. Used by matlab
+    public synchronized void removeMyTestListener2(MyTestListener2 lis) {
+        listeners.removeElement(lis);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public void notifyMyTest() {
+        java.util.Vector<MyTestListener2> listenersCopy;
+        synchronized(this) {
+            listenersCopy = (java.util.Vector<MyTestListener2>)listeners.clone();
+        }
+        for (int i=0; i<listenersCopy.size(); i++) {
+            MyTestEvent2 event = new MyTestEvent2(this, 0, 1);
+            ((MyTestListener2)listenersCopy.elementAt(i)).testEvent(event);
+        }
+    }
 }
