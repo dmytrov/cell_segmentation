@@ -1,0 +1,3 @@
+classdef TException < MException 
+    
+end
