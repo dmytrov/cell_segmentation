@@ -6,7 +6,6 @@ classdef TConnectionPoint < handle
     
     properties (GetAccess = public, SetAccess = protected)
         Component;
-        Other;
     end
     
     methods (Access = public)
@@ -14,7 +13,6 @@ classdef TConnectionPoint < handle
             this.Name = name;
             this.Type = type;
             this.Component = component;            
-            this.Other = [];
         end                
     end
 end
