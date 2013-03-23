@@ -7,11 +7,11 @@ classdef TPipeline < handle
     methods (Access = public)
         function this = TPipeline(name)
             this.Name = name;
-            this.Components = Core.TComponent.empty;
+            this.Components = cell(0, 1);
         end
         
         function AddComponent(this, component)
-            this.Components = [this.Components, component];
+            this.Components = [this.Components; {component}];
         end
         
         function AddProcessorsChain(this, processors)
