@@ -1,6 +1,6 @@
 classdef TInputPoint < Core.TConnectionPoint
     properties (Access = public)
-        Other;
+        Other;  % connected output
     end
     
     methods (Access = public)

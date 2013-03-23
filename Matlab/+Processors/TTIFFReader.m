@@ -1,4 +1,8 @@
 classdef TTIFFReader < Core.TProcessor
+    properties (Constant = true)
+        OUT_STACK = 1;
+    end
+    
     properties (Access = public)
         FileName;
     end
@@ -7,7 +11,7 @@ classdef TTIFFReader < Core.TProcessor
         function this = TTIFFReader(name)
             this = this@Core.TProcessor(name);
             this.Inputs = [];
-            this.Outputs = [Core.TOutputPoint('Image', 'Image Stack', this)];
+            this.Outputs = [Core.TOutputPoint('Stack', 'Image Stack', this)];
             
         end
     
@@ -15,9 +19,7 @@ classdef TTIFFReader < Core.TProcessor
             Run@Core.TProcessor(this);
             
             data = ImageUtils.LoadTIFF(this.FileName);            
-            for other = this.OutputByName('Image').Others
-                other.Component.Data = data;
-            end
+            this.Outputs(this.OUT_STACK).PushData(data);
         end
     end    
 end
