@@ -15,9 +15,19 @@ public class MatlabConnector {
     }
     
     //------------------------------------------------------------------------------------------
-    public void getPipelineBuilders(EventResultHandler<String[]> resultHandler) {
-		if (!listeners.isEmpty()) {
-			listeners.firstElement().getPipelineBuilders(new IJavaToMatlabListener.GetPipelineBuildersEvent(this, resultHandler));
-		}
+    public void getPipelineBuilders(IJavaToMatlabListener.GetPipelineBuildersResultHandler resultHandler) {
+    	listeners.firstElement().getPipelineBuilders(new IJavaToMatlabListener.GetPipelineBuildersEvent(this, resultHandler));
+	}
+    
+    public void buildPipeline(IJavaToMatlabListener.BuildPipelineResultHandler resultHandler) {
+    	listeners.firstElement().buildPipeline(new IJavaToMatlabListener.BuildPipelineEvent(this, resultHandler));
+	}
+    
+    public void getComponents(IJavaToMatlabListener.GetComponentsResultHandler resultHandler) {
+    	listeners.firstElement().getComponents(new IJavaToMatlabListener.GetComponentsEvent(this, resultHandler));
+	}
+    
+    public void runComponent(IJavaToMatlabListener.RunComponentResultHandler resultHandler) {
+    	listeners.firstElement().runComponent(new IJavaToMatlabListener.RunComponentEvent(this, resultHandler));    	
 	}
 }

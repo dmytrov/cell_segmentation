@@ -1,6 +1,6 @@
 package de.unituebingen.cin.celllab;
 
-import de.unituebingen.cin.celllab.matlab.EventResultHandler;	
+import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener;
 import de.unituebingen.cin.celllab.matlab.MatlabConnector;
 
 public class ApplicationUI {
@@ -17,7 +17,7 @@ public class ApplicationUI {
 	public void onBindingFinished() {
 		System.out.println("Binding finished");		
 		System.out.println("Calling getPipelineBuilders");
-		matlab.getPipelineBuilders(new EventResultHandler<String[]>() {
+		matlab.getPipelineBuilders(new IJavaToMatlabListener.GetPipelineBuildersResultHandler() {
 			@Override
 			public void onHandled(String[] data) {
 				pipelines = data.clone();
