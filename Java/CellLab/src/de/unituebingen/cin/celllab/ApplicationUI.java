@@ -1,6 +1,8 @@
 package de.unituebingen.cin.celllab;
 
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener;
+import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.BuildPipelineEventData;
+import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.GetPipelineBuildersEventData;
 import de.unituebingen.cin.celllab.matlab.MatlabConnector;
 
 public class ApplicationUI {
@@ -22,10 +24,10 @@ public class ApplicationUI {
 	public void getPipelineBuilders() {
 		matlab.getPipelineBuilders(new IJavaToMatlabListener.GetPipelineBuildersResultHandler() {
 			@Override
-			public void onHandled(String[] data) {
-				pipelines = data.clone();
+			public void onHandled(GetPipelineBuildersEventData data) {
+				pipelines = data.names.clone();
 				System.out.println("GetPipelineBuildersEvent is handled. Returned:");
-	        	for (String name : data) {
+	        	for (String name : pipelines) {
 	        		System.out.println("\t" + name);
 	        	}
 	        	buildPipeline(pipelines[0]);
@@ -33,14 +35,17 @@ public class ApplicationUI {
 		});		
 	}	
 	
-	public void buildPipeline(String name) {
-		IJavaToMatlabListener.BuildPipelineResultHandler q = new IJavaToMatlabListener.BuildPipelineResultHandler() {
+	public void buildPipeline(final String name) {
+		matlab.buildPipeline(new IJavaToMatlabListener.BuildPipelineResultHandler() {
 			@Override
-			public void onHandled(String data) {
+			public void onInit(BuildPipelineEventData data) {
+				data.name = name;
+			}
+			@Override
+			public void onHandled(BuildPipelineEventData data) {
 				System.out.println("Pipeline is built");
 			}
-		};		
-		matlab.buildPipeline(name, q);
+		});		
 	}
 	
     

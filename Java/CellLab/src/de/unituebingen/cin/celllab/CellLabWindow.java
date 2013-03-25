@@ -1,7 +1,5 @@
 package de.unituebingen.cin.celllab;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
@@ -10,9 +8,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 public class CellLabWindow {
 

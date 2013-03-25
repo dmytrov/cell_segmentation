@@ -16,16 +16,16 @@ classdef TJavaConnector < handle
         
         function OnGetPipelineBuilders(this, sender, event)
             nBuilders = numel(this.Application.PipelineBuilders);
-            event.data = javaArray('java.lang.String', nBuilders);
+            event.data.names = javaArray('java.lang.String', nBuilders);
             for k = 1:nBuilders
                 name = this.Application.PipelineBuilders{k}.Name;
-                event.data(k) = java.lang.String(name);
+                event.data.names(k) = java.lang.String(name);
             end
             event.onHandled(); % call java code back
         end
         
         function OnBuildPipeline(this, sender, event)
-            this.Application.BuildPipelineByName(event.data);
+            this.Application.BuildPipelineByName(event.data.name);
             event.onHandled(); % call java code back
         end
     end

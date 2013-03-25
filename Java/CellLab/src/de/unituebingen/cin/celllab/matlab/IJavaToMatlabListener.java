@@ -11,10 +11,13 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
 		public T data;
 		public EventResultHandler<T> eventResultHandler;
 
-		public JavaToMatlabEvent(Object source, T dataInit, EventResultHandler<T> erh) {
+		public JavaToMatlabEvent(Object source, T intiData, EventResultHandler<T> erh) {
 			super(source);
-			data = dataInit;
+			data = intiData;
 			eventResultHandler = erh;
+			if (eventResultHandler != null) {
+				eventResultHandler.onInit(data);
+			}
 		}
 
 		public void onHandled() {
@@ -25,28 +28,36 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
 	}
 	
 	//---------------------------------------------------------------------------------------
-	public class GetPipelineBuildersResultHandler extends EventResultHandler<String[]> {		
+	public class GetPipelineBuildersEventData {
+		public String[] names = new String[0];
 	}
 	
-	public class GetPipelineBuildersEvent extends JavaToMatlabEvent<String[]> {
+	public class GetPipelineBuildersResultHandler extends EventResultHandler<GetPipelineBuildersEventData> {		
+	}
+	
+	public class GetPipelineBuildersEvent extends JavaToMatlabEvent<GetPipelineBuildersEventData> {
         private static final long serialVersionUID = 1L;
         
         public GetPipelineBuildersEvent(Object source, GetPipelineBuildersResultHandler erh) {
-            super(source, new String[0], erh);
+            super(source, new GetPipelineBuildersEventData(), erh);
         }
     }
 	
     void getPipelineBuilders(GetPipelineBuildersEvent event);
 
     //---------------------------------------------------------------------------------------
-    public class BuildPipelineResultHandler extends EventResultHandler<String> {		
+    public class BuildPipelineEventData {
+    	public String name;
+    }
+    
+    public class BuildPipelineResultHandler extends EventResultHandler<BuildPipelineEventData> {		
 	}
 	
-    public class BuildPipelineEvent extends JavaToMatlabEvent<String> {
+    public class BuildPipelineEvent extends JavaToMatlabEvent<BuildPipelineEventData> {
         private static final long serialVersionUID = 1L;
         
         public BuildPipelineEvent(Object source, BuildPipelineResultHandler erh) {
-            super(source, new String(), erh);
+            super(source, new BuildPipelineEventData(), erh);
         }
     }
 			
@@ -77,14 +88,18 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
 	void getComponents(GetComponentsEvent event);
 	
 	//---------------------------------------------------------------------------------------
-	public class RunComponentResultHandler extends EventResultHandler<String> {		
+	public class RunComponentEventData {
+		public String name;
 	}
 	
-	public class RunComponentEvent extends JavaToMatlabEvent<String> {
+	public class RunComponentResultHandler extends EventResultHandler<RunComponentEventData> {		
+	}
+	
+	public class RunComponentEvent extends JavaToMatlabEvent<RunComponentEventData> {
         private static final long serialVersionUID = 1L;
         
         public RunComponentEvent(Object source, RunComponentResultHandler erh) {
-            super(source, new String(), erh);
+            super(source, new RunComponentEventData(), erh);
         }
     }
 	void runComponent(RunComponentEvent event);

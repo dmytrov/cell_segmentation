@@ -19,10 +19,8 @@ public class MatlabConnector {
     	listeners.firstElement().getPipelineBuilders(new IJavaToMatlabListener.GetPipelineBuildersEvent(this, resultHandler));
 	}
     
-    public void buildPipeline(String name, IJavaToMatlabListener.BuildPipelineResultHandler resultHandler) {
-    	IJavaToMatlabListener.BuildPipelineEvent event = new IJavaToMatlabListener.BuildPipelineEvent(this, resultHandler);
-    	event.data = name;
-    	listeners.firstElement().buildPipeline(event);
+    public void buildPipeline(IJavaToMatlabListener.BuildPipelineResultHandler resultHandler) {
+    	listeners.firstElement().buildPipeline(new IJavaToMatlabListener.BuildPipelineEvent(this, resultHandler));
 	}
     
     public void getComponents(IJavaToMatlabListener.GetComponentsResultHandler resultHandler) {
