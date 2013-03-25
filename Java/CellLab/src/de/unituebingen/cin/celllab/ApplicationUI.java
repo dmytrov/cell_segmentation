@@ -15,8 +15,11 @@ public class ApplicationUI {
 	}
 	
 	public void onBindingFinished() {
-		System.out.println("Binding finished");		
-		System.out.println("Calling getPipelineBuilders");
+		System.out.println("Binding finished");
+		getPipelineBuilders();
+	}
+	
+	public void getPipelineBuilders() {
 		matlab.getPipelineBuilders(new IJavaToMatlabListener.GetPipelineBuildersResultHandler() {
 			@Override
 			public void onHandled(String[] data) {
@@ -25,10 +28,20 @@ public class ApplicationUI {
 	        	for (String name : data) {
 	        		System.out.println("\t" + name);
 	        	}
+	        	buildPipeline(pipelines[0]);
 			}
 		});		
 	}	
 	
+	public void buildPipeline(String name) {
+		IJavaToMatlabListener.BuildPipelineResultHandler q = new IJavaToMatlabListener.BuildPipelineResultHandler() {
+			@Override
+			public void onHandled(String data) {
+				System.out.println("Pipeline is built");
+			}
+		};		
+		matlab.buildPipeline(name, q);
+	}
 	
     
 }

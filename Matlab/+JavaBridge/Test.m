@@ -1,4 +1,5 @@
 clc;
+clear java;
 cd D:\EulersLab\Code\Matlab;
 
 application = Core.TApplication('Cell lab');
