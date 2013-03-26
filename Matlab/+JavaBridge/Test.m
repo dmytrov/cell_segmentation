@@ -5,6 +5,6 @@ cd D:\EulersLab\Code\Matlab;
 application = Core.TApplication('Cell lab');
 application.AddPipelineBuilder(Pipelines.TTestPipelineBuilder());
 
-javaUI = de.unituebingen.cin.celllab.ApplicationUI();
+javaUI = de.unituebingen.cin.celllab.Application();
 bridge = JavaBridge.TJavaConnector(application, javaUI.getMatlabConnector());
 javaUI.onBindingFinished();

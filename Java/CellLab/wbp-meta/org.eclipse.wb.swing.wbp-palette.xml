@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<palette>
+	<category id="CellLabUniqueId" name="CellLab Custom" description="Category added for project CellLab" open="true">
+		<component class="de.unituebingen.cin.celllab.opengl.DoubleBufferGLJPanel" name="OpenGL JPanel" description="Double buffered OpenGL rendering JPanel"/>
+	</category>
+</palette>

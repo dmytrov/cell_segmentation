@@ -1,5 +1,7 @@
 package de.unituebingen.cin.celllab.matlab;
 
+import java.awt.Color;
+
 import de.unituebingen.cin.celllab.matlab.EventResultHandler;
 
 // Interface name must end with "Listener" to be visible to matlab code. 
@@ -64,14 +66,35 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
     void buildPipeline(BuildPipelineEvent event);
   
     //---------------------------------------------------------------------------------------
+    public class ComponentState {
+    	static final int VALID = 0;
+    	static final int INVALID = 1;
+    	static final int RUNNING = 2;
+    }
     public class ComponentDescription {
     	public String type;
     	public String name;
     	public int state;
+    	public Color getColor() {
+    		switch (state) {
+    			case ComponentState.VALID :
+    				return new Color(100, 255, 100);
+    			case ComponentState.INVALID :
+    				return new Color(255, 100, 100);
+    			case ComponentState.RUNNING :
+    				return new Color(100, 100, 100);
+    			default :
+    				// TODO: throw an exception
+    				return new Color(0, 0, 0);
+    		}
+    	}
     }
     
     public class GetComponentsEventData extends java.util.ArrayList<ComponentDescription>{
 		private static final long serialVersionUID = 1L;
+		public ComponentDescription createComponentDescription() {
+			return new ComponentDescription();
+		}
     }
     
     public class GetComponentsResultHandler extends EventResultHandler<GetComponentsEventData> {		

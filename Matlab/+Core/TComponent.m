@@ -46,6 +46,16 @@ classdef TComponent < handle
             this.Inputs(1).ConnectTo(component.Outputs(1))
         end
         
+        function res = HasChildren(this)
+            res = false;
+            for output = this.Outputs
+                if (~isempty(output.Others))
+                    res = true;
+                    return;
+                end
+            end
+        end
+        
         % Prototype
         function OnInputConnected(this)            
         end

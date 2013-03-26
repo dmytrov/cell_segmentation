@@ -20,8 +20,5 @@ classdef TApplication < handle
             this.Pipeline = builder.Build();
         end
         
-        function Run(this)
-            this.Pipeline.Run(this.Pipeline.Components{end});
-        end
     end
 end

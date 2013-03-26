@@ -49,6 +49,14 @@ classdef TPipeline < handle
             end
         end
         
+        function RunAll(this)
+            for component = this.Components'            
+                if (~component{1}.HasChildren())
+                    this.Run(component{1});
+                end
+            end
+        end
+        
         function MarkChildrenInvalid(this, component)
             for output = component.Outputs
                 for input = output.Others
