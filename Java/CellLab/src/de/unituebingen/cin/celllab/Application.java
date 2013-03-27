@@ -10,6 +10,8 @@ import de.unituebingen.cin.celllab.matlab.ComponentUI;
 import de.unituebingen.cin.celllab.matlab.ComponentsBridge;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.BuildPipelineEventData;
+import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.ComponentNativeUIEventData;
+import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.ComponentNativeUIResultHandler;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.GetComponentParametersEventData;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.GetComponentParametersResultHandler;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.RunComponentEventData;
@@ -142,8 +144,9 @@ public class Application {
 		cellLabUI.panelPipeline.revalidate();
 		cellLabUI.panelPipeline.repaint();
 	}
-
+	
 	public void openComponentUI(ComponentDescription desc) {
+		nativeComponentUI(currentComponentDesc, false);
 		currentComponentDesc = desc;
 		currentUI = null;
 		cellLabUI.panelComponent.removeAll();
@@ -152,10 +155,24 @@ public class Application {
 			if (currentUI != null) {
 				cellLabUI.panelComponent.add(currentUI);
 				getComponentParameters(currentComponentDesc, currentUI);
+				nativeComponentUI(currentComponentDesc, true);
 			}
 		}
 		cellLabUI.panelComponent.revalidate();
 		cellLabUI.panelComponent.repaint();
+	}
+	
+	public void nativeComponentUI(final ComponentDescription desc, final boolean visible) {
+		if (desc == null) {
+			return;
+		}
+		matlab.componentNativeUI(new ComponentNativeUIResultHandler() {
+			@Override
+			public void onInit(ComponentNativeUIEventData data) {
+    			data.name = desc.name;
+    			data.visible = visible;
+    		}
+		});
 	}
 	
     public void getComponentParameters(final ComponentDescription desc, final ComponentUI ui) {

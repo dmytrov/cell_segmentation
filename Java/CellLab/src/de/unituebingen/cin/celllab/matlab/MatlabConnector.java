@@ -42,4 +42,8 @@ public class MatlabConnector {
     public void setComponentParameters(IJavaToMatlabListener.SetComponentParametersResultHandler resultHandler) {
     	listeners.firstElement().setComponentParameters(new IJavaToMatlabListener.SetComponentParametersEvent(this, resultHandler));    	
 	}
+    
+    public void componentNativeUI(IJavaToMatlabListener.ComponentNativeUIResultHandler resultHandler) {
+    	listeners.firstElement().componentNativeUI(new IJavaToMatlabListener.ComponentNativeUIEvent(this, resultHandler));    	
+	}
 }

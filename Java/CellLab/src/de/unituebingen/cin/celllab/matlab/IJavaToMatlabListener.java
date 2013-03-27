@@ -182,5 +182,27 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
     }
 	
 	void setComponentParameters(SetComponentParametersEvent event);
-    
+
+	// ---------------------------------------------------------------------------------------
+	public class ComponentNativeUIEventData {
+		public String name;
+		public boolean visible;
+	}
+
+	public class ComponentNativeUIResultHandler extends
+			EventResultHandler<ComponentNativeUIEventData> {
+	}
+
+	public class ComponentNativeUIEvent extends
+			JavaToMatlabEvent<ComponentNativeUIEventData> {
+		private static final long serialVersionUID = 1L;
+
+		public ComponentNativeUIEvent(Object source,
+				ComponentNativeUIResultHandler erh) {
+			super(source, new ComponentNativeUIEventData(), erh);
+		}
+	}
+
+	void componentNativeUI(ComponentNativeUIEvent event);
+
 }

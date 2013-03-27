@@ -56,6 +56,10 @@ classdef TComponent < handle
             end
         end
         
+        function res = GetUIClass(this)
+            res = class(this);
+        end
+        
         % Prototype
         function OnInputConnected(this)            
         end
@@ -72,6 +76,10 @@ classdef TComponent < handle
         
         % Prototype
         function SetParameters(this, params)
+        end
+        
+        % Prototype
+        function SetNativeUIVisible(this, visible)
         end
     end
         

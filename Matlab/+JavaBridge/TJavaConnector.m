@@ -1,23 +1,32 @@
 classdef TJavaConnector < handle
     properties (Access = public)
         Application;
+        JavaUI;
     end
     
     methods (Access = public)
-        function this = TJavaConnector(application, javaInterface)
+        function this = TJavaConnector(application, javaUI)
             this.Application = application;
-            this.BindJavaInterface(javaInterface);
+            this.JavaUI = javaUI;
+            this.BindJavaInterface(javaUI);
         end
         
-        function BindJavaInterface(this, ji)
+        function BindJavaInterface(this, javaUI)
+            ji = javaUI.getMatlabConnector();
             set(ji, 'GetPipelineBuildersCallback', @(h, e)(OnGetPipelineBuilders(this, h, e)));
             set(ji, 'BuildPipelineCallback', @(h, e)(OnBuildPipeline(this, h, e)));
             set(ji, 'GetComponentsCallback', @(h, e)(OnGetComponents(this, h, e)));
             set(ji, 'RunComponentCallback', @(h, e)(OnRunComponent(this, h, e)));
             set(ji, 'RunPipelineCallback', @(h, e)(OnRunPipeline(this, h, e)));
             set(ji, 'GetComponentParametersCallback', @(h, e)(OnGetComponentParameters(this, h, e)));
-            set(ji, 'SetComponentParametersCallback', @(h, e)(OnSetComponentParameters(this, h, e)));            
+            set(ji, 'SetComponentParametersCallback', @(h, e)(OnSetComponentParameters(this, h, e)));             
+            set(ji, 'ComponentNativeUICallback', @(h, e)(OnComponentNativeUI(this, h, e)));             
+            % this.Application.Pipeline.OnChangeCallback = @OnPipelineChangeCallback;
         end        
+        
+        function OnPipelineChangeCallback(this)
+            % this.JavaUI.onPipelineChanged();
+        end
         
         function OnGetPipelineBuilders(this, sender, event)
             nBuilders = numel(this.Application.PipelineBuilders);
@@ -38,7 +47,7 @@ classdef TJavaConnector < handle
             for k = this.Application.Pipeline.Components'
                 component = k{1};
                 desc = event.data.createComponentDescription();
-                desc.type = java.lang.String(class(component));
+                desc.type = java.lang.String(component.GetUIClass());
                 desc.name = java.lang.String(component.Name);
                 desc.state = component.State;
                 event.data.add(desc);
@@ -71,6 +80,14 @@ classdef TJavaConnector < handle
             component = this.Application.Pipeline.ComponentByName(event.data.name);
             if (~isempty(component))
                 component.SetParameters(event.data.params);
+            end
+            event.onHandled(); % call java code back
+        end
+        
+        function OnComponentNativeUI(this, sender, event)
+            component = this.Application.Pipeline.ComponentByName(event.data.name);
+            if (~isempty(component))
+                component.SetNativeUIVisible(event.data.visible);
             end
             event.onHandled(); % call java code back
         end
