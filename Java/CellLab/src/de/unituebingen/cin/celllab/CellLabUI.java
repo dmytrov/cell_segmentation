@@ -92,7 +92,7 @@ public class CellLabUI extends JFrame{
 		
 		panelComponent = new JPanel();
 		splitPane.setRightComponent(panelComponent);
-		splitPane.setDividerLocation(110);
+		splitPane.setDividerLocation(180);
 	}
 
 }

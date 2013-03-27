@@ -2,12 +2,17 @@ package de.unituebingen.cin.celllab.matlab.components;
 
 import de.unituebingen.cin.celllab.matlab.ComponentParameters;
 import de.unituebingen.cin.celllab.matlab.ComponentUI;
+
+import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.io.File;
 
 public class TIFFReaderUI extends ComponentUI {
 	public class TIFFReaderUIParameters extends ComponentParameters {
@@ -38,6 +43,19 @@ public class TIFFReaderUI extends ComponentUI {
 		JLabel lblNewLabel = new JLabel("Input file:");
 		
 		JButton btnBrowse = new JButton("Browse...");
+		btnBrowse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				File currentFile = new File(textFileName.getText());
+				File currentPath = new File(currentFile.getAbsolutePath());
+				fileChooser.setCurrentDirectory(currentPath);
+				fileChooser.setSelectedFile(currentFile);
+				int rVal = fileChooser.showOpenDialog(TIFFReaderUI.this);
+				if (rVal == JFileChooser.APPROVE_OPTION) {
+					textFileName.setText(fileChooser.getSelectedFile().toString());
+			    }
+			}
+		});
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -45,10 +63,10 @@ public class TIFFReaderUI extends ComponentUI {
 					.addContainerGap()
 					.addComponent(lblNewLabel)
 					.addGap(18)
-					.addComponent(textFileName, GroupLayout.PREFERRED_SIZE, 231, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(textFileName, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
 					.addComponent(btnBrowse)
-					.addContainerGap(53, Short.MAX_VALUE))
+					.addContainerGap(33, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -58,7 +76,7 @@ public class TIFFReaderUI extends ComponentUI {
 						.addComponent(lblNewLabel)
 						.addComponent(textFileName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnBrowse))
-					.addContainerGap(266, Short.MAX_VALUE))
+					.addContainerGap(247, Short.MAX_VALUE))
 		);
 		setLayout(groupLayout);
 	}

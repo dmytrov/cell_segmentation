@@ -38,8 +38,10 @@ public class Application {
 		componentsBridge = new ComponentsBridge();
 		componentsBridge.registerComponentUI("Processors.TTIFFReader", TIFFReaderUI.class);
 		
+		componentsDesc = new GetComponentsEventData();
 		cellLabUI = new CellLabUI();
 		currentUI = null;
+		updatePipelinePanel();
 		
 		cellLabUI.btnRunCurrent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -50,6 +52,7 @@ public class Application {
 		
 		cellLabUI.btnRunAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				setComponentParameters(currentComponentDesc, currentUI);
 				matlab.runPipeline(new IJavaToMatlabListener.RunPipelineResultHandler() {
 					@Override
 					public void onHandled(RunPipelineEventData data) {
@@ -103,6 +106,7 @@ public class Application {
 			public void onHandled(BuildPipelineEventData data) {
 				System.out.println("Pipeline is built");
 				createConponentsList();
+				openComponentUI(null);
 			}
 		});		
 	}
@@ -120,11 +124,12 @@ public class Application {
 	
 	public void updatePipelinePanel() {
 		cellLabUI.panelPipeline.removeAll();
+		int k = 0;
 		for (ComponentDescription desc : componentsDesc) {
 			JButton btn = new JButton(desc.name);
 			btn.setBackground(desc.getColor());
 			btn.putClientProperty("description", desc);
-			cellLabUI.panelPipeline.add(btn);					
+			cellLabUI.panelPipeline.add(btn, String.format("cell 0 %d,alignx left,aligny top", k));					
 			btn.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -132,19 +137,22 @@ public class Application {
 					openComponentUI(compDesc);
 				}				
 			});
+			k++;
 		}
 		cellLabUI.panelPipeline.revalidate();
 		cellLabUI.panelPipeline.repaint();
 	}
-	
+
 	public void openComponentUI(ComponentDescription desc) {
-		cellLabUI.panelComponent.removeAll();
-		ComponentUI ui = componentsBridge.createUIByMatlabClassName(desc.type);
 		currentComponentDesc = desc;
-		currentUI = ui;
-		if (ui != null) {
-			cellLabUI.panelComponent.add(ui);
-			getComponentParameters(currentComponentDesc, ui);
+		currentUI = null;
+		cellLabUI.panelComponent.removeAll();
+		if (desc != null) {
+			currentUI = componentsBridge.createUIByMatlabClassName(desc.type);
+			if (currentUI != null) {
+				cellLabUI.panelComponent.add(currentUI);
+				getComponentParameters(currentComponentDesc, currentUI);
+			}
 		}
 		cellLabUI.panelComponent.revalidate();
 		cellLabUI.panelComponent.repaint();
@@ -181,6 +189,9 @@ public class Application {
     }
     
     public void runComponent(final ComponentDescription desc) {
+    	if (desc == null) {
+    		return;
+    	}
     	matlab.runComponent(new RunComponentResultHandler() {
     		@Override
 			public void onInit(RunComponentEventData data) {
