@@ -65,6 +65,14 @@ classdef TComponent < handle
             exception = MException('TComponent:Run', 'Not implemented');
             throw(exception);
         end
+        
+        % Prototype
+        function GetParameters(this, params)
+        end
+        
+        % Prototype
+        function SetParameters(this, params)
+        end
     end
         
     

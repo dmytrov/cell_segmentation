@@ -21,5 +21,13 @@ classdef TTIFFReader < Core.TProcessor
             data = ImageUtils.LoadTIFF(this.FileName);            
             this.Outputs(this.OUT_STACK).PushData(data);
         end
+        
+        function GetParameters(this, params)
+            params.fileName = java.lang.String(this.FileName);
+        end
+        
+        function SetParameters(this, params)
+            this.FileName = char(params.fileName);
+        end
     end    
 end

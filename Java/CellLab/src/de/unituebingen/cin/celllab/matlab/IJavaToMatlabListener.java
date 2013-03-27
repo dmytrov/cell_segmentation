@@ -64,7 +64,24 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
     }
 			
     void buildPipeline(BuildPipelineEvent event);
-  
+    
+    //---------------------------------------------------------------------------------------
+    public class RunPipelineEventData {    
+    }
+    
+    public class RunPipelineResultHandler extends EventResultHandler<RunPipelineEventData> {		
+	}
+	
+    public class RunPipelineEvent extends JavaToMatlabEvent<RunPipelineEventData> {
+        private static final long serialVersionUID = 1L;
+        
+        public RunPipelineEvent(Object source, RunPipelineResultHandler erh) {
+            super(source, new RunPipelineEventData(), erh);
+        }
+    }
+    
+    void runPipeline(RunPipelineEvent event);
+    
     //---------------------------------------------------------------------------------------
     public class ComponentState {
     	static final int VALID = 0;
@@ -125,12 +142,45 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
             super(source, new RunComponentEventData(), erh);
         }
     }
+	
 	void runComponent(RunComponentEvent event);
 	
 	//---------------------------------------------------------------------------------------
-	//void getComponentParameters(GetComponentParametersEvent event);
+	public class GetComponentParametersEventData {
+		public String name;
+		public ComponentParameters params;
+	}
+	
+	public class GetComponentParametersResultHandler extends EventResultHandler<GetComponentParametersEventData> {		
+	}
+	
+	public class GetComponentParametersEvent extends JavaToMatlabEvent<GetComponentParametersEventData> {
+        private static final long serialVersionUID = 1L;
+        
+        public GetComponentParametersEvent(Object source, GetComponentParametersResultHandler erh) {
+            super(source, new GetComponentParametersEventData(), erh);
+        }
+    }
+	
+	void getComponentParameters(GetComponentParametersEvent event);
 	
 	//---------------------------------------------------------------------------------------
-	//void setComponentParameters(SetComponentParametersEvent event);
+	public class SetComponentParametersEventData {
+		public String name;
+		public ComponentParameters params;
+	}
+	
+	public class SetComponentParametersResultHandler extends EventResultHandler<SetComponentParametersEventData> {		
+	}
+	
+	public class SetComponentParametersEvent extends JavaToMatlabEvent<SetComponentParametersEventData> {
+        private static final long serialVersionUID = 1L;
+        
+        public SetComponentParametersEvent(Object source, SetComponentParametersResultHandler erh) {
+            super(source, new SetComponentParametersEventData(), erh);
+        }
+    }
+	
+	void setComponentParameters(SetComponentParametersEvent event);
     
 }

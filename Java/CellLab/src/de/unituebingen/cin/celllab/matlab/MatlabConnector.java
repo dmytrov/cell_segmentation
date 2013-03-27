@@ -30,4 +30,16 @@ public class MatlabConnector {
     public void runComponent(IJavaToMatlabListener.RunComponentResultHandler resultHandler) {
     	listeners.firstElement().runComponent(new IJavaToMatlabListener.RunComponentEvent(this, resultHandler));    	
 	}
+    
+    public void runPipeline(IJavaToMatlabListener.RunPipelineResultHandler resultHandler) {
+    	listeners.firstElement().runPipeline(new IJavaToMatlabListener.RunPipelineEvent(this, resultHandler));    	
+	}
+    
+    public void getComponentParameters(IJavaToMatlabListener.GetComponentParametersResultHandler resultHandler) {
+    	listeners.firstElement().getComponentParameters(new IJavaToMatlabListener.GetComponentParametersEvent(this, resultHandler));    	
+	}
+    
+    public void setComponentParameters(IJavaToMatlabListener.SetComponentParametersResultHandler resultHandler) {
+    	listeners.firstElement().setComponentParameters(new IJavaToMatlabListener.SetComponentParametersEvent(this, resultHandler));    	
+	}
 }

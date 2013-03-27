@@ -28,13 +28,27 @@ classdef TPipeline < handle
             end
         end
         
-        function Run(this, component)
+        function res = ComponentByName(this, name)
+            res = [];
+            for k = this.Components'
+                component = k{1};
+                if (strcmp(component.Name, name))
+                    res = component;
+                    return;
+                end
+            end
+        end
+        
+        function Run(this, component, force)
+            if (nargin < 3)
+                force = false;
+            end
             if (~isa (component, 'Core.TComponent'))
                 exception = MException('TPipeline:Run', 'Argument is not a Core.TComponent object');
                 throw(exception);
             end
             
-            if (component.State ~= Core.TComponentState.VALID)
+            if (force || (component.State ~= Core.TComponentState.VALID))
                 this.RunParents(component);
                 this.MarkChildrenInvalid(component);
                 component.State = Core.TComponentState.RUNNING;

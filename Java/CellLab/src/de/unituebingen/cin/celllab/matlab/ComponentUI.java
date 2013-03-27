@@ -6,13 +6,11 @@ public abstract class ComponentUI extends JPanel{
 	public ComponentUI() {
 	}
 	private static final long serialVersionUID = 1L;
-
-	public abstract String getMatlabComponentClass();
 	
-	public ComponentSettings getSettings() {
-		return new ComponentSettings();
+	public ComponentParameters getParameters() {
+		return new ComponentParameters();
 	}
 	
-	public void setSettings(ComponentSettings settings) {		
+	public void setParameters(ComponentParameters parameters) {		
 	}	
 }
