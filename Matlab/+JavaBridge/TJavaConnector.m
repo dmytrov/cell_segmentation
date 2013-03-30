@@ -1,18 +1,18 @@
 classdef TJavaConnector < handle
     properties (Access = public)
         Application;
-        JavaUI;
+        JavaApplication;
     end
     
     methods (Access = public)
-        function this = TJavaConnector(application, javaUI)
+        function this = TJavaConnector(application, javaApplication)
             this.Application = application;
-            this.JavaUI = javaUI;
-            this.BindJavaInterface(javaUI);
+            this.JavaApplication = javaApplication;
+            this.BindJavaInterface(javaApplication);
         end
         
-        function BindJavaInterface(this, javaUI)
-            ji = javaUI.getMatlabConnector();
+        function BindJavaInterface(this, javaApplication)
+            ji = javaApplication.getMatlabConnector();
             set(ji, 'GetPipelineBuildersCallback', @(h, e)(OnGetPipelineBuilders(this, h, e)));
             set(ji, 'BuildPipelineCallback', @(h, e)(OnBuildPipeline(this, h, e)));
             set(ji, 'GetComponentsCallback', @(h, e)(OnGetComponents(this, h, e)));
@@ -21,11 +21,23 @@ classdef TJavaConnector < handle
             set(ji, 'GetComponentParametersCallback', @(h, e)(OnGetComponentParameters(this, h, e)));
             set(ji, 'SetComponentParametersCallback', @(h, e)(OnSetComponentParameters(this, h, e)));             
             set(ji, 'ComponentNativeUICallback', @(h, e)(OnComponentNativeUI(this, h, e)));             
-            % this.Application.Pipeline.OnChangeCallback = @OnPipelineChangeCallback;
         end        
         
-        function OnPipelineChangeCallback(this)
-            % this.JavaUI.onPipelineChanged();
+        function OnComponentsStateChange(this)
+            descs = this.JavaApplication.createGetComponentsEventData();
+            this.FillComponentsDescsList(descs);
+            this.JavaApplication.onComponentsStateChange(descs);
+        end
+        
+        function FillComponentsDescsList(this, descs)
+            for k = this.Application.Pipeline.Components'
+                component = k{1};
+                desc = descs.createComponentDescription();
+                desc.type = java.lang.String(component.GetUIClass());
+                desc.name = java.lang.String(component.Name);
+                desc.state = component.State;
+                descs.add(desc);
+            end
         end
         
         function OnGetPipelineBuilders(this, sender, event)
@@ -40,18 +52,12 @@ classdef TJavaConnector < handle
         
         function OnBuildPipeline(this, sender, event)
             this.Application.BuildPipelineByName(event.data.name);
+            this.Application.Pipeline.OnComponentsStateChangeCallback = @()(this.OnComponentsStateChange());
             event.onHandled(); % call java code back
         end
         
         function OnGetComponents(this, sender, event)
-            for k = this.Application.Pipeline.Components'
-                component = k{1};
-                desc = event.data.createComponentDescription();
-                desc.type = java.lang.String(component.GetUIClass());
-                desc.name = java.lang.String(component.Name);
-                desc.state = component.State;
-                event.data.add(desc);
-            end
+            this.FillComponentsDescsList(event.data);
             event.onHandled(); % call java code back
         end
         

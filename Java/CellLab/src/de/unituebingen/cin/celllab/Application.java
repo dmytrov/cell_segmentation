@@ -80,6 +80,15 @@ public class Application {
 		return matlab;
 	}
 	
+	public GetComponentsEventData createGetComponentsEventData() {
+		return new GetComponentsEventData();
+	}
+	
+	public void onComponentsStateChange(GetComponentsEventData descs) {
+		componentsDesc = descs;
+		updatePipelinePanel();
+	}
+	
 	public void onBindingFinished() {
 		System.out.println("Binding finished");
 		getPipelineBuilders();

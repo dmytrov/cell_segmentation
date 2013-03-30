@@ -2,6 +2,7 @@ classdef TPipeline < handle
     properties (Access = public)
         Name;
         Components;
+        OnComponentsStateChangeCallback;
     end
     
     methods (Access = protected)
@@ -69,6 +70,12 @@ classdef TPipeline < handle
             end
         end
         
+        function CallComponentsStateChangeCallback(this)
+            if (~isempty(this.OnComponentsStateChangeCallback))
+                this.OnComponentsStateChangeCallback();
+            end
+        end
+        
         function Run(this, component, force)
             if (nargin < 3)
                 force = false;
@@ -82,8 +89,10 @@ classdef TPipeline < handle
                 this.RunParents(component);
                 this.MarkChildrenInvalid(component);
                 component.State = Core.TComponentState.RUNNING;
+                this.CallComponentsStateChangeCallback();
                 component.Run();
                 component.State = Core.TComponentState.VALID;
+                this.CallComponentsStateChangeCallback();
             end
         end
         
