@@ -8,7 +8,7 @@ classdef TAlignStack < Core.TProcessor
         function this = TAlignStack(name)
             this = this@Core.TProcessor(name);
             this.Inputs = [Core.TInputPoint('Stack', 'Image Stack', this)];
-            this.Outputs = [Core.TInputPoint('Stack', 'Image Stack', this)];
+            this.Outputs = [Core.TOutputPoint('Stack', 'Image Stack', this)];
         end
     
         function Run(this)
