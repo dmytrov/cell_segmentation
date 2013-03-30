@@ -1,10 +1,12 @@
 package de.unituebingen.cin.celllab;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
+import javax.swing.JToggleButton;
 
 import de.unituebingen.cin.celllab.matlab.ComponentUI;
 import de.unituebingen.cin.celllab.matlab.ComponentsBridge;
@@ -23,7 +25,7 @@ import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.GetPipelineBuild
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.RunPipelineEventData;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.ComponentDescription;
 import de.unituebingen.cin.celllab.matlab.MatlabConnector;
-import de.unituebingen.cin.celllab.matlab.components.TIFFReaderUI;
+import de.unituebingen.cin.celllab.matlab.components.LoadTIFFUI;
 
 public class Application {
 	protected MatlabConnector matlab = new MatlabConnector();
@@ -31,14 +33,14 @@ public class Application {
 	public String[] pipelines;
 	public ComponentsBridge componentsBridge;
 	public GetComponentsEventData componentsDesc;
-	public ComponentDescription currentComponentDesc;
+	public int currentComponent;
 	public ComponentUI currentUI;
 	
 	
 	public Application() {
 		// Register UI classes for matlab components
 		componentsBridge = new ComponentsBridge();
-		componentsBridge.registerComponentUI("Processors.TTIFFReader", TIFFReaderUI.class);
+		componentsBridge.registerComponentUI("Processors.TLoadTIFF", LoadTIFFUI.class);
 		
 		componentsDesc = new GetComponentsEventData();
 		cellLabUI = new CellLabUI();
@@ -47,14 +49,14 @@ public class Application {
 		
 		cellLabUI.btnRunCurrent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setComponentParameters(currentComponentDesc, currentUI);
-				runComponent(currentComponentDesc);
+				setComponentParameters(getCurrentComponentDesc(), currentUI);
+				runComponent(getCurrentComponentDesc());
 			}
 		});
 		
 		cellLabUI.btnRunAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setComponentParameters(currentComponentDesc, currentUI);
+				setComponentParameters(getCurrentComponentDesc(), currentUI);
 				matlab.runPipeline(new IJavaToMatlabListener.RunPipelineResultHandler() {
 					@Override
 					public void onHandled(RunPipelineEventData data) {
@@ -64,6 +66,14 @@ public class Application {
 			}
 		});
 		cellLabUI.setVisible(true);
+	}
+	
+	public ComponentDescription getCurrentComponentDesc() {
+		if ((currentComponent >= 0) && (currentComponent < componentsDesc.size())) {
+			return componentsDesc.get(currentComponent);
+		} else {
+			return null;
+		}		
 	}
 	
 	public MatlabConnector getMatlabConnector() {
@@ -128,15 +138,15 @@ public class Application {
 		cellLabUI.panelPipeline.removeAll();
 		int k = 0;
 		for (ComponentDescription desc : componentsDesc) {
-			JButton btn = new JButton(desc.name);
+			JToggleButton btn = new JToggleButton(desc.name);
 			btn.setBackground(desc.getColor());
+			btn.setSelected(desc == getCurrentComponentDesc());
 			btn.putClientProperty("description", desc);
 			cellLabUI.panelPipeline.add(btn, String.format("cell 0 %d,alignx left,aligny top", k));					
 			btn.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					ComponentDescription compDesc = (ComponentDescription)((JButton)e.getSource()).getClientProperty("description");
-					openComponentUI(compDesc);
+					onComponentSelected(e);					
 				}				
 			});
 			k++;
@@ -145,21 +155,33 @@ public class Application {
 		cellLabUI.panelPipeline.repaint();
 	}
 	
+	public void onComponentSelected(ActionEvent e) {
+		JToggleButton selectedButton = (JToggleButton)e.getSource();
+		ComponentDescription desc = (ComponentDescription)(selectedButton).getClientProperty("description");
+		selectedButton.setSelected(true);
+		
+		if (getCurrentComponentDesc() != desc) {
+			setComponentParameters(getCurrentComponentDesc(), currentUI); // flush current component parameters before reopening new
+			openComponentUI(desc);
+			updatePipelinePanel();
+		}
+	}
+	
 	public void openComponentUI(ComponentDescription desc) {
-		nativeComponentUI(currentComponentDesc, false);
-		currentComponentDesc = desc;
+		nativeComponentUI(getCurrentComponentDesc(), false);
+		currentComponent = componentsDesc.indexOf(desc);
 		currentUI = null;
 		cellLabUI.panelComponent.removeAll();
 		if (desc != null) {
 			currentUI = componentsBridge.createUIByMatlabClassName(desc.type);
 			if (currentUI != null) {
 				cellLabUI.panelComponent.add(currentUI);
-				getComponentParameters(currentComponentDesc, currentUI);
-				nativeComponentUI(currentComponentDesc, true);
+				getComponentParameters(getCurrentComponentDesc(), currentUI);
 			}
 		}
 		cellLabUI.panelComponent.revalidate();
 		cellLabUI.panelComponent.repaint();
+		nativeComponentUI(getCurrentComponentDesc(), true);
 	}
 	
 	public void nativeComponentUI(final ComponentDescription desc, final boolean visible) {

@@ -4,7 +4,11 @@
 
 classdef Form < handle
     properties (SetAccess = private, GetAccess = public)
-        h
+        h;
+    end
+    
+    properties (Access = public)
+        deleteOnClose = 1;
     end
     
     methods (Access = public)
@@ -19,9 +23,13 @@ classdef Form < handle
 
         function delete(obj)
             try
-                if (~isempty(obj.h))
-                    close(obj.h);
-                end
+                %if (~isempty(obj.h))
+                %    if (obj.deleteOnClose)
+                        close(obj.h);
+                %    else
+                %        set(obj.h, 'Visible', 'off');
+                %    end
+                %end
             catch err
             end
         end

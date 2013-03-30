@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-public class TIFFReaderUI extends ComponentUI {
+public class LoadTIFFUI extends ComponentUI {
 	public class TIFFReaderUIParameters extends ComponentParameters {
 		public String fileName; 
 	}
@@ -35,7 +35,7 @@ public class TIFFReaderUI extends ComponentUI {
 		textFileName.setText(params.fileName);
 	}
 	
-	public TIFFReaderUI() {
+	public LoadTIFFUI() {
 		
 		textFileName = new JTextField();
 		textFileName.setColumns(10);
@@ -50,7 +50,7 @@ public class TIFFReaderUI extends ComponentUI {
 				File currentPath = new File(currentFile.getAbsolutePath());
 				fileChooser.setCurrentDirectory(currentPath);
 				fileChooser.setSelectedFile(currentFile);
-				int rVal = fileChooser.showOpenDialog(TIFFReaderUI.this);
+				int rVal = fileChooser.showOpenDialog(LoadTIFFUI.this);
 				if (rVal == JFileChooser.APPROVE_OPTION) {
 					textFileName.setText(fileChooser.getSelectedFile().toString());
 			    }

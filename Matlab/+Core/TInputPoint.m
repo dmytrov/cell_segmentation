@@ -33,5 +33,15 @@ classdef TInputPoint < Core.TConnectionPoint
                 this.Other = [];
             end
         end
+        
+        function res = PullData(this)
+            if (~isempty(this.Other))
+                res = this.Other.Component.Data;
+            else
+                exception = MException('TInputPoint:PullData', ...
+                    ['Input point "', this.Name, '" is not connected']);
+                throw(exception);
+            end
+        end
     end
 end

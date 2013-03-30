@@ -1,4 +1,4 @@
-classdef TTIFFReader < Core.TProcessor
+classdef TLoadTIFF < Core.TProcessor
     properties (Constant = true)
         OUT_STACK = 1;
     end
@@ -8,7 +8,7 @@ classdef TTIFFReader < Core.TProcessor
     end
     
     methods (Access = public)
-        function this = TTIFFReader(name)
+        function this = TLoadTIFF(name)
             this = this@Core.TProcessor(name);
             this.Inputs = [];
             this.Outputs = [Core.TOutputPoint('Stack', 'Image Stack', this)];
