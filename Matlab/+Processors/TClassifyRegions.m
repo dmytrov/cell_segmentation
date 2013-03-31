@@ -9,8 +9,8 @@ classdef TClassifyRegions < Core.TProcessor
     end
     
     methods (Access = public)        
-        function this = TClassifyRegions(name)
-            this = this@Core.TProcessor(name);
+        function this = TClassifyRegions(name, pipeline)
+            this = this@Core.TProcessor(name, pipeline);
             this.Inputs = [Core.TInputPoint('Stack', 'Image Stack', this)];
             this.Outputs = [Core.TOutputPoint('Regions', 'Regions 3D', this)];
         end

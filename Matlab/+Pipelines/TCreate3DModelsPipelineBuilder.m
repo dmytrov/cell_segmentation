@@ -7,12 +7,12 @@ classdef TCreate3DModelsPipelineBuilder < Core.TPipelineBuilder
         function res = Build(this)            
             res = Core.TPipeline(this.Name);
             
-            loadTIFF = Processors.TLoadTIFF('Load 3D scan');
+            loadTIFF = Processors.TLoadTIFF('Load 3D scan', res);
             loadTIFF.FileName = '../Data/Q5 512.tif';
-            alignStack = Processors.TAlignStack('Align stack');
-            classifyRegions = Processors.TClassifyRegions('Classify regions');
-            estimateModels = Processors.TEstimateModels('Estimate models');
-            showModels = Processors.TShowModels('Show models');
+            alignStack = Processors.TAlignStack('Align stack', res);
+            classifyRegions = Processors.TClassifyRegions('Classify regions', res);
+            estimateModels = Processors.TEstimateModels('Estimate models', res);
+            showModels = Processors.TShowModels('Show models', res);
             
             res.AddProcessorsChain({loadTIFF, alignStack, classifyRegions});
             res.ConnectPoints(estimateModels.InputByName('Stack'), alignStack.OutputByName('Stack'));

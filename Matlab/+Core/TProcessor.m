@@ -1,7 +1,7 @@
 classdef TProcessor < Core.TComponent
     methods (Access = public)
-        function this = TProcessor(name)
-            this = this@Core.TComponent(name);
+        function this = TProcessor(name, pipeline)
+            this = this@Core.TComponent(name, pipeline);
         end
 
         function CheckInputsConnected(this)

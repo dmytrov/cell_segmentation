@@ -8,8 +8,8 @@ classdef TLoadTIFF < Core.TProcessor
     end
     
     methods (Access = public)
-        function this = TLoadTIFF(name)
-            this = this@Core.TProcessor(name);
+        function this = TLoadTIFF(name, pipeline)
+            this = this@Core.TProcessor(name, pipeline);
             this.Inputs = [];
             this.Outputs = [Core.TOutputPoint('Stack', 'Image Stack', this)];
             

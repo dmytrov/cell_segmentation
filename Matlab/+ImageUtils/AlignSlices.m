@@ -2,7 +2,7 @@
 %   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
 %   mailto:dmytro.velychko@student.uni-tuebingen.de
 
-function res = AlignSlices(scan, kReferenceSlice)
+function res = AlignSlices(scan, kReferenceSlice, messageLog)
     % Due to some instability in mechanics/tissue/perfusion the slices may
     % be slightly shifted. 
     % Calculate slices correlation, realign the slices.
@@ -10,15 +10,19 @@ function res = AlignSlices(scan, kReferenceSlice)
     SINGLE_REFERENCE = 1;
     res = scan;
     [sx, sy, sz] = size(scan);
+    if (nargin < 3)
+        messageLog = Core.TMessageLog();
+    end
     if (nargin < 2)
-        %kReferenceSlice = nan;
         mode = CONTINUOUS;
         alignOrder = 2:sz;
         alignReference = 0:sz - 1;
     else
-        mode = SINGLE_REFERENCE;
-        alignOrder = [1:kReferenceSlice-1, kReferenceSlice+1:sz];
-        alignReference = kReferenceSlice + zeros(1, sz);
+        mode = CONTINUOUS;
+        %mode = SINGLE_REFERENCE;
+        alignOrder = [kReferenceSlice-1:-1:1, kReferenceSlice+1:sz];        
+        alignReference = [kReferenceSlice:-1:1, kReferenceSlice:sz];
+        %alignReference = kReferenceSlice + zeros(1, sz);
     end
     corrSize = 7;
     corrHalfSize = round((corrSize - 1) / 2);
@@ -27,7 +31,7 @@ function res = AlignSlices(scan, kReferenceSlice)
     displFullX = 0;
     displFullY = 0;
     for k = alignOrder
-        fprintf('Aligning slice %d of %d\n', k, sz);	
+        messageLog.PrintLine(sprintf('Aligning slice %d of %d', k, sz));	
         sliceCorr = ImageCorrelation(scan(:,:,alignReference(k)), scan(:,:,k), corrSize);
         sliceCorr = sliceCorr - mean([min(sliceCorr(:)), max(sliceCorr(:))]);
         sliceCorr(sliceCorr < 0) = 0;

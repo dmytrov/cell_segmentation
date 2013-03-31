@@ -8,8 +8,8 @@ classdef TShowStack < Core.TProcessor
     end
     
     methods (Access = public)
-        function this = TShowStack(name)
-            this = this@Core.TProcessor(name);
+        function this = TShowStack(name, pipeline)
+            this = this@Core.TProcessor(name, pipeline);
             this.Inputs = [Core.TInputPoint('Stack', 'Image Stack', this)];
             this.Outputs = [];
         end

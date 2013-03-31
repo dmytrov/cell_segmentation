@@ -6,14 +6,16 @@ classdef TComponent < handle
     
     properties (GetAccess = public, SetAccess = protected)
         Name;
+        Pipeline;
         Inputs;
         Outputs;        
         Callbacks;
     end
     
     methods (Access = public)
-        function this = TComponent(name)
+        function this = TComponent(name, pipeline)
             this.Name = name;
+            this.Pipeline = pipeline;
             this.State = Core.TComponentState.INVALID;
             this.Inputs = Core.TInputPoint.empty;
             this.Outputs = Core.TOutputPoint.empty;

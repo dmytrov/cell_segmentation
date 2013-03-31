@@ -4,8 +4,8 @@ classdef TDataContainer < Core.TComponent
     end
     
     methods (Access = public)        
-        function this = TDataContainer(name)
-            this = this@Core.TComponent(name);
+        function this = TDataContainer(name, pipeline)
+            this = this@Core.TComponent(name, pipeline);
             this.Inputs = [Core.TInputPoint('In', '', this)];
             this.Outputs = [Core.TOutputPoint('Out', '', this)];
         end

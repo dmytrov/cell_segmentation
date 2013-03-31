@@ -3,6 +3,7 @@ classdef TPipeline < handle
         Name;
         Components;
         OnComponentsStateChangeCallback;
+        MessageLog;
     end
     
     methods (Access = protected)
@@ -26,7 +27,7 @@ classdef TPipeline < handle
             this.AddComponent(procPrev);
             for kProcessor = 2:numel(processors)
                 processor = processors{kProcessor};
-                dataContainer = Core.TDataContainer(this.DataContainerName(procPrev.Outputs(1)));
+                dataContainer = Core.TDataContainer(this.DataContainerName(procPrev.Outputs(1)), this);
                 this.AddComponent(dataContainer);
                 dataContainer.ConnectInputsTo(procPrev);
                 this.AddComponent(processor);
@@ -49,7 +50,7 @@ classdef TPipeline < handle
                 input.ConnectTo(output);
             else % two processors
                 if (isempty(output.Others))
-                    dataContainer = Core.TDataContainer(this.DataContainerName(output));
+                    dataContainer = Core.TDataContainer(this.DataContainerName(output), this);
                     dataContainer.ConnectInputsTo(output.Component);                    
                     this.AddComponent(dataContainer);
                 else

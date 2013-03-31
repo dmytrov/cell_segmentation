@@ -3,12 +3,15 @@ classdef TApplication < handle
         Name;
         PipelineBuilders;
         Pipeline;
+        MessageLog;
     end
     
     methods (Access = public)
         function this = TApplication(name)
             this.Name = name;
             this.PipelineBuilders = cell(1, 0);
+            this.MessageLog = Core.TMessageLog();
+            this.MessageLog.PrintToConsole = true;
         end                
         
         function AddPipelineBuilder(this, builder)

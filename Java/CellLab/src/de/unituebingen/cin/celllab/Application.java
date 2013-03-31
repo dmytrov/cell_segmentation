@@ -1,10 +1,10 @@
 package de.unituebingen.cin.celllab;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
-import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 
@@ -74,6 +74,16 @@ public class Application {
 		} else {
 			return null;
 		}		
+	}
+	
+	public void onMessageLog(String message) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.getTime();
+    	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    	message = sdf.format(calendar.getTime()) + " " + message; 
+    	
+		cellLabUI.textAreaLog.append(message);
+		cellLabUI.textAreaLog.setCaretPosition(cellLabUI.textAreaLog.getDocument().getLength());
 	}
 	
 	public MatlabConnector getMatlabConnector() {

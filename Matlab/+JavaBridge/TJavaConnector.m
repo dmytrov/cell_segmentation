@@ -21,6 +21,7 @@ classdef TJavaConnector < handle
             set(ji, 'GetComponentParametersCallback', @(h, e)(OnGetComponentParameters(this, h, e)));
             set(ji, 'SetComponentParametersCallback', @(h, e)(OnSetComponentParameters(this, h, e)));             
             set(ji, 'ComponentNativeUICallback', @(h, e)(OnComponentNativeUI(this, h, e)));             
+            this.Application.MessageLog.CustomPrinter = @(message)(this.JavaApplication.onMessageLog(java.lang.String(message)));
         end        
         
         function OnComponentsStateChange(this)
@@ -53,6 +54,8 @@ classdef TJavaConnector < handle
         function OnBuildPipeline(this, sender, event)
             this.Application.BuildPipelineByName(event.data.name);
             this.Application.Pipeline.OnComponentsStateChangeCallback = @()(this.OnComponentsStateChange());
+            this.Application.Pipeline.MessageLog = this.Application.MessageLog;
+
             event.onHandled(); % call java code back
         end
         

@@ -6,9 +6,9 @@ classdef TTestPipelineBuilder < Core.TPipelineBuilder
 
         function res = Build(this)            
             res = Core.TPipeline(this.Name);
-            tiffReader = Processors.TLoadTIFF('Functional scan');
+            tiffReader = Processors.TLoadTIFF('Functional scan', res);
             tiffReader.FileName = '../Data/Q5 512.tif';
-            visualiser = Processors.TShowStack('Stack UI');
+            visualiser = Processors.TShowStack('Stack UI', res);
             res.AddProcessorsChain({tiffReader, visualiser});
         end
     end

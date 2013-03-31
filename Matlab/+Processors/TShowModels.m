@@ -8,8 +8,8 @@ classdef TShowModels < Core.TProcessor
     end
     
     methods (Access = public)
-        function this = TShowModels(name)
-            this = this@Core.TProcessor(name);
+        function this = TShowModels(name, pipeline)
+            this = this@Core.TProcessor(name, pipeline);
             this.Inputs = [Core.TInputPoint('Models', 'WEMesh List', this)];
             this.Outputs = [];
         end

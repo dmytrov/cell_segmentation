@@ -12,6 +12,10 @@ import javax.swing.JPanel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JTextArea;
+import java.awt.Dimension;
+import java.awt.Component;
+import javax.swing.JScrollPane;
 
 public class CellLabUI extends JFrame{
 
@@ -32,6 +36,10 @@ public class CellLabUI extends JFrame{
 	private JMenuItem mntmExit;
 	public JButton btnRunCurrent;
 	public JMenuItem mntmAbout;
+	public JSplitPane splitPane_1;
+	public JPanel panel;
+	public JTextArea textAreaLog;
+	public JScrollPane scrollPane;
 	
 	public CellLabUI() {
 		setTitle("CellLab");
@@ -74,8 +82,17 @@ public class CellLabUI extends JFrame{
 		btnNextComponent = new JButton("Open next");
 		toolBar.add(btnNextComponent);
 		
+		splitPane_1 = new JSplitPane();
+		splitPane_1.setResizeWeight(1.0);
+		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		getContentPane().add(splitPane_1, BorderLayout.CENTER);
+		
+		panel = new JPanel();
+		splitPane_1.setLeftComponent(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+		
 		splitPane = new JSplitPane();
-		getContentPane().add(splitPane, BorderLayout.CENTER);
+		panel.add(splitPane, BorderLayout.CENTER);
 		
 		panelPipeline = new JPanel();
 		splitPane.setLeftComponent(panelPipeline);
@@ -83,16 +100,25 @@ public class CellLabUI extends JFrame{
 		btnNewButton_2 = new JButton("New button1");
 		
 		btnNewButton_3 = new JButton("New button2");
-		panelPipeline.setLayout(new MigLayout("", "[97px]", "[23px][23px][23px]"));
+		panelPipeline.setLayout(new MigLayout("", "[97px]", "[23px][23px][23px][]"));
 		panelPipeline.add(btnNewButton_2, "cell 0 0,alignx left,aligny top");
 		panelPipeline.add(btnNewButton_3, "cell 0 1,alignx left,aligny top");
 		
 		btnNewButton_1 = new JButton("New button3");
 		panelPipeline.add(btnNewButton_1, "cell 0 2,alignx left,aligny top");
 		
+		textAreaLog = new JTextArea();
+		textAreaLog.setRows(3);
+		textAreaLog.setEditable(false);
+		textAreaLog.setSize(new Dimension(0, 50));
+		
 		panelComponent = new JPanel();
 		splitPane.setRightComponent(panelComponent);
 		splitPane.setDividerLocation(180);
+		
+		scrollPane = new JScrollPane(textAreaLog);
+		scrollPane.setAutoscrolls(true);
+		splitPane_1.setRightComponent(scrollPane);
 	}
 
 }

@@ -10,8 +10,8 @@ classdef TEstimateModels < Core.TProcessor
     end
     
     methods (Access = public)        
-        function this = TEstimateModels(name)
-            this = this@Core.TProcessor(name);
+        function this = TEstimateModels(name, pipeline)
+            this = this@Core.TProcessor(name, pipeline);
             this.Inputs = [Core.TInputPoint('Stack', 'Image Stack', this), ...
                            Core.TInputPoint('Regions', 'Regions 3D', this)];
             this.Outputs = [Core.TOutputPoint('Models', 'WEMesh List', this)];
@@ -27,14 +27,16 @@ classdef TEstimateModels < Core.TProcessor
                     nCells = nCells + 1;
                 end
             end
-            fprintf('Found %d cells in %d convergence regions.\n', nCells, length(regions.RegionDesc));
+            this.Pipeline.MessageLog.PrintLine( ...
+                sprintf('Found %d cells in %d convergence regions', nCells, length(regions.RegionDesc)));
             distances = 0:this.Settings.RayStep:this.Settings.RayRadius;
             k = 1;
             kCell = 1;
             models = [];
             for region = regions.RegionDesc    
                 if (region.Type == Segment3D.TRegionDesc.CELL)
-                    fprintf('Estimatings cell %d of %d\n', kCell, nCells);
+                    this.Pipeline.MessageLog.PrintLine( ...
+                        sprintf('Estimatings cell %d of %d', kCell, nCells));
                     ptCenter = region.Center;
                     cellID = k;
 
