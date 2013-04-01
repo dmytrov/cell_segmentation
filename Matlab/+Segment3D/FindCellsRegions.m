@@ -43,9 +43,13 @@ function regions = FindCellsRegions(settings, scan)
     pixelList = regionprops(connectedComponents, 'PixelList');
     regions = Segment3D.TRegionDescsList();
     for k = 1:length(centroids)
+        pixels = FixMatlabDimentionsOrder(pixelList(k).PixelList');
+        center = FixMatlabDimentionsOrder(centroids(k).Centroid');
+        surface = Segment3D.CreateSurfaceMesh(settings, pixels);
         regions.AddRegionDesc( ...
-            settings.PixToMicron(FixMatlabDimentionsOrder(pixelList(k).PixelList')), ...
-            settings.PixToMicron(FixMatlabDimentionsOrder(centroids(k).Centroid')), ...
+            settings.PixToMicron(pixels), ...
+            settings.PixToMicron(center), ...
+            surface, ...
             Segment3D.TRegionDesc.UNCLASSIFIED);
     end
 end
@@ -53,3 +57,7 @@ end
 function res = FixMatlabDimentionsOrder(x)
     res =  x([2, 1, 3], :);
 end
+
+
+
+

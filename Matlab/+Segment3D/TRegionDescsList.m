@@ -18,9 +18,9 @@ classdef TRegionDescsList < handle
             this.SearchStruct = [];
         end
         
-        function AddRegionDesc(this, pixels, center, type)
+        function AddRegionDesc(this, pixels, center, surface, type)
             id = length(this.RegionDesc) + 1;
-            rd = Segment3D.TRegionDesc(id, pixels, center, type);
+            rd = Segment3D.TRegionDesc(id, pixels, center, surface, type);
             this.RegionDesc = [this.RegionDesc, rd];
             this.Pixels = [this.Pixels, pixels];
             this.PixelID = [this.PixelID, repmat(id, [1, size(pixels, 2)])];

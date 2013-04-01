@@ -17,14 +17,16 @@ classdef TRegionDesc < handle
         Center;
         Pixels;         % 3xN matrix
         SearchStruct;   % KD-tree
+        Surface;        % isosurface, TIndexMesh
     end
     
     methods (Access = public)
-        function this = TRegionDesc(id, pixels, center, type)
+        function this = TRegionDesc(id, pixels, center, surface, type)
             this.ID = id;
             this.Pixels = pixels;
             this.Type = type;
             this.Center = center;
+            this.Surface = surface;
             this.SearchStruct = KDTreeSearcher(this.Pixels', 'Distance', 'euclidean', 'BucketSize', 50);            
         end
         
