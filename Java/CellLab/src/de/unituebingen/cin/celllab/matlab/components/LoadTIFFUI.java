@@ -9,13 +9,12 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JButton;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
 public class LoadTIFFUI extends ComponentUI {
-	public class TIFFReaderUIParameters extends ComponentParameters {
+	public class LoadTIFFUIParameters extends ComponentParameters {
 		public String fileName; 
 	}
 		
@@ -24,14 +23,14 @@ public class LoadTIFFUI extends ComponentUI {
 	
 	@Override
 	public ComponentParameters getParameters() {
-		TIFFReaderUIParameters params = new TIFFReaderUIParameters();
+		LoadTIFFUIParameters params = new LoadTIFFUIParameters();
 		params.fileName = textFileName.getText();
 		return params;		
 	}
 	
 	@Override
 	public void setParameters(ComponentParameters parameters) {
-		TIFFReaderUIParameters params = (TIFFReaderUIParameters)parameters;
+		LoadTIFFUIParameters params = (LoadTIFFUIParameters)parameters;
 		textFileName.setText(params.fileName);
 	}
 	

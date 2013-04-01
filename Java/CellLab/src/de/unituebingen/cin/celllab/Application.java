@@ -25,6 +25,7 @@ import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.GetPipelineBuild
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.RunPipelineEventData;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.ComponentDescription;
 import de.unituebingen.cin.celllab.matlab.MatlabConnector;
+import de.unituebingen.cin.celllab.matlab.components.ClassifyRegionsUI;
 import de.unituebingen.cin.celllab.matlab.components.LoadTIFFUI;
 
 public class Application {
@@ -41,6 +42,7 @@ public class Application {
 		// Register UI classes for matlab components
 		componentsBridge = new ComponentsBridge();
 		componentsBridge.registerComponentUI("Processors.TLoadTIFF", LoadTIFFUI.class);
+		componentsBridge.registerComponentUI("Processors.TClassifyRegions", ClassifyRegionsUI.class);
 		
 		componentsDesc = new GetComponentsEventData();
 		cellLabUI = new CellLabUI();
@@ -128,6 +130,7 @@ public class Application {
 	}	
 	
 	public void buildPipeline(final String name) {
+		openComponentUI(null);
 		matlab.buildPipeline(new IJavaToMatlabListener.BuildPipelineResultHandler() {
 			@Override
 			public void onInit(BuildPipelineEventData data) {
@@ -137,7 +140,6 @@ public class Application {
 			public void onHandled(BuildPipelineEventData data) {
 				System.out.println("Pipeline is built");
 				createConponentsList();
-				openComponentUI(null);
 			}
 		});		
 	}

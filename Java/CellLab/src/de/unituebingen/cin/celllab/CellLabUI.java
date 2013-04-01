@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JTextArea;
 import java.awt.Dimension;
-import java.awt.Component;
 import javax.swing.JScrollPane;
 
 public class CellLabUI extends JFrame{
@@ -114,6 +113,7 @@ public class CellLabUI extends JFrame{
 		
 		panelComponent = new JPanel();
 		splitPane.setRightComponent(panelComponent);
+		panelComponent.setLayout(new BorderLayout(0, 0));
 		splitPane.setDividerLocation(180);
 		
 		scrollPane = new JScrollPane(textAreaLog);
