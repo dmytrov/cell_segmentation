@@ -46,4 +46,8 @@ public class MatlabConnector {
     public void componentNativeUI(IJavaToMatlabListener.ComponentNativeUIResultHandler resultHandler) {
     	listeners.firstElement().componentNativeUI(new IJavaToMatlabListener.ComponentNativeUIEvent(this, resultHandler));    	
 	}
+    
+    public void bindComponentListener(IJavaToMatlabListener.BindComponentListenerResultHandler resultHandler) {
+    	listeners.firstElement().bindComponentListener(new IJavaToMatlabListener.BindComponentListenerEvent(this, resultHandler));    	
+	}
 }

@@ -8,27 +8,6 @@ import de.unituebingen.cin.celllab.matlab.EventResultHandler;
 // All methods are visible to matlab as %methodName%Callback
 public interface IJavaToMatlabListener extends java.util.EventListener {
 	
-	public abstract class JavaToMatlabEvent<T> extends java.util.EventObject {
-		private static final long serialVersionUID = 1L;
-		public T data;
-		public EventResultHandler<T> eventResultHandler;
-
-		public JavaToMatlabEvent(Object source, T intiData, EventResultHandler<T> erh) {
-			super(source);
-			data = intiData;
-			eventResultHandler = erh;
-			if (eventResultHandler != null) {
-				eventResultHandler.onInit(data);
-			}
-		}
-
-		public void onHandled() {
-			if (eventResultHandler != null) {
-				eventResultHandler.onHandled(data);
-			}
-		}
-	}
-	
 	//---------------------------------------------------------------------------------------
 	public class GetPipelineBuildersEventData {
 		public String[] names = new String[0];
@@ -204,5 +183,24 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
 	}
 
 	void componentNativeUI(ComponentNativeUIEvent event);
+	
+	// ---------------------------------------------------------------------------------------
+	public class BindComponentListenerEventData {
+		public String name;
+		public ComponentUI ui;
+	}
+	
+	public class BindComponentListenerResultHandler extends 
+			EventResultHandler<BindComponentListenerEventData>{		
+	}
+	
+	public class BindComponentListenerEvent extends JavaToMatlabEvent<BindComponentListenerEventData> {
+		private static final long serialVersionUID = 1L;
 
+		public BindComponentListenerEvent(Object source, BindComponentListenerResultHandler erh) {
+			super(source, new BindComponentListenerEventData(), erh);
+		}
+	}
+	
+	void bindComponentListener(BindComponentListenerEvent event);
 }

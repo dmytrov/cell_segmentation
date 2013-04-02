@@ -11,6 +11,8 @@ import javax.swing.JToggleButton;
 import de.unituebingen.cin.celllab.matlab.ComponentUI;
 import de.unituebingen.cin.celllab.matlab.ComponentsBridge;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener;
+import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.BindComponentListenerEventData;
+import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.BindComponentListenerResultHandler;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.BuildPipelineEventData;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.ComponentNativeUIEventData;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.ComponentNativeUIResultHandler;
@@ -197,6 +199,7 @@ public class Application {
 			currentUI = componentsBridge.createUIByMatlabClassName(desc.type);
 			if (currentUI != null) {
 				cellLabUI.panelComponent.add(currentUI);
+				bindComponentListener(getCurrentComponentDesc(), currentUI);
 				getComponentParameters(getCurrentComponentDesc(), currentUI);
 			}
 		}
@@ -217,6 +220,19 @@ public class Application {
     		}
 		});
 	}
+		
+	public void bindComponentListener(final ComponentDescription desc, final ComponentUI ui) {
+    	if ((ui == null) || !(ui instanceof ComponentUI)) {
+    		return;
+    	}
+    	matlab.bindComponentListener(new BindComponentListenerResultHandler() {
+    		@Override
+			public void onInit(BindComponentListenerEventData data) {
+    			data.name = desc.name;
+    			data.ui = ui;
+    		}
+    	});
+    }
 	
     public void getComponentParameters(final ComponentDescription desc, final ComponentUI ui) {
     	if ((ui == null) || !(ui instanceof ComponentUI)) {

@@ -12,6 +12,10 @@ classdef TComponent < handle
         Callbacks;
     end
     
+    properties (Access = protected)
+        ExternalUI;
+    end
+    
     methods (Access = public)
         function this = TComponent(name, pipeline)
             this.Name = name;
@@ -82,6 +86,11 @@ classdef TComponent < handle
         
         % Prototype
         function SetNativeUIVisible(this, visible)
+        end
+        
+        % Prototype
+        function BindJavaUI(this, ui)
+            this.ExternalUI = ui;
         end
     end
         

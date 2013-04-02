@@ -5,6 +5,7 @@
 package de.unituebingen.cin.celllab.opengl;
 
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -13,13 +14,19 @@ import de.unituebingen.cin.celllab.math.basic3d.Vector3d;
 
 public class SceneLayer3D extends SceneLayer {
 
+	public ArrayList<IRenderable> renderables;
+	
 	public SceneLayer3D(String name, SceneLayer parentLayer) {
-		super(name, parentLayer);		
+		super(name, parentLayer);
+		renderables = new ArrayList<IRenderable>(); 
 	}
 
 	@Override
 	public void renderAfterChildren(GLAutoDrawable drawable) {
 		//System.out.printf("Rotation matrix: %s", getFullTransform().rotation);
+		for (IRenderable renderable : renderables ) {
+			renderable.render(drawable);
+		}			
 		GL gl = drawable.getGL();
 		gl.glBegin(GL.GL_TRIANGLES);
         gl.glColor3f(1.0f, 0.0f, 0.0f); gl.glVertex3f(-1.0f, 0.0f, -10.0f);

@@ -21,6 +21,7 @@ classdef TJavaConnector < handle
             set(ji, 'GetComponentParametersCallback', @(h, e)(OnGetComponentParameters(this, h, e)));
             set(ji, 'SetComponentParametersCallback', @(h, e)(OnSetComponentParameters(this, h, e)));             
             set(ji, 'ComponentNativeUICallback', @(h, e)(OnComponentNativeUI(this, h, e)));             
+            set(ji, 'BindComponentListenerCallback', @(h, e)(OnBindComponentListenerUI(this, h, e)));
             this.Application.MessageLog.CustomPrinter = @(message)(this.JavaApplication.onMessageLog(java.lang.String(message)));
         end        
         
@@ -98,6 +99,14 @@ classdef TJavaConnector < handle
             if (~isempty(component))
                 component.SetNativeUIVisible(event.data.visible);
             end
+            event.onHandled(); % call java code back
+        end
+        
+        function OnBindComponentListenerUI(this, sender, event)
+            component = this.Application.Pipeline.ComponentByName(event.data.name);
+            if (~isempty(component))
+                component.BindJavaUI(event.data.ui);
+            end            
             event.onHandled(); % call java code back
         end
     end
