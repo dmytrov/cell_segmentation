@@ -24,7 +24,7 @@
     scan = ImageUtils.LoadTIFF(sScanFileName);
     scan(:, 1:3, :) = 0; % fix the high values on the edge
     
-    scanAligned = ImageUtils.AlignSlices(scan);        
+    scanAligned = ImageUtils.AlignSlices(scan, 'SINGLE_REFERENCE', 2);        
     [models, regions] = Segment3D.RecognizeCells(settings, scanAligned);
     
 	if (settings.IsDebug)

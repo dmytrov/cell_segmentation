@@ -2,7 +2,7 @@
 %   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
 %   mailto:dmytro.velychko@student.uni-tuebingen.de
 
-function res = AlignSlices(scan, kReferenceSlice, messageLog)
+function res = AlignSlices(scan, sMode, kReferenceSlice, messageLog)
     % Due to some instability in mechanics/tissue/perfusion the slices may
     % be slightly shifted. 
     % Calculate slices correlation, realign the slices.
@@ -10,21 +10,25 @@ function res = AlignSlices(scan, kReferenceSlice, messageLog)
     SINGLE_REFERENCE = 1;
     res = scan;
     [sx, sy, sz] = size(scan);
-    if (nargin < 3)
+    if (nargin < 4)
         messageLog = Core.TMessageLog();
     end
+    if (nargin < 3)
+        kReferenceSlice = 1;
+    end
     if (nargin < 2)
+        sMode = 'CONTINUOUS';
+    end
+    if (strcmp(sMode, 'CONTINUOUS'))
         mode = CONTINUOUS;
         alignOrder = 2:sz;
         alignReference = 0:sz - 1;
     else
-        mode = CONTINUOUS;
-        %mode = SINGLE_REFERENCE;
+        mode = SINGLE_REFERENCE;
         alignOrder = [kReferenceSlice-1:-1:1, kReferenceSlice+1:sz];        
-        alignReference = [kReferenceSlice:-1:1, kReferenceSlice:sz];
-        %alignReference = kReferenceSlice + zeros(1, sz);
+        alignReference = kReferenceSlice + zeros(1, sz);
     end
-    corrSize = 7;
+    corrSize = 9;
     corrHalfSize = round((corrSize - 1) / 2);
     [corrGridX, corrGridY] = meshgrid(-corrHalfSize:corrHalfSize, -corrHalfSize:corrHalfSize);
     [imgGridX, imgGridY] = meshgrid(1:sx, 1:sy);
@@ -33,13 +37,21 @@ function res = AlignSlices(scan, kReferenceSlice, messageLog)
     for k = alignOrder
         messageLog.PrintLine(sprintf('Aligning slice %d of %d', k, sz));	
         sliceCorr = ImageCorrelation(scan(:,:,alignReference(k)), scan(:,:,k), corrSize);
+        
+        %maxBorder = max([sliceCorr(1, :), sliceCorr(end, :), sliceCorr(:, 1)', sliceCorr(:, end)']);
+        %sliceCorr = sliceCorr - maxBorder;
+        
         sliceCorr = sliceCorr - mean([min(sliceCorr(:)), max(sliceCorr(:))]);
+        
         sliceCorr(sliceCorr < 0) = 0;
-        %sliceCorr(sliceCorr<mean([min(sliceCorr(:)), max(sliceCorr(:))])) = 0;
         sliceCorr = sliceCorr / sum(sliceCorr(:));
         % Find center of mass (expected value)
         displX = sum(sum(sliceCorr .* corrGridX));
         displY = sum(sum(sliceCorr .* corrGridY));
+        if (isnan(displX) || isnan(displY));
+            displX = 0;
+            displY = 0;
+        end
         if (mode == CONTINUOUS)
             displFullX = displFullX + displX;        
             displFullY = displFullY + displY;

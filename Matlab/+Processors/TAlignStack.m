@@ -4,6 +4,10 @@ classdef TAlignStack < Core.TProcessor
         OUT_STACK = 1;
     end
     
+    properties (Access = public)
+        mode = 'CONTINUOUS';
+    end
+    
     methods (Access = public)
         function this = TAlignStack(name, pipeline)
             this = this@Core.TProcessor(name, pipeline);
@@ -15,7 +19,7 @@ classdef TAlignStack < Core.TProcessor
             Run@Core.TProcessor(this);            
             stack = this.Inputs(this.IN_STACK).PullData();
             stackAligned = stack;
-            %stackAligned = ImageUtils.AlignSlices(stack, 1, this.Pipeline.MessageLog);
+            %stackAligned = ImageUtils.AlignSlices(stack, mode, 1, this.Pipeline.MessageLog);
             this.Outputs(this.OUT_STACK).PushData(stackAligned);
         end
         
