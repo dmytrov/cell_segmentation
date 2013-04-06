@@ -19,6 +19,7 @@ classdef TLoadTIFF < Core.TProcessor
             Run@Core.TProcessor(this);
             
             data = ImageUtils.LoadTIFF(this.FileName);            
+            %data = data(1:end/2, 1:end/2, :);
             this.Outputs(this.OUT_STACK).PushData(data);
         end
         

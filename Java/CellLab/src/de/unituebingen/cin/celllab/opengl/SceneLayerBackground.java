@@ -19,6 +19,8 @@ public class SceneLayerBackground extends SceneLayer {
 		Camera.pushProjection(gl);
 		Camera.setOrthogonalProjection(drawable);		
 		
+		gl.glDisable(GL.GL_LIGHTING);
+		
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		

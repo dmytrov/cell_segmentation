@@ -48,7 +48,8 @@ classdef TClassifyRegions < Core.TProcessor
                     size(region.Surface.lFacets, 2));
                 
                 surface.vertices = region.Surface.lVertices';
-                surface.facets = region.Surface.lFacets' - 1;
+                surface.normals = region.Surface.lNormals';
+                surface.facets = region.Surface.lFacets' - 1;                
                 this.ExternalUI.surfaces.add(surface);
             end
         end
