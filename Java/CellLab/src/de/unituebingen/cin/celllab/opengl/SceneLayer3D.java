@@ -29,9 +29,9 @@ public class SceneLayer3D extends SceneLayer {
 		}			
 		GL gl = drawable.getGL();
 		gl.glBegin(GL.GL_TRIANGLES);
-        gl.glColor3f(1.0f, 0.0f, 0.0f); gl.glVertex3f(-1.0f, 0.0f, -10.0f);
-        gl.glColor3f(0.0f, 1.0f, 0.0f); gl.glVertex3f( 0.0f, 1.0f, -10.0f);
-        gl.glColor3f(0.0f, 0.0f, 1.0f); gl.glVertex3f( 1.0f, 0.0f, -10.0f);
+        gl.glColor3f(1.0f, 0.0f, 0.0f); gl.glVertex3f(-1.0f, 0.0f, 1.0f);
+        gl.glColor3f(0.0f, 1.0f, 0.0f); gl.glVertex3f( 0.0f, 1.0f, 1.0f);
+        gl.glColor3f(0.0f, 0.0f, 1.0f); gl.glVertex3f( 1.0f, 0.0f, 1.0f);
         gl.glEnd();               
 	}
 	

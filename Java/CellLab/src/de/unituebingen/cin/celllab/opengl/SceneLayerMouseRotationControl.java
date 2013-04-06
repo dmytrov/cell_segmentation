@@ -45,12 +45,12 @@ public class SceneLayerMouseRotationControl extends SceneLayer {
 				Vector3d axis = new Vector3d();
 				vViewLocal = getParentVViewLocal(vView);
 				axis.cross(vRotationStart, vViewLocal);
-				AxisAngle4d axisAngle = new AxisAngle4d(axis.x, axis.y, axis.z, ROTATION_FACTOR * vRotationStart.angle(vViewLocal));
+				AxisAngle4d axisAngle = new AxisAngle4d(axis.x, axis.y, axis.z, -ROTATION_FACTOR * vRotationStart.angle(vViewLocal));
 				Quat4d qRot = new Quat4d();
 				qRot.set(axisAngle);
 				Matrix3d mRot = new Matrix3d();
 				mRot.set(qRot);
-				transform.rotation.mul(transform.rotation, mRot);
+				transform.rotation.mul(mRot, transform.rotation);
 				event.getComponent().repaint();
 			}
 			vRotationStart.set(getParentVViewLocal(vView));

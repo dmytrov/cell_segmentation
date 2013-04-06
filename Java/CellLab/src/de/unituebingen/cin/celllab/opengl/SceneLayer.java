@@ -15,7 +15,7 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 	protected SceneLayer parentLayer = null;
 	public List<SceneLayer> childLayers = new ArrayList<SceneLayer>();
 	protected SceneLayer focusedLayer = null;
-	protected AffineTransform3d transform = new AffineTransform3d();
+	public AffineTransform3d transform = new AffineTransform3d();
 	
 	public SceneLayer(String name, SceneLayer parentLayer) {
 		this.parentLayer = parentLayer;
@@ -29,7 +29,21 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 		GL gl = drawable.getGL();
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glPushMatrix();
-		gl.glLoadMatrixd(getFullTransform().getArray(), 0);
+		/*AffineTransform3d fullTransform = getFullTransform();
+		double dx = fullTransform.translation.x;
+		double dy = fullTransform.translation.y;
+		double dz = fullTransform.translation.z;
+		fullTransform.translation.x = 0;
+		fullTransform.translation.y = 0;
+		fullTransform.translation.z = 0;
+		double[] mRot = fullTransform.getArray();
+		gl.glLoadMatrixd(mRot, 0);
+		gl.glTranslated(dx, dy, dz);
+		*/
+		gl.glMultMatrixd(transform.getArray(), 0);
+		//double[] mRotLoaded = new double[16];
+		//gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, mRotLoaded, 0);
+		//System.out.println(Arrays.toString(mRotLoaded));
 		renderBeforeChildren(drawable);
 		renderChildrenReverseOrder(drawable);
 		renderAfterChildren(drawable);
@@ -57,7 +71,7 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 		if (parentLayer != null) {
 			res.set(parentLayer.getFullTransform());
 		}
-		res.combine(this.transform);
+		res.combine(this.transform);				
 		return res;
 	}
 	

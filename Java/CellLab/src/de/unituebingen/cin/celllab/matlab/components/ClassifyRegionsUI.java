@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 public class ClassifyRegionsUI extends ComponentUI {
 	public ArrayList<IndexMesh> surfaces = new ArrayList<IndexMesh>();
 	protected SceneLayer3D scene3D;
+	protected SceneLayerMouseRotationControl sceneMouseRot;
 
 	private static final long serialVersionUID = 1L;
 	public JToolBar toolBar;
@@ -53,8 +54,12 @@ public class ClassifyRegionsUI extends ComponentUI {
 	
 	public void build3DScene() {
 		SceneLayer sceneRoot = new SceneLayer("Root", null);
-		SceneLayer sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneRoot);
+		sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneRoot);
+		sceneMouseRot.transform.translation.z = - 150;
 		scene3D = new SceneLayer3D("3D", sceneMouseRot);
+		scene3D.transform.translation.x = - 50; 
+		scene3D.transform.translation.y = - 50;
+		scene3D.transform.translation.z = - 25;
 		@SuppressWarnings("unused")
 		SceneLayer sceneBackground = new SceneLayerBackground("Background", sceneRoot);
 		Controller controller = new Controller();

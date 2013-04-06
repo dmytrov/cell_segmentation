@@ -22,6 +22,6 @@ function Test()
     end
     viewerDistorted = UI.StackViewer(distorted);
     
-    aligned = ImageUtils.AlignSlices(distorted);
+    aligned = ImageUtils.AlignSlices(distorted, 'CONTINUOUS');
     viewerAligned = UI.StackViewer(aligned);
 end

@@ -77,7 +77,9 @@ public class Camera {
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();
 		float aspect = (float)drawable.getWidth() / drawable.getHeight();
-		glu.gluPerspective(fovAngle, aspect, 0.1, 100.0);
+		float zNear = 0.1f;
+		float zFar = 1000.0f;
+		glu.gluPerspective(fovAngle, aspect, zNear, zFar);
 	}
 	
 	public static void setOrthogonalProjection(GLAutoDrawable drawable) {
