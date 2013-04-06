@@ -42,29 +42,14 @@ classdef TClassifyRegions < Core.TProcessor
         
         function PushRegionsDataToUI(this)
             this.ExternalUI.surfaces.clear();
-            nRegions = 0;
             for region = this.Regions.RegionDesc
                 surface = de.unituebingen.cin.celllab.opengl.IndexMesh( ...
                     size(region.Surface.lVertices, 2), ...
                     size(region.Surface.lFacets, 2));
                 
-                for k = 1:size(region.Surface.lVertices, 2)
-                    surface.vertices(k, 1) = java.lang.Double(region.Surface.lVertices(1, k));
-                    surface.vertices(k, 2) = java.lang.Double(region.Surface.lVertices(2, k));
-                    surface.vertices(k, 3) = java.lang.Double(region.Surface.lVertices(3, k));
-                end
-                for k = 1:size(region.Surface.lFacets, 2)
-                    surface.facets(k, 1) = int32(region.Surface.lFacets(1, k)-1);
-                    surface.facets(k, 2) = int32(region.Surface.lFacets(2, k)-1);
-                    surface.facets(k, 3) = int32(region.Surface.lFacets(3, k)-1);
-                end
-                
+                surface.vertices = region.Surface.lVertices';
+                surface.facets = region.Surface.lFacets' - 1;
                 this.ExternalUI.surfaces.add(surface);
-
-                nRegions = nRegions + 1               
-                if (nRegions >= 3)
-                    return;
-                end
             end
         end
     end
