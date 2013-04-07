@@ -12,6 +12,7 @@ classdef TModel < handle
         lFacets;
         nFacets;
         ptCenter = [0, 0, 0]';
+        tag;
     end
     
     methods

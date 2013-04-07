@@ -6,7 +6,7 @@ classdef TProcessor < Core.TComponent
 
         function CheckInputsConnected(this)
             for input = this.Inputs
-                if (isempty(input.Other.Component))
+                if (isempty(input.Other))
                     exception = MException('TComponent:Run', ...
                         ['Componemt: ', this.Name, ', intput:' + input.Name, 'is not connected']);
                     throw(exception);
@@ -16,7 +16,7 @@ classdef TProcessor < Core.TComponent
         
         function CheckOutputsConnected(this)
             for output = this.Outputs
-                if (isempty(output.Others.Component))
+                if (isempty(output.Others))
                     exception = MException('TComponent:Run', ...
                         ['Componemt: ', this.Name, ', output:' + output.Name, 'is not connected']);
                     throw(exception);

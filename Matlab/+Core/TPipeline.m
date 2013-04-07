@@ -19,7 +19,9 @@ classdef TPipeline < handle
         end
         
         function AddComponent(this, component)
-            this.Components = [this.Components; {component}];
+            if (isempty(this.ComponentByName(component.Name)))
+                this.Components = [this.Components; {component}];
+            end
         end
         
         function AddProcessorsChain(this, processors)

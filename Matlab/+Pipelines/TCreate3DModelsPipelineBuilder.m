@@ -13,11 +13,13 @@ classdef TCreate3DModelsPipelineBuilder < Core.TPipelineBuilder
             classifyRegions = Processors.TClassifyRegions('Classify regions', res);
             estimateModels = Processors.TEstimateModels('Estimate models', res);
             showModels = Processors.TShowModels('Show models', res);
+            save3D = Processors.TSave3DModelAndData('Save 3D models', res);
             
             res.AddProcessorsChain({loadTIFF, alignStack, classifyRegions});
             res.ConnectPoints(estimateModels.InputByName('Stack'), alignStack.OutputByName('Stack'));
             res.ConnectPoints(estimateModels.InputByName('Regions'), classifyRegions.OutputByName('Regions'));
-            res.AddProcessorsChain({estimateModels, showModels});
+            res.AddProcessorsChain({estimateModels, showModels}); 
+            res.AddProcessorsChain({estimateModels, save3D});
             
             settings = Segment3D.TSettings();
             classifyRegions.Settings = settings;
