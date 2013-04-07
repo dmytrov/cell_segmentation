@@ -23,14 +23,19 @@ classdef TSave3DModelAndData < Core.TProcessor
             end
             
             f = fopen('./out/cells.txt', 'w');
-            k = 1;
-            for cellData = lCellData
-                fwrite(f, sprintf('%d\t%s\r\n', k, cellData.ToString()));
-                sFilename = ['./out/cell', int2str(k), '.stl'];
-                MeshUtils.SaveAsBinarySTL(cellData.mModel, sFilename);
-                k = k + 1;
+            try
+                fwrite(f, [sprintf('CellID\t'), lCellData(1).FieldsDesc(), sprintf('\r\n')]);
+                k = 1;
+                for cellData = lCellData
+                    fwrite(f, sprintf('%d\t%s\r\n', k, cellData.ToString()));
+                    sFilename = ['./out/cell', int2str(k), '.stl'];
+                    MeshUtils.SaveAsBinarySTL(cellData.mModel, sFilename);
+                    k = k + 1;
+                end
+            catch err
+                fclose(f);                        
+                rethrow(err);
             end
-            fclose(f);                        
             
         end
     end
