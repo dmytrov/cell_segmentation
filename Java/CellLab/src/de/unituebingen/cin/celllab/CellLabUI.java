@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -15,6 +16,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JTextArea;
 import java.awt.Dimension;
 import javax.swing.JScrollPane;
+import javax.swing.JCheckBoxMenuItem;
 
 public class CellLabUI extends JFrame{
 
@@ -39,6 +41,8 @@ public class CellLabUI extends JFrame{
 	public JPanel panel;
 	public JTextArea textAreaLog;
 	public JScrollPane scrollPane;
+	public JMenu mnView;
+	public JCheckBoxMenuItem chckbxmntmShowDataComponents;
 	
 	public CellLabUI() {
 		setTitle("CellLab");
@@ -59,6 +63,12 @@ public class CellLabUI extends JFrame{
 		});
 		mnFile.add(mntmExit);
 		
+		mnView = new JMenu("View");
+		menuBar.add(mnView);
+		
+		chckbxmntmShowDataComponents = new JCheckBoxMenuItem("Show Data Components");		
+		mnView.add(chckbxmntmShowDataComponents);
+		
 		mnPipeline = new JMenu("Pipeline");
 		menuBar.add(mnPipeline);
 		
@@ -66,6 +76,13 @@ public class CellLabUI extends JFrame{
 		menuBar.add(mnHelp);
 		
 		mntmAbout = new JMenuItem("About...");
+		mntmAbout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				AboutUI dialog = new AboutUI();
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);				
+			}
+		});
 		mnHelp.add(mntmAbout);
 		
 		toolBar = new JToolBar();

@@ -8,7 +8,6 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
 import de.unituebingen.cin.celllab.math.basic3d.*;
-import de.unituebingen.cin.celllab.opengl.*;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;

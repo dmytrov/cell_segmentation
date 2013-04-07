@@ -38,6 +38,7 @@ public class Application {
 	public GetComponentsEventData componentsDesc;
 	public int currentComponent;
 	public ComponentUI currentUI;
+	public boolean bShowDataComponents = false;
 	
 	
 	public Application() {
@@ -69,6 +70,16 @@ public class Application {
 				});
 			}
 		});
+		
+		cellLabUI.chckbxmntmShowDataComponents.getModel().setSelected(bShowDataComponents);
+		
+		cellLabUI.chckbxmntmShowDataComponents.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				bShowDataComponents = cellLabUI.chckbxmntmShowDataComponents.getModel().isSelected();
+				updatePipelinePanel();
+			}
+		});
+		
 		cellLabUI.setVisible(true);
 	}
 	
@@ -161,18 +172,20 @@ public class Application {
 		cellLabUI.panelPipeline.removeAll();
 		int k = 0;
 		for (ComponentDescription desc : componentsDesc) {
-			JToggleButton btn = new JToggleButton(desc.name);
-			btn.setBackground(desc.getColor());
-			btn.setSelected(desc == getCurrentComponentDesc());
-			btn.putClientProperty("description", desc);
-			cellLabUI.panelPipeline.add(btn, String.format("cell 0 %d,alignx left,aligny top", k));					
-			btn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					onComponentSelected(e);					
-				}				
-			});
-			k++;
+			if (bShowDataComponents || (desc.name.indexOf("->") == -1)) {
+				JToggleButton btn = new JToggleButton(desc.name);
+				btn.setBackground(desc.getColor());
+				btn.setSelected(desc == getCurrentComponentDesc());
+				btn.putClientProperty("description", desc);
+				cellLabUI.panelPipeline.add(btn, String.format("cell 0 %d,alignx left,aligny top", k));					
+				btn.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						onComponentSelected(e);					
+					}				
+				});
+				k++;
+			}			
 		}
 		cellLabUI.panelPipeline.revalidate();
 		cellLabUI.panelPipeline.repaint();

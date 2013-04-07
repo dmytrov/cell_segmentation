@@ -7,7 +7,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.media.opengl.GLJPanel;
 import javax.swing.JFrame;
-import de.unituebingen.cin.celllab.*;
 import de.unituebingen.cin.celllab.opengl.*;
 
 public class CellLabApplication

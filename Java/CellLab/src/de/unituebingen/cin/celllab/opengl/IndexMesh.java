@@ -1,11 +1,7 @@
 package de.unituebingen.cin.celllab.opengl;
 
-import java.util.ArrayList;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
-
-import de.unituebingen.cin.celllab.math.basic3d.*;
 
 public class IndexMesh implements IRenderable {
 	public double[][] vertices = new double[1][3];
