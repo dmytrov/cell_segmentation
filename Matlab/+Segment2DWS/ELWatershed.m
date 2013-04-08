@@ -16,7 +16,7 @@ function clusterID = ELWatershed(scan, Neighbors, cellDiameterHint)
         order(k1).y = mod(sortOrder(k1),wi) + 1;
     end
 
-    % A bit modofied "Watershed" clustering
+    % A bit modified "Watershed" clustering
     k1 = 1;
     nClusters = 0;
     while (k1 <= length(order))

@@ -5,6 +5,6 @@ function res = ELImStackResize(img, factor)
     szNew = sz;
     res = nan(sxNew, syNew, szNew);
     for k1 = 1:szNew
-        res(:,:,k1) = ELImResize(img(:,:,k1), factor);
+        res(:,:,k1) = Segment2DWS.ELImResize(img(:,:,k1), factor);
     end
 end

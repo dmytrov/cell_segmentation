@@ -24,16 +24,16 @@ function clusterID = ELCellSegmentation2D(scan, borderType, cellDiameterHint, dy
     end
     
     [fx, fy] = gradient(scan);
-    fx = ELClamp(fx, -1, 1);
-    fy = ELClamp(fy, -1, 1);
+    fx = Segment2DWS.ELClamp(fx, -1, 1);
+    fy = Segment2DWS.ELClamp(fy, -1, 1);
     
     kernelSize = round(cellDiameterHint);
     kernelSize = kernelSize + mod(kernelSize+1, 2);
     kernel = fspecial('gaussian', [kernelSize, kernelSize], cellDiameterHint/5);
-    convergence = ELConvergence(fx, fy, kernel) + 1;
+    convergence = Segment2DWS.ELConvergence(fx, fy, kernel) + 1;
     
-    clusterID = ELWatershed(convergence, borderType, cellDiameterHint);
-    clusterID = ELLimitClustersRange(scan, clusterID, 1-dynamicRange);
+    clusterID = Segment2DWS.ELWatershed(convergence, borderType, cellDiameterHint);
+    clusterID = Segment2DWS.ELLimitClustersRange(scan, clusterID, 1-dynamicRange);
     
     % % Debug visualization
     % subplot(1, 3, 1), imagesc(scan);         axis image;
