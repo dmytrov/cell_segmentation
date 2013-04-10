@@ -20,6 +20,7 @@ import de.unituebingen.cin.celllab.opengl.DoubleBufferGLJPanel;
 import de.unituebingen.cin.celllab.opengl.IndexMesh;
 import de.unituebingen.cin.celllab.opengl.SceneLayer;
 import de.unituebingen.cin.celllab.opengl.SceneLayerBackground;
+import de.unituebingen.cin.celllab.opengl.SceneLayerLight;
 import de.unituebingen.cin.celllab.opengl.SceneLayerMouseRotationControl;
 
 import java.awt.event.ActionListener;
@@ -57,7 +58,9 @@ public class ClassifyRegionsUI extends ComponentUI {
 	
 	public void build3DScene() {
 		SceneLayer sceneRoot = new SceneLayer("Root", null);
-		sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneRoot);
+		SceneLayerLight sceneLight = new SceneLayerLight("Light", sceneRoot);
+		sceneLight.lightPos = new float[] {-50, 100, 20, 1};
+		sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneLight);
 		sceneMouseRot.transform.translation.z = - 150;
 		scene3D = new ClassifyRegionsSceneLayer3D("3D", sceneMouseRot, this);
 		scene3D.transform.translation.x = - 50; 
@@ -118,9 +121,9 @@ public class ClassifyRegionsUI extends ComponentUI {
 		// New surfaces data is available now
 		for (IndexMesh surface : surfaces) {
 			if (surface.tag == 1) {
-				surface.color = new float[] {0.8f, 0.2f, 0.2f};
+				surface.colorFactor = new float[] {0.8f, 0.2f, 0.2f, 1.0f};
 			} else {
-				surface.color = new float[] {0.5f, 0.5f, 0.5f};
+				surface.colorFactor = new float[] {0.2f, 0.2f, 0.8f, 1.0f};
 			}			
 		}
 		scene3D.renderables.clear();

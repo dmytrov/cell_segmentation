@@ -67,7 +67,7 @@ classdef TIndexMesh < handle
                     nVertexToFacet(ve) = nVertexToFacet(ve) + 1;
                 end
             end            
-            for k = size(this.lNormals, 2)
+            for k = 1:size(this.lNormals, 2)
                 vn = this.lNormals(:, k);
                 this.lNormals(:, k) = vn / norm(vn);
             end

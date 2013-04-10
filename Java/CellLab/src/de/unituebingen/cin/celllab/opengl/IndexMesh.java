@@ -7,8 +7,12 @@ public class IndexMesh implements IRenderable {
 	public double[][] vertices = new double[1][3];
 	public double[][] normals = new double[1][3];
 	public int[][] facets = new int[1][3];	
-	public float[] color = new float[] {0.5f, 0.5f, 0.5f};
-	public float[] colorFactorSelected = new float[] {0.5f, 0.5f, 2.0f};
+	public float[] colorAmbient = new float[] {1.0f, 1.0f, 1.0f, 1.0f};
+	public float[] colorDiffuse = new float[] {1.0f, 1.0f, 1.0f, 1.0f};
+	public float[] colorSpecular = new float[] {0.5f, 0.5f, 0.5f, 1.0f};
+	public float[] colorFactor = new float[] {1.0f, 1.0f, 1.0f, 1.0f};
+	public float[] colorFactorSelected = new float[] {2.0f, 2.0f, 2.0f, 1.0f};
+	public float shininess = 20.0f;
 	public int tag = 0;
 	public boolean selected = false;
 	
@@ -25,17 +29,28 @@ public class IndexMesh implements IRenderable {
 	public void render(GLAutoDrawable drawable) {
 		GL gl = drawable.getGL();
 		gl.glBegin(GL.GL_TRIANGLES);
-		float[] colorCurrent = new float[3];
-		System.arraycopy(color, 0, colorCurrent, 0, 3);
-		if (selected) {
-			for (int k = 0; k < colorCurrent.length; k++) {
-				colorCurrent[k] = colorCurrent[k] * colorFactorSelected[k];
+		float[] colorAmbientCurrent = new float[4];
+		float[] colorDiffuseCurrent = new float[4];
+		float[] colorSpecularCurrent = new float[4];
+		System.arraycopy(colorAmbient, 0, colorAmbientCurrent, 0, 4);
+		System.arraycopy(colorDiffuse, 0, colorDiffuseCurrent, 0, 4);
+		System.arraycopy(colorSpecular, 0, colorSpecularCurrent, 0, 4);
+		for (int k = 0; k < 4; k++) {
+			colorAmbientCurrent[k] = colorAmbientCurrent[k] * colorFactor[k];
+			colorDiffuseCurrent[k] = colorDiffuseCurrent[k] * colorFactor[k];
+			//colorSpecularCurrent[k] = colorSpecularCurrent[k] * colorFactor[k];
+			if (selected) {					
+				colorAmbientCurrent[k] = colorAmbientCurrent[k] * colorFactorSelected[k];
+				colorDiffuseCurrent[k] = colorDiffuseCurrent[k] * colorFactorSelected[k];
+				colorSpecularCurrent[k] = colorSpecularCurrent[k] * colorFactorSelected[k];
 			}
 		}
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, colorCurrent, 0);
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, colorCurrent, 0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, colorAmbientCurrent, 0);		
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, colorDiffuseCurrent, 0);
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, colorSpecularCurrent, 0);
+        gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, shininess);
+
         
-        //gl.glColor3d(color[0], color[1], color[2]);
         double[] ve;
         double[] vn;
         for (int k = 0; k < facets.length; k++) {

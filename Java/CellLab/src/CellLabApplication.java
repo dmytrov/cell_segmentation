@@ -28,12 +28,13 @@ public class CellLabApplication
         
 		GLJPanel glPanel = GLRendererFactory.MakeUIRenderer();
 		SceneLayer sceneRoot = new SceneLayer("Root", null);
-		SceneLayer sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneRoot);
-		sceneMouseRot.transform.translation.z = -10;		
+		SceneLayerLight sceneLight = new SceneLayerLight("Light", sceneRoot);
+		SceneLayer sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneLight);
+		sceneMouseRot.transform.translation.z = - 10;
 		SceneLayer scene3D = new SceneLayer3D("3D", sceneMouseRot);
-		scene3D.transform.translation.x = 0; 
-		scene3D.transform.translation.y = 0;
-		scene3D.transform.translation.z = 0;
+		scene3D.transform.translation.x = -0; 
+		scene3D.transform.translation.y = -0;
+		scene3D.transform.translation.z = -0;
 		SceneLayer sceneBackground = new SceneLayerBackground("Background", sceneRoot);
 		Controller controller = new Controller();
 		controller.attachScene(sceneRoot);
