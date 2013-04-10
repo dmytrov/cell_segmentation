@@ -13,8 +13,8 @@ function res = CreateSurfaceMesh(settings, pixels)
     fv = isosurface(x, y, z, val, 0.5);
     fv.vertices =  fv.vertices(:, [2, 1, 3]);
     res = Segment3D.TIndexMesh();
+    fv.vertices = settings.PixToMicron(fv.vertices')';
     res.InitFromFacetVertex(fv);
-    res.lVertices = settings.PixToMicron(res.lVertices);
     
 %     figure; plot3(pixels(1,:), pixels(2,:), pixels(3,:), '.');
 %     p = patch(fv);

@@ -4,6 +4,8 @@ classdef TIndexMesh < handle
         lVertices;   % 3xN vertex buffer   
         lNormals;    % 3xN vertex normals buffer   
         lFacets;     % 3xM index buffer for facets
+        ptBBMin;      % min of bounding box
+        ptBBMax;      % max of bounding box
     end
     
     methods (Access = public)
@@ -16,6 +18,38 @@ classdef TIndexMesh < handle
             this.lVertices = fv.vertices';
             this.lFacets = fv.faces';
             this.ComputeNormals();
+            this.ComputeBoundingBox();
+        end
+        
+        function ComputeBoundingBox(this)
+            this.ptBBMin = min(this.lVertices, [], 2);
+            this.ptBBMax = max(this.lVertices, [], 2);
+        end
+        
+        function [bHit, ptHit] = RayHit(this, ptRay, vRay)
+            ptHit = nan(3, 1);
+            bHit = false;
+            [~, bAABBHit] = Collision.VectorAABBIntersect(ptRay, vRay, this.ptBBMin, this.ptBBMax);
+            if (~bAABBHit)
+                return;
+            end        
+            % Check all facets
+            for fa = this.lFacets
+                pt1 = this.lVertices(:, fa(1));
+                pt2 = this.lVertices(:, fa(2));
+                pt3 = this.lVertices(:, fa(3));
+                [ptHitCurrent, bHitCurrent] = Collision.VectorTraingleIntersect(ptRay, vRay, pt1, pt2, pt3);
+                if (bHitCurrent)
+                    if (~bHit)
+                        bHit = true;
+                        ptHit = ptHitCurrent;
+                    else
+                        if (norm(ptHitCurrent-vRay) < norm(ptHit-vRay))
+                            ptHit = ptHitCurrent;
+                        end
+                    end
+                end
+            end
         end
         
         function ComputeNormals(this)

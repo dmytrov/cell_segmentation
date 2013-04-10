@@ -30,14 +30,37 @@ classdef TClassifyRegions < Core.TProcessor
         
         function BindJavaUI(this, ui)
             BindJavaUI@Core.TComponent(this, ui);
-            set(this.ExternalUI, 'AutoClassifyCallback', @(h, e)(OnAutoClassify(this, h, e)));            
+            set(this.ExternalUI, 'AutoClassifyCallback', @(h, e)(OnAutoClassify(this, h, e)));
+            set(this.ExternalUI, 'GetRegionByRayCallback', @(h, e)(OnGetRegionByRay(this, h, e)));
         end
         
         function OnAutoClassify(this, sender, event)
             this.Pipeline.Run(this);
             this.PushRegionsDataToUI();
-            event.onHandled(); % call java code back
             this.ExternalUI.onNewSurfaces();
+            event.onHandled(); % call java code back
+        end
+        
+        function OnGetRegionByRay(this, sender, event)
+            ptRay = event.data.ptRay;
+            vRay = event.data.vRay;
+            event.data.kSelected = this.GetSelectedRegionID(ptRay, vRay)-1;
+            %this.ExternalUI.onRegionSelected(this.GetSelectedRegionID(ptRay, vRay)-1);
+            event.onHandled(); % call java code back
+        end
+        
+        function res = GetSelectedRegionID(this, ptRay, vRay)
+            res = 0;
+            distClosest = Inf;
+            k = 1;
+            for region = this.Regions.RegionDesc
+                [bHit, ptHit] = region.Surface.RayHit(ptRay, vRay);
+                if (bHit && (norm(ptHit-ptRay) < distClosest))
+                    distClosest = norm(ptHit-ptRay);
+                    res = k;
+                end
+                k = k + 1;
+            end
         end
         
         function PushRegionsDataToUI(this)
@@ -49,7 +72,8 @@ classdef TClassifyRegions < Core.TProcessor
                 
                 surface.vertices = region.Surface.lVertices';
                 surface.normals = region.Surface.lNormals';
-                surface.facets = region.Surface.lFacets' - 1;                
+                surface.facets = region.Surface.lFacets' - 1;                                
+                surface.tag = region.Type;
                 this.ExternalUI.surfaces.add(surface);
             end
         end

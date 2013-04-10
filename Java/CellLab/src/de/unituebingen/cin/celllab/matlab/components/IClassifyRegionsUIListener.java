@@ -55,7 +55,29 @@ public interface IClassifyRegionsUIListener extends java.util.EventListener{
     }
 	
 	void autoClassify(EventObject event);
-	void getRegionByRay(EventObject event);
+	
+	//-------------------------------------------------------------------------------
+	public class GetRegionByRayEventData {
+		public double[] ptRay;
+		public double[] vRay;
+		public int kSelected = -1;
+	}
+	
+	public class GetRegionByRayResultHandler extends 
+				EventResultHandler<GetRegionByRayEventData>{		
+	}
+	
+	public class GetRegionByRayEvent extends JavaToMatlabEvent<GetRegionByRayEventData> {
+		private static final long serialVersionUID = 1L;
+
+		public GetRegionByRayEvent(Object source, GetRegionByRayResultHandler erh) {
+			super(source, new GetRegionByRayEventData(), erh);
+		}
+	}
+	
+	void getRegionByRay(GetRegionByRayEvent event);
+	
+	//-------------------------------------------------------------------------------
 	void markRegion(EventObject event);
 	void cutRegion(EventObject event);
 }

@@ -22,6 +22,10 @@ public class SceneLayerMouseRotationControl extends SceneLayer {
 
 	@Override
 	protected boolean handleMousePressedBeforeChildren(MouseEvent event, Vector3d ptView, Vector3d vView, Vector3d ptViewLocal, Vector3d vViewLocal) {
+		// Intercept right mouse click
+		if (SwingUtilities.isRightMouseButton(event)) {
+			return true;
+		}
 		return false;
 	}
 	

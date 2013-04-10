@@ -7,7 +7,10 @@ public class IndexMesh implements IRenderable {
 	public double[][] vertices = new double[1][3];
 	public double[][] normals = new double[1][3];
 	public int[][] facets = new int[1][3];	
-	public double[] color = new double[] {0.5, 0.5, 0.5};
+	public float[] color = new float[] {0.5f, 0.5f, 0.5f};
+	public float[] colorFactorSelected = new float[] {0.5f, 0.5f, 2.0f};
+	public int tag = 0;
+	public boolean selected = false;
 	
 	public IndexMesh() {		
 	}
@@ -22,7 +25,17 @@ public class IndexMesh implements IRenderable {
 	public void render(GLAutoDrawable drawable) {
 		GL gl = drawable.getGL();
 		gl.glBegin(GL.GL_TRIANGLES);
-        gl.glColor3d(color[0], color[1], color[2]);
+		float[] colorCurrent = new float[3];
+		System.arraycopy(color, 0, colorCurrent, 0, 3);
+		if (selected) {
+			for (int k = 0; k < colorCurrent.length; k++) {
+				colorCurrent[k] = colorCurrent[k] * colorFactorSelected[k];
+			}
+		}
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, colorCurrent, 0);
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, colorCurrent, 0);
+        
+        //gl.glColor3d(color[0], color[1], color[2]);
         double[] ve;
         double[] vn;
         for (int k = 0; k < facets.length; k++) {
