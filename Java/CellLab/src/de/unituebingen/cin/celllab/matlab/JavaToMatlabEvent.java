@@ -15,8 +15,21 @@ public abstract class JavaToMatlabEvent<T> extends java.util.EventObject {
 	}
 
 	public void onHandled() {
-		if (eventResultHandler != null) {
+		if (eventResultHandler != null) {			
 			eventResultHandler.onHandled(data);
+			eventResultHandler.notifyHandled();
+		}
+	}
+	
+	public void waitUntilHandled() throws InterruptedException {
+		if (eventResultHandler != null) {
+			eventResultHandler.waitUntilHandled();
+		}
+	}
+	
+	public void waitUntilHandledCatchExceptions() {
+		if (eventResultHandler != null) {
+			eventResultHandler.waitUntilHandledCatchExceptions();			
 		}
 	}
 }

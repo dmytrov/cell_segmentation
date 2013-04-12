@@ -3,11 +3,10 @@ package de.unituebingen.cin.celllab.matlab.components;
 import de.unituebingen.cin.celllab.math.basic3d.Vector3d;
 import de.unituebingen.cin.celllab.matlab.ComponentParameters;
 import de.unituebingen.cin.celllab.matlab.ComponentUI;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.AutoClassifyEvent;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayEvent;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayEventData;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayResultHandler;
-import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.SynchronousEvent;
-import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.EmptyEvent;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -105,15 +104,16 @@ public class ClassifyRegionsUI extends ComponentUI {
 	//-------------------------------------------------------------------
 	public void autoClassifySyncCall() {
 		if (!listeners.isEmpty()) {
-			SynchronousEvent event = new SynchronousEvent(this);
+			AutoClassifyEvent event = new AutoClassifyEvent(this);
 			listeners.firstElement().autoClassify(event);
-			event.waitUntilHandled();
+			event.waitUntilHandledCatchExceptions();
 		}
 	}
 	
 	public void autoClassify() {
 		if (!listeners.isEmpty()) {
-			listeners.firstElement().autoClassify(new EmptyEvent(this));
+			AutoClassifyEvent event = new AutoClassifyEvent(this);
+			listeners.firstElement().autoClassify(event);
 		}
 	}
 	
