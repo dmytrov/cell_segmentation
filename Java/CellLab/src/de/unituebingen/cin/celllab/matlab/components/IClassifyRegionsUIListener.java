@@ -44,6 +44,26 @@ public interface IClassifyRegionsUIListener extends java.util.EventListener{
 	void getRegionByRay(GetRegionByRayEvent event);
 	
 	//-------------------------------------------------------------------------------
-	void markRegion(EventObject event);
+	public class MarkRegionEventData {
+		public int regionID;
+		public int newMark;
+	}
+	
+	public class MarkRegionResultHandler extends 
+				EventResultHandler<MarkRegionEventData>{		
+	}
+	
+	public class MarkRegionEvent extends JavaToMatlabEvent<MarkRegionEventData> {
+		private static final long serialVersionUID = 1L;
+
+		public MarkRegionEvent(Object source, MarkRegionResultHandler erh) {
+			super(source, new MarkRegionEventData(), erh);
+		}
+	}
+	
+	void markRegion(MarkRegionEvent event);
+	
+	//-------------------------------------------------------------------------------
+
 	void cutRegion(EventObject event);
 }

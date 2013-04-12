@@ -32,6 +32,7 @@ classdef TClassifyRegions < Core.TProcessor
             BindJavaUI@Core.TComponent(this, ui);
             set(this.ExternalUI, 'AutoClassifyCallback', @(h, e)(OnAutoClassify(this, h, e)));
             set(this.ExternalUI, 'GetRegionByRayCallback', @(h, e)(OnGetRegionByRay(this, h, e)));
+            set(this.ExternalUI, 'MarkRegionCallback', @(h, e)(OnMarkRegion(this, h, e)));            
         end
         
         function OnAutoClassify(this, sender, event)
@@ -45,7 +46,15 @@ classdef TClassifyRegions < Core.TProcessor
             ptRay = event.data.ptRay;
             vRay = event.data.vRay;
             event.data.kSelected = this.GetSelectedRegionID(ptRay, vRay)-1;
-            %this.ExternalUI.onRegionSelected(this.GetSelectedRegionID(ptRay, vRay)-1);
+            event.onHandled(); % call java code back
+        end
+        
+        function OnMarkRegion(this, sender, event)
+            regionID = event.data.regionID;
+            newMark =  event.data.newMark;
+            this.Regions.RegionDesc(regionID+1).Type = newMark;
+            this.PushRegionsMarksToUI();
+            this.ExternalUI.onNewSurfaces();
             event.onHandled(); % call java code back
         end
         
@@ -75,6 +84,15 @@ classdef TClassifyRegions < Core.TProcessor
                 surface.facets = region.Surface.lFacets' - 1;                                
                 surface.tag = region.Type;
                 this.ExternalUI.surfaces.add(surface);
+            end
+        end
+        
+        function PushRegionsMarksToUI(this)
+            k = 0;
+            for region = this.Regions.RegionDesc
+                surface = this.ExternalUI.surfaces.get(k);
+                surface.tag = region.Type;
+                k = k + 1;
             end
         end
     end

@@ -7,6 +7,9 @@ import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayEvent;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayEventData;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayResultHandler;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MarkRegionEvent;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MarkRegionEventData;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MarkRegionResultHandler;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -26,6 +29,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class ClassifyRegionsUI extends ComponentUI {
+	public class RegionType {
+		public static final int UNCLASSIFIED    = 0;
+		public static final int CELL            = 1;
+	}
 	public ArrayList<IndexMesh> surfaces = new ArrayList<IndexMesh>();	
 	protected ClassifyRegionsSceneLayer3D scene3D;
 	protected SceneLayerMouseRotationControl sceneMouseRot;
@@ -48,6 +55,25 @@ public class ClassifyRegionsUI extends ComponentUI {
 			}
 		});
 		toolBar.add(btnAuto);
+		
+		btnMarkAsCell = new JButton("Mark as cell");
+		btnMarkAsCell.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				markCurrentRegion(RegionType.CELL);
+			}
+		});
+		toolBar.add(btnMarkAsCell);
+		
+		btnMarkAsNoise = new JButton("Mark as noise");
+		btnMarkAsNoise.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				markCurrentRegion(RegionType.UNCLASSIFIED);
+			}
+		});
+		toolBar.add(btnMarkAsNoise);
+		
+		btnCutRegion = new JButton("Cut region");
+		toolBar.add(btnCutRegion);
 		
 		doubleBufferGLJPanel = new DoubleBufferGLJPanel();
 		add(doubleBufferGLJPanel, BorderLayout.CENTER);
@@ -74,7 +100,6 @@ public class ClassifyRegionsUI extends ComponentUI {
 	}
 			
 	public class ClassifyRegionsUIParameters extends ComponentParameters {
-		//public String fileName; 
 	}
 	
 	@Override
@@ -90,6 +115,9 @@ public class ClassifyRegionsUI extends ComponentUI {
 	
 	//-------------------------------------------------------------------
 	private java.util.Vector<IClassifyRegionsUIListener> listeners = new java.util.Vector<IClassifyRegionsUIListener>();
+	public JButton btnMarkAsCell;
+	public JButton btnMarkAsNoise;
+	public JButton btnCutRegion;
 		
 	// Add an event subscription. Used by matlab
 	public synchronized void addIClassifyRegionsUIListener(IClassifyRegionsUIListener lis) {
@@ -116,11 +144,28 @@ public class ClassifyRegionsUI extends ComponentUI {
 			listeners.firstElement().autoClassify(event);
 		}
 	}
+
+	public void markCurrentRegion(final int marker) {
+		if (listeners.isEmpty()) {
+			return;
+		}
+		final int kSelected = getSelectedRegionID();
+		if (kSelected >=0) {
+			listeners.firstElement().markRegion(new MarkRegionEvent(this, 
+					new MarkRegionResultHandler(){
+				@Override
+				public void onInit(MarkRegionEventData data) {
+					data.regionID = kSelected;
+					data.newMark = marker;
+				}
+			}));
+		}
+	}
 	
 	public void onNewSurfaces() {
 		// New surfaces data is available now
 		for (IndexMesh surface : surfaces) {
-			if (surface.tag == 1) {
+			if (surface.tag == RegionType.CELL) {
 				surface.colorFactor = new float[] {0.8f, 0.2f, 0.2f, 1.0f};
 			} else {
 				surface.colorFactor = new float[] {0.2f, 0.2f, 0.8f, 1.0f};
@@ -130,6 +175,24 @@ public class ClassifyRegionsUI extends ComponentUI {
 		scene3D.renderables.addAll(surfaces);
 		doubleBufferGLJPanel.repaint();
 		System.out.println("New surfaces received");
+	}
+	
+	public void setSelectedRegionID(int kSelected) {
+		for (IndexMesh surface : surfaces) {
+			surface.selected = false;
+		}
+		if ((kSelected >= 0) && (kSelected < surfaces.size())) {
+			surfaces.get(kSelected).selected = true;
+		}
+		
+	}
+	public int getSelectedRegionID() {
+		for (int k = 0; k<surfaces.size(); k++) {
+			if (surfaces.get(k).selected) {
+				return k;
+			}
+		}
+		return -1;
 	}
 	
 	public void getRegionByRay(final Vector3d ptRay, final Vector3d vRay) {
@@ -143,12 +206,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 				}
 				@Override
 				public void onHandled(GetRegionByRayEventData data) {
-					for (IndexMesh surface : surfaces) {
-						surface.selected = false;
-					}
-					if (data.kSelected >= 0) {
-						surfaces.get(data.kSelected).selected = true;
-					}
+					setSelectedRegionID(data.kSelected);					
 					doubleBufferGLJPanel.repaint();
 				}
 			}));
