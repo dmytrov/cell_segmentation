@@ -63,7 +63,44 @@ public interface IClassifyRegionsUIListener extends java.util.EventListener{
 	
 	void markRegion(MarkRegionEvent event);
 	
-	//-------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------
+	public class DeleteRegionEventData {
+		public int regionID;
+	}
 
-	void cutRegion(EventObject event);
+	public class DeleteRegionResultHandler extends
+			EventResultHandler<DeleteRegionEventData> {
+	}
+
+	public class DeleteRegionEvent extends
+			JavaToMatlabEvent<DeleteRegionEventData> {
+		private static final long serialVersionUID = 1L;
+
+		public DeleteRegionEvent(Object source, DeleteRegionResultHandler erh) {
+			super(source, new DeleteRegionEventData(), erh);
+		}
+	}
+
+	void deleteRegion(DeleteRegionEvent event);
+	
+	//-------------------------------------------------------------------------------
+	public class CutRegionEventData {
+		public int regionID;
+		public double[] ptPlane;
+		public double[] vnPlane;
+	}
+	
+	public class CutRegionResultHandler extends 
+				EventResultHandler<CutRegionEventData>{		
+	}
+	
+	public class CutRegionEvent extends JavaToMatlabEvent<CutRegionEventData> {
+		private static final long serialVersionUID = 1L;
+
+		public CutRegionEvent(Object source, CutRegionResultHandler erh) {
+			super(source, new CutRegionEventData(), erh);
+		}
+	}
+	
+	void cutRegion(CutRegionEvent event);
 }

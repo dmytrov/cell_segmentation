@@ -23,7 +23,7 @@ public class SceneLayerBackground extends SceneLayer {
 		
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		
+
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
         gl.glBegin(GL.GL_POLYGON);
         gl.glColor3f(0.8f, 0.9f, 1.0f); gl.glVertex2f(0, 0);

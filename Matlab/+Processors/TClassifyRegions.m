@@ -33,10 +33,14 @@ classdef TClassifyRegions < Core.TProcessor
             set(this.ExternalUI, 'AutoClassifyCallback', @(h, e)(OnAutoClassify(this, h, e)));
             set(this.ExternalUI, 'GetRegionByRayCallback', @(h, e)(OnGetRegionByRay(this, h, e)));
             set(this.ExternalUI, 'MarkRegionCallback', @(h, e)(OnMarkRegion(this, h, e)));            
+            set(this.ExternalUI, 'DeleteRegionCallback', @(h, e)(OnDeleteRegion(this, h, e)));            
+            set(this.ExternalUI, 'CutRegionCallback', @(h, e)(OnCutRegion(this, h, e)));            
+            this.PushRegionsDataToUI();
+            this.ExternalUI.onNewSurfaces();
         end
         
         function OnAutoClassify(this, sender, event)
-            this.Pipeline.Run(this);
+            this.Pipeline.Run(this, true);
             this.PushRegionsDataToUI();
             this.ExternalUI.onNewSurfaces();
             event.onHandled(); % call java code back
@@ -50,10 +54,42 @@ classdef TClassifyRegions < Core.TProcessor
         end
         
         function OnMarkRegion(this, sender, event)
-            regionID = event.data.regionID;
+            regionID = event.data.regionID + 1;
             newMark =  event.data.newMark;
-            this.Regions.RegionDesc(regionID+1).Type = newMark;
+            this.Regions.RegionDesc(regionID).Type = newMark;
             this.PushRegionsMarksToUI();
+            this.ExternalUI.onNewSurfaces();
+            event.onHandled(); % call java code back
+        end
+        
+        function OnDeleteRegion(this, sender, event)
+            regionID = event.data.regionID + 1;
+            this.Regions.RemoveRegionDesc(regionID);
+            this.PushRegionsDataToUI();
+            this.ExternalUI.onNewSurfaces();
+            event.onHandled(); % call java code back
+        end
+        
+        function OnCutRegion(this, sender, event)
+            regionID = event.data.regionID + 1;
+            ptPlane = event.data.ptPlane;
+            vnPlane = event.data.vnPlane;
+            [oldRegionDesc, pixels] = this.Regions.RemoveRegionDesc(regionID);
+            up = (vnPlane' * (pixels - repmat(ptPlane, 1, size(pixels, 2))) > 0);
+            
+            indexes = [up; ~up]';
+            for index = indexes
+                if (sum(index) > 0)                    
+                    surface = Segment3D.CreateSurfaceMesh(this.Settings, this.Settings.MicronToPix(pixels(:, index)));
+                    this.Regions.AddRegionDesc( ...
+                        pixels(:, index), ...
+                        mean(pixels(:, index), 2), ...
+                        surface, ...
+                        oldRegionDesc.Type);
+                end
+            end
+           
+            this.PushRegionsDataToUI();
             this.ExternalUI.onNewSurfaces();
             event.onHandled(); % call java code back
         end

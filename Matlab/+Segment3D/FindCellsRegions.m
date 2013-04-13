@@ -37,7 +37,6 @@ function regions = FindCellsRegions(settings, scan)
     % Find the centers of the thresholded regions
     connectedComponents = bwconncomp(coThresh, 18); % 6, 18, 26 (connectivity criteria)
     centroids = regionprops(connectedComponents, 'centroid');
-    volumes = regionprops(connectedComponents, 'area'); % Matlab developers believe that area is equal to volume
     
     % Create search structures
     pixelList = regionprops(connectedComponents, 'PixelList');

@@ -28,6 +28,17 @@ classdef TRegionDescsList < handle
             this.SearchStruct = [];
         end
         
+        function [desc, pixels] = RemoveRegionDesc(this, id)
+            desc = this.RegionDesc(id);
+            this.RegionDesc = this.RegionDesc([1:id-1, id+1:end]);
+            pixels = this.Pixels(:, this.PixelID == id);
+            this.Pixels = this.Pixels(:, this.PixelID ~= id);
+            this.PixelID = this.PixelID(this.PixelID ~= id);
+            this.PixelID(this.PixelID > id) = this.PixelID(this.PixelID > id) - 1;
+            
+            this.SearchStruct = [];
+        end
+        
         function [pt, id] = NearestPoint(this, x)
             if (isempty(this.SearchStruct))
                 this.SearchStruct = KDTreeSearcher(this.Pixels', 'Distance', 'euclidean', 'BucketSize', 50);

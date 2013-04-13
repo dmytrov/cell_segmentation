@@ -3,7 +3,14 @@ package de.unituebingen.cin.celllab.matlab.components;
 import de.unituebingen.cin.celllab.math.basic3d.Vector3d;
 import de.unituebingen.cin.celllab.matlab.ComponentParameters;
 import de.unituebingen.cin.celllab.matlab.ComponentUI;
+import de.unituebingen.cin.celllab.matlab.components.ClassifyRegionsSceneLayer3D.Mode;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.AutoClassifyEvent;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.CutRegionEvent;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.CutRegionEventData;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.CutRegionResultHandler;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.DeleteRegionEvent;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.DeleteRegionEventData;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.DeleteRegionResultHandler;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayEvent;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayEventData;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.GetRegionByRayResultHandler;
@@ -73,7 +80,20 @@ public class ClassifyRegionsUI extends ComponentUI {
 		toolBar.add(btnMarkAsNoise);
 		
 		btnCutRegion = new JButton("Cut region");
+		btnCutRegion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				enterCutRegionMode();
+			}
+		});
 		toolBar.add(btnCutRegion);
+		
+		btnDeleteRegion = new JButton("Delete region");
+		btnDeleteRegion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				deleteCurrentRegion();
+			}
+		});
+		toolBar.add(btnDeleteRegion);
 		
 		doubleBufferGLJPanel = new DoubleBufferGLJPanel();
 		add(doubleBufferGLJPanel, BorderLayout.CENTER);
@@ -118,6 +138,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 	public JButton btnMarkAsCell;
 	public JButton btnMarkAsNoise;
 	public JButton btnCutRegion;
+	public JButton btnDeleteRegion;
 		
 	// Add an event subscription. Used by matlab
 	public synchronized void addIClassifyRegionsUIListener(IClassifyRegionsUIListener lis) {
@@ -161,6 +182,22 @@ public class ClassifyRegionsUI extends ComponentUI {
 			}));
 		}
 	}
+	
+	public void deleteCurrentRegion() {
+		if (listeners.isEmpty()) {
+			return;
+		}
+		final int kSelected = getSelectedRegionID();
+		if (kSelected >=0) {
+			listeners.firstElement().deleteRegion(new DeleteRegionEvent(this, 
+					new DeleteRegionResultHandler(){
+				@Override
+				public void onInit(DeleteRegionEventData data) {
+					data.regionID = kSelected;
+				}
+			}));
+		}	
+	}	
 	
 	public void onNewSurfaces() {
 		// New surfaces data is available now
@@ -213,5 +250,26 @@ public class ClassifyRegionsUI extends ComponentUI {
 		}
 	}
 	
+	public void enterCutRegionMode() {
+		scene3D.mode = Mode.Cut;
+	}
+	
+	public void cutSelectedRegion(final Vector3d pt, final Vector3d vn) {
+		if (listeners.isEmpty()) {
+			return;
+		}
+		final int kSelected = getSelectedRegionID();
+		if (kSelected >=0) {
+			listeners.firstElement().cutRegion(new CutRegionEvent(this, 
+					new CutRegionResultHandler(){
+				@Override
+				public void onInit(CutRegionEventData data) {
+					data.regionID = kSelected;
+					data.ptPlane = pt.toArray();
+					data.vnPlane = vn.toArray();
+				}				
+			}));
+		}
+	}
 	
 }
