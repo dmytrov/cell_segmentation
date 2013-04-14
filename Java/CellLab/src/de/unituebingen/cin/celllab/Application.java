@@ -211,6 +211,8 @@ public class Application {
 		if (desc != null) {
 			currentUI = componentsBridge.createUIByMatlabClassName(desc.type);
 			if (currentUI != null) {
+				currentUI.desc = desc;
+				currentUI.application = this;
 				cellLabUI.panelComponent.add(currentUI);
 				bindComponentListener(getCurrentComponentDesc(), currentUI);
 				getComponentParameters(getCurrentComponentDesc(), currentUI);

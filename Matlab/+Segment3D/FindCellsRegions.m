@@ -2,37 +2,20 @@
 %   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
 %   mailto:dmytro.velychko@student.uni-tuebingen.de
 
-function regions = FindCellsRegions(settings, scan)
-    % Blur
-    kernelVariance = settings.ConvergenceBlurVariance;
-    kernelSize = round(3 * kernelVariance / 2) * 2 + 1; % odd dimentionality    
-    k = ImageUtils.Make3DGaussKernel(kernelSize, kernelVariance);
-    scanBlurred = ImageUtils.FastConvolution3D(scan, k);
-    [fx, fy, fz] = ImageUtils.Gradient3D(scanBlurred);
-    [fx, fy, fz] = ImageUtils.Clamp3D(fx, fy, fz, 0, 0.1);
-    
-    % Construct convergence kernel
-    kernelVariance = settings.MicronToPix(settings.ConvergenceKernelVariance); 
-    kernelSize = round(3 * kernelVariance / 2) * 2 + 1; % odd dimentionality
-    k = ImageUtils.Make3DGaussKernel(kernelSize, kernelVariance);
-
-    % Fast convergence
-    co = ImageUtils.FastConvergence3D(fx, fy, fz, k);
-    %viewer = UI.StackProfileViewer(co);
-    
+function regions = FindCellsRegions(settings, convergence)
     % Threshold
-    coMax = max(co(:));
-    thresh = 0.5 * coMax;
+    coMax = max(convergence(:));
+    thresh = settings.ConvergenceThreshold * coMax;
     
     if (settings.IsDebug)
         % Visualise the thresholded convergence 
-        coThreshInd = co > thresh;
-        coThresh = co;
-        coThresh(coThreshInd) = co(coThreshInd) + coMax;
-        convViewer = UI.StackViewer(cat(1, co, coThresh));
+        coThreshInd = convergence > thresh;
+        coThresh = convergence;
+        coThresh(coThreshInd) = convergence(coThreshInd) + coMax;
+        convViewer = UI.StackViewer(cat(1, convergence, coThresh));
     end
 
-    coThresh = co > thresh;
+    coThresh = convergence > thresh;
         
     % Find the centers of the thresholded regions
     connectedComponents = bwconncomp(coThresh, 18); % 6, 18, 26 (connectivity criteria)

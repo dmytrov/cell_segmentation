@@ -4,8 +4,11 @@
 
 function [models, regions] = RecognizeCells(settings, scanAligned)
 	models = [];
-    fprintf('Calculating convergence regions... ');
-	regions = Segment3D.FindCellsRegions(settings, scanAligned);
+    fprintf('Calculating convergence... ');
+    convergence = CalcConvergence(settings, scanAligned);
+    fprintf('done.\n');
+    fprintf('Extracting regions... ');
+	regions = Segment3D.FindCellsRegions(settings, convergence);
     fprintf('done.\n');
     fprintf('Classifying regions... ');
 	Segment3D.ClassifyRegions(settings, regions);

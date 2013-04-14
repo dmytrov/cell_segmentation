@@ -14,6 +14,7 @@ classdef TSettings
         % Convergence parameters
         ConvergenceBlurVariance; % vector, pixels, to remove some photon noise and smooth the stack
         ConvergenceKernelVariance; % vector, micron
+        ConvergenceThreshold; % [0-1], fraction of maxConvergenceValue
         
         % Classification criteria (rough)
         CellMinPixVolumeRough; % pixels, rough estimation
@@ -64,6 +65,7 @@ classdef TSettings
             
             obj.ConvergenceBlurVariance = [2, 2, 0.1]';
             obj.ConvergenceKernelVariance = [radius, radius, radius]' / 3.5;
+            obj.ConvergenceThreshold = 0.5;
             
             % Lots of magic munbers because they are parametrised by radius
             pixInCell = prod(radius ./ obj.Resolution);

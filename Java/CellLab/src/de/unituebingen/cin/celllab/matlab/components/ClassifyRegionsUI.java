@@ -21,7 +21,6 @@ import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 
-import javax.swing.JToolBar;
 import javax.swing.JButton;
 
 import de.unituebingen.cin.celllab.opengl.Controller;
@@ -34,6 +33,11 @@ import de.unituebingen.cin.celllab.opengl.SceneLayerMouseRotationControl;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JSplitPane;
+import javax.swing.JPanel;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JSlider;
+import javax.swing.JLabel;
 
 public class ClassifyRegionsUI extends ComponentUI {
 	public class RegionType {
@@ -45,58 +49,93 @@ public class ClassifyRegionsUI extends ComponentUI {
 	protected SceneLayerMouseRotationControl sceneMouseRot;
 
 	private static final long serialVersionUID = 1L;
-	public JToolBar toolBar;
 	public JButton btnAuto;
 	public DoubleBufferGLJPanel doubleBufferGLJPanel;
 
 	public ClassifyRegionsUI() {
 		setLayout(new BorderLayout(0, 0));
 		
-		toolBar = new JToolBar();
-		add(toolBar, BorderLayout.NORTH);
+		splitPane = new JSplitPane();
+		add(splitPane, BorderLayout.CENTER);
 		
-		btnAuto = new JButton("Auto");
+		doubleBufferGLJPanel = new DoubleBufferGLJPanel();
+		splitPane.setRightComponent(doubleBufferGLJPanel);
+		
+		panel = new JPanel();
+		splitPane.setLeftComponent(panel);
+		panel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][]"));
+		
+		lblConvergenceThreshold = new JLabel("Convergence threshold:");
+		panel.add(lblConvergenceThreshold, "cell 0 0");
+		
+		panel_1 = new JPanel();
+		panel.add(panel_1, "cell 0 1,grow");
+		panel_1.setLayout(new BorderLayout(0, 0));
+		
+		sliderConvergenceThreshold = new JSlider();
+		sliderConvergenceThreshold.setPaintTicks(true);
+		sliderConvergenceThreshold.setPaintLabels(true);
+		sliderConvergenceThreshold.setMinorTickSpacing(10);
+		sliderConvergenceThreshold.setMajorTickSpacing(50);
+		panel_1.add(sliderConvergenceThreshold);
+		
+		lblMinVolume = new JLabel("Min cell volume:");
+		panel.add(lblMinVolume, "cell 0 2");
+		
+		panel_2 = new JPanel();
+		panel.add(panel_2, "cell 0 3,grow");
+		panel_2.setLayout(new BorderLayout(0, 0));
+		
+		sliderMinCellVolume = new JSlider();
+		sliderMinCellVolume.setPaintTicks(true);
+		sliderMinCellVolume.setPaintLabels(true);
+		sliderMinCellVolume.setMinorTickSpacing(10);
+		sliderMinCellVolume.setMajorTickSpacing(50);
+		panel_2.add(sliderMinCellVolume, BorderLayout.CENTER);
+		
+		btnAuto = new JButton("Automatic");
+		panel.add(btnAuto, "cell 0 4,growx");
 		btnAuto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				autoClassify();
 			}
 		});
-		toolBar.add(btnAuto);
+		
+		lblManualEditing = new JLabel("Manual editing:");
+		panel.add(lblManualEditing, "cell 0 5");
 		
 		btnMarkAsCell = new JButton("Mark as cell");
+		panel.add(btnMarkAsCell, "cell 0 6,growx");
 		btnMarkAsCell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				markCurrentRegion(RegionType.CELL);
 			}
 		});
-		toolBar.add(btnMarkAsCell);
 		
 		btnMarkAsNoise = new JButton("Mark as noise");
+		panel.add(btnMarkAsNoise, "cell 0 7,growx");
 		btnMarkAsNoise.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				markCurrentRegion(RegionType.UNCLASSIFIED);
 			}
 		});
-		toolBar.add(btnMarkAsNoise);
 		
 		btnCutRegion = new JButton("Cut region");
+		panel.add(btnCutRegion, "cell 0 8,growx");
 		btnCutRegion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				enterCutRegionMode();
 			}
 		});
-		toolBar.add(btnCutRegion);
 		
 		btnDeleteRegion = new JButton("Delete region");
+		panel.add(btnDeleteRegion, "cell 0 9,growx");
 		btnDeleteRegion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				deleteCurrentRegion();
 			}
 		});
-		toolBar.add(btnDeleteRegion);
-		
-		doubleBufferGLJPanel = new DoubleBufferGLJPanel();
-		add(doubleBufferGLJPanel, BorderLayout.CENTER);
+		splitPane.setDividerLocation(150);
 		
 		build3DScene();
 	}
@@ -106,7 +145,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 		SceneLayerLight sceneLight = new SceneLayerLight("Light", sceneRoot);
 		sceneLight.lightPos = new float[] {-50, 100, 20, 1};
 		sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneLight);
-		sceneMouseRot.transform.translation.z = - 150;
+		sceneMouseRot.transform.translation.z = - 160;
 		scene3D = new ClassifyRegionsSceneLayer3D("3D", sceneMouseRot, this);
 		scene3D.transform.translation.x = - 50; 
 		scene3D.transform.translation.y = - 50;
@@ -120,17 +159,23 @@ public class ClassifyRegionsUI extends ComponentUI {
 	}
 			
 	public class ClassifyRegionsUIParameters extends ComponentParameters {
+		public double convergenceThreshold;
+		public double minCellVolume;
 	}
 	
 	@Override
 	public ComponentParameters getParameters() {
 		ClassifyRegionsUIParameters params = new ClassifyRegionsUIParameters();
+		params.convergenceThreshold = (double)sliderConvergenceThreshold.getValue() / sliderConvergenceThreshold.getMaximum();
+		params.minCellVolume = (double)sliderMinCellVolume.getValue();
 		return params;		
 	}
 	
 	@Override
 	public void setParameters(ComponentParameters parameters) {
 		ClassifyRegionsUIParameters params = (ClassifyRegionsUIParameters)parameters;
+		sliderConvergenceThreshold.setValue((int)(params.convergenceThreshold * sliderConvergenceThreshold.getMaximum()));
+		sliderMinCellVolume.setValue((int)params.minCellVolume);
 	}
 	
 	//-------------------------------------------------------------------
@@ -139,6 +184,15 @@ public class ClassifyRegionsUI extends ComponentUI {
 	public JButton btnMarkAsNoise;
 	public JButton btnCutRegion;
 	public JButton btnDeleteRegion;
+	public JSplitPane splitPane;
+	public JPanel panel;
+	public JLabel lblMinVolume;
+	public JLabel lblConvergenceThreshold;
+	public JPanel panel_1;
+	public JSlider sliderConvergenceThreshold;
+	public JPanel panel_2;
+	public JSlider sliderMinCellVolume;
+	public JLabel lblManualEditing;
 		
 	// Add an event subscription. Used by matlab
 	public synchronized void addIClassifyRegionsUIListener(IClassifyRegionsUIListener lis) {
@@ -161,6 +215,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 	
 	public void autoClassify() {
 		if (!listeners.isEmpty()) {
+			this.application.setComponentParameters(this.desc, this);
 			AutoClassifyEvent event = new AutoClassifyEvent(this);
 			listeners.firstElement().autoClassify(event);
 		}

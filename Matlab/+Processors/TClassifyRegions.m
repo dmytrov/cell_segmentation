@@ -1,6 +1,6 @@
 classdef TClassifyRegions < Core.TProcessor
     properties (Constant = true)
-        IN_STACK = 1;
+        IN_CONVERGENCE = 1;
         OUT_REGIONS = 1;
     end
     
@@ -15,14 +15,24 @@ classdef TClassifyRegions < Core.TProcessor
     methods (Access = public)        
         function this = TClassifyRegions(name, pipeline)
             this = this@Core.TProcessor(name, pipeline);
-            this.Inputs = [Core.TInputPoint('Stack', 'Image Stack', this)];
+            this.Inputs = [Core.TInputPoint('Convergence', 'Convergence Stack', this)];
             this.Outputs = [Core.TOutputPoint('Regions', 'Regions 3D', this)];
         end
     
+        function GetParameters(this, params)
+            params.convergenceThreshold = this.Settings.ConvergenceThreshold;
+            params.minCellVolume = this.Settings.CellMinPixVolumeFine;
+        end
+        
+        function SetParameters(this, params)
+            this.Settings.ConvergenceThreshold = params.convergenceThreshold;
+            this.Settings.CellMinPixVolumeFine = params.minCellVolume;
+        end
+        
         function Run(this)
             Run@Core.TProcessor(this);                        
-            stack = this.Inputs(this.IN_STACK).PullData();            
-            regions = Segment3D.FindCellsRegions(this.Settings, stack);
+            convergence = this.Inputs(this.IN_CONVERGENCE).PullData();            
+            regions = Segment3D.FindCellsRegions(this.Settings, convergence);
             this.Regions = regions;
             Segment3D.ClassifyRegions(this.Settings, regions);
             this.Outputs(this.OUT_REGIONS).PushData(regions);
@@ -110,6 +120,9 @@ classdef TClassifyRegions < Core.TProcessor
         
         function PushRegionsDataToUI(this)
             this.ExternalUI.surfaces.clear();
+            if (isempty(this.Regions))
+                return;
+            end
             for region = this.Regions.RegionDesc
                 surface = de.unituebingen.cin.celllab.opengl.IndexMesh( ...
                     size(region.Surface.lVertices, 2), ...
