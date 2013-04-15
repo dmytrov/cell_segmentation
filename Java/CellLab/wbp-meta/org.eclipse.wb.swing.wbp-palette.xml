@@ -2,5 +2,6 @@
 <palette>
 	<category id="CellLabUniqueId" name="CellLab Custom" description="Category added for project CellLab" open="true">
 		<component class="de.unituebingen.cin.celllab.opengl.DoubleBufferGLJPanel" name="OpenGL JPanel" description="Double buffered OpenGL rendering JPanel"/>
+		<component class="de.unituebingen.cin.celllab.matlab.components.JROIEditor" name="ROI Editor" description="ROI editor component"/>
 	</category>
 </palette>

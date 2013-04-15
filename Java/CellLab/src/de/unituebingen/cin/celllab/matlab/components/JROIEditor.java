@@ -1,0 +1,211 @@
+package de.unituebingen.cin.celllab.matlab.components;
+
+import java.awt.AWTEvent;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+
+import javax.swing.JComponent;
+
+public class JROIEditor extends JComponent {
+	public enum Mode {
+		Edit,
+		Add,
+		Delete
+	}
+	private static final long serialVersionUID = 1L;
+	public int scaleFactor = 5;
+	public int[][] img = new int[64][64];
+	public int[][] map = new int[64][64];
+	public Mode mode = Mode.Edit; 
+	protected int currentMarker = -1;
+	
+	public JROIEditor() {
+		this.enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+	}
+	
+	protected int[][] matrixCopy(int[][] src) {
+		if (src == null) {
+			return new int[1][1];
+		}
+		int[][] res = new int[src.length][src[0].length];
+		for (int k = 0; k<src.length; k++) {
+			System.arraycopy(src[k], 0, res[k], 0, src[k].length);
+		}
+		return res;
+	}
+	
+	public int[][] getImg() {
+		return matrixCopy(img);
+	}
+	
+	public void setImg(int[][] m) {
+		img = matrixCopy(m);
+		repaint();
+		revalidate();
+	}
+	
+	public int[][] getMap() {
+		return matrixCopy(map);
+	}
+	
+	public void setMap(int[][] m) {
+		map = matrixCopy(m);
+		repaint();
+		revalidate();
+	}
+	
+	protected BufferedImage makeImage() {
+		if ((img.length != map.length) || (img[0].length != map[0].length)) {
+			return null;
+		}
+		int sx = img.length;
+		int sy = img[0].length;
+		BufferedImage res = new BufferedImage(scaleFactor*sx, scaleFactor*sy, BufferedImage.TYPE_INT_RGB);
+		WritableRaster raster = res.getRaster();
+		int[] iArray = new int[3];
+		for (int x = 0; x < sx; x++) {
+			for (int y = 0; y < sy; y++) {
+				int pixValue = img[x][y];
+				iArray[0] = pixValue;
+				iArray[1] = pixValue;
+				iArray[2] = pixValue;
+				for (int k1 = 0; k1 < scaleFactor; k1++) {
+					for (int k2 = 0; k2 < scaleFactor; k2++) {
+						raster.setPixel(scaleFactor*x + k1, scaleFactor*y + k2, iArray);
+					}
+				}
+			}
+		}
+		iArray[0] = 0;
+		iArray[1] = 255;
+		iArray[2] = 0;
+		for (int x = 0; x < sx; x++) {
+			for (int y = 0; y < sy; y++) {
+				if ((x < sx-1) && (map[x][y] != map[x+1][y])) {
+					for (int k = 0; k < scaleFactor; k++) {
+						raster.setPixel(scaleFactor*(x+1), scaleFactor*y+k, iArray);
+					}
+				}
+				if ((y < sy-1) && (map[x][y] != map[x][y+1])) {
+					for (int k = 0; k < scaleFactor; k++) {
+						raster.setPixel(scaleFactor*(x)+k, scaleFactor*(y+1), iArray);
+					}
+				}
+			}
+		}
+		return res;
+	}
+	public void paint(Graphics g) {
+		super.paint(g);
+		BufferedImage bi = makeImage();
+		if (bi != null) {
+			Graphics2D g2 = (Graphics2D)g;
+			g2.drawImage(bi, 0, 0, this);
+			g2.finalize();
+		}
+	}
+	
+	protected int getSelectedX(MouseEvent e) {
+		return (int)e.getX() / scaleFactor;
+	}
+	
+	protected int getSelectedY(MouseEvent e) {
+		return (int)e.getY() / scaleFactor;
+	}
+	
+	protected int getSelectedID(MouseEvent e) {
+		int x = getSelectedX(e);
+		int y = getSelectedY(e);
+		return getMapValue(x, y);
+	}
+	
+	protected int getFreeID() {
+		int maxID = -1;
+		int sx = map.length;
+		int sy = map[0].length;
+		for (int x = 0; x < sx; x++) {
+			for (int y = 0; y < sy; y++) {
+				if (map[x][y] > maxID) {
+					maxID = map[x][y]; 
+				}
+			}
+		}
+		return maxID + 1;
+	}
+	
+	protected void deleteID(int id) {
+		int sx = map.length;
+		int sy = map[0].length;
+		for (int x = 0; x < sx; x++) {
+			for (int y = 0; y < sy; y++) {
+				if (map[x][y] == id) {
+					map[x][y] = 0; 
+				} else if (map[x][y] > id) {
+					map[x][y]--;
+				}
+			}
+		}
+	}
+	
+	protected void setMapValue(int x, int y, int value) {
+		if ((x >=0) && (x < map.length) && (y >=0) && (y < map[0].length)) {
+			map[x][y] = value;
+		}
+	}
+	
+	protected int getMapValue(int x, int y) {
+		if ((x >=0) && (x < map.length) && (y >=0) && (y < map[0].length)) {
+			return map[x][y];
+		} else {
+			return -1;
+		}
+	}
+	
+	@Override
+	protected void processMouseEvent(MouseEvent e) {
+		switch (mode) {
+			case Edit:
+				if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+					currentMarker = getSelectedID(e);
+				} else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
+					currentMarker = -1;
+				}
+				break;
+			case Add:
+				if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+					currentMarker = getFreeID();
+					setMapValue(getSelectedX(e), getSelectedY(e), currentMarker);
+					mode = Mode.Edit;
+					repaint();
+				}	
+				break;
+			case Delete:
+				if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+					int id = getSelectedID(e);
+					if (id > 0) {
+						deleteID(id);
+						repaint();
+					}
+				}
+				break;
+		}		
+	}
+	
+	@Override
+	protected void processMouseMotionEvent(MouseEvent e) {
+		switch (mode) {
+			case Edit:
+				if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
+					if (currentMarker >= 0) {
+						setMapValue(getSelectedX(e), getSelectedY(e), currentMarker);
+						repaint();
+					}
+				}
+			default:
+		}
+	}
+	
+}

@@ -33,7 +33,6 @@ public class CellLabUI extends JFrame{
 	JPanel panelComponent;
 	public JMenu mnPipeline;
 	public JMenu mnHelp;
-	public JButton btnNextComponent;
 	private JMenuItem mntmExit;
 	public JButton btnRunCurrent;
 	public JMenuItem mntmAbout;
@@ -94,9 +93,6 @@ public class CellLabUI extends JFrame{
 		
 		btnRunCurrent = new JButton("Run current");		
 		toolBar.add(btnRunCurrent);
-		
-		btnNextComponent = new JButton("Open next");
-		toolBar.add(btnNextComponent);
 		
 		splitPane_1 = new JSplitPane();
 		splitPane_1.setResizeWeight(1.0);

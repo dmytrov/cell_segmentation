@@ -38,7 +38,7 @@ function res = MakeROIFrom3DModelsAndFunctionalScan(settings, models, scan3D, sc
             sectionMax = max([sectionMax, [1, 1]'], [], 2);
             for k1 = sectionMin(1):sectionMax(1)
                 for k2 = sectionMin(2):sectionMax(2)
-                    if (PointInsideRegion2D([k1, k2]', section))
+                    if (Collision.PointInsideRegion2D([k1, k2]', section))
                         res(k1, k2) = k;
                     end
                 end
@@ -48,21 +48,6 @@ function res = MakeROIFrom3DModelsAndFunctionalScan(settings, models, scan3D, sc
     end
     
 end
-
-function res = PointInsideRegion2D(pt, section)
-    res = false;
-    for k = 1:size(section, 3)
-        pt1 = section(1, :, k);
-        pt2 = section(2, :, k);
-        if (Collision.RaySegmentIntersect2D(pt, [0, 1]', pt1, pt2))
-            res = ~res;
-        end
-    end   
-    
-end
-
-
-
 
 
 

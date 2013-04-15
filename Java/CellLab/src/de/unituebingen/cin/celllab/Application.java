@@ -28,6 +28,7 @@ import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.RunPipelineEvent
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.ComponentDescription;
 import de.unituebingen.cin.celllab.matlab.MatlabConnector;
 import de.unituebingen.cin.celllab.matlab.components.ClassifyRegionsUI;
+import de.unituebingen.cin.celllab.matlab.components.EditROIUI;
 import de.unituebingen.cin.celllab.matlab.components.LoadTIFFUI;
 
 public class Application {
@@ -46,6 +47,7 @@ public class Application {
 		componentsBridge = new ComponentsBridge();
 		componentsBridge.registerComponentUI("Processors.TLoadTIFF", LoadTIFFUI.class);
 		componentsBridge.registerComponentUI("Processors.TClassifyRegions", ClassifyRegionsUI.class);
+		componentsBridge.registerComponentUI("Processors.TEdit2DROI", EditROIUI.class);
 		
 		componentsDesc = new GetComponentsEventData();
 		cellLabUI = new CellLabUI();
@@ -54,20 +56,13 @@ public class Application {
 		
 		cellLabUI.btnRunCurrent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setComponentParameters(getCurrentComponentDesc(), currentUI);
-				runComponent(getCurrentComponentDesc());
+				runCurrentComponent();
 			}
 		});
 		
 		cellLabUI.btnRunAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setComponentParameters(getCurrentComponentDesc(), currentUI);
-				matlab.runPipeline(new IJavaToMatlabListener.RunPipelineResultHandler() {
-					@Override
-					public void onHandled(RunPipelineEventData data) {
-						createConponentsList();
-					}
-				});
+				runAllComponents();				
 			}
 		});
 		
@@ -81,6 +76,22 @@ public class Application {
 		});
 		
 		cellLabUI.setVisible(true);
+	}
+	
+	public void runCurrentComponent() {
+		setComponentParameters(getCurrentComponentDesc(), currentUI);
+		runComponent(getCurrentComponentDesc());
+		getComponentParameters(getCurrentComponentDesc(), currentUI);
+	}
+	
+	public void runAllComponents() {
+		setComponentParameters(getCurrentComponentDesc(), currentUI);
+		matlab.runPipeline(new IJavaToMatlabListener.RunPipelineResultHandler() {
+			@Override
+			public void onHandled(RunPipelineEventData data) {
+				createConponentsList();
+			}
+		});
 	}
 	
 	public ComponentDescription getCurrentComponentDesc() {
