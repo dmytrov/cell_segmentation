@@ -19,8 +19,8 @@ classdef TAlignStack < Core.TProcessor
         function Run(this)
             Run@Core.TProcessor(this);            
             stack = this.Inputs(this.IN_STACK).PullData();
-            stackAligned = stack;
-            %stackAligned = ImageUtils.AlignSlices(stack, this.Mode, this.StartSlice, this.Pipeline.MessageLog);
+            %stackAligned = stack;
+            stackAligned = ImageUtils.AlignSlices(stack, this.Mode, this.StartSlice, this.Pipeline.MessageLog);
             this.Outputs(this.OUT_STACK).PushData(stackAligned);
         end
         

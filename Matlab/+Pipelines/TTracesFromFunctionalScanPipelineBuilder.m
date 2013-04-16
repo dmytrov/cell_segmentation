@@ -17,18 +17,18 @@ classdef TTracesFromFunctionalScanPipelineBuilder < Core.TPipelineBuilder
             saveTraces = Processors.TSave2DROIAndTracesData('Save traces', res);
             
             res.AddProcessorsChain({loadTIFF, alignStack, make2DROI});
-            res.AddComponent(edit2DROI);
-            res.AddComponent(extractTraces);
-            res.AddComponent(saveTraces);
             
             res.ConnectPoints(edit2DROI.InputByName('Stack'), alignStack.OutputByName('Stack'));
             res.ConnectPoints(edit2DROI.InputByName('ROI'), make2DROI.OutputByName('ROI'));
+            res.AddComponent(edit2DROI);
             
             res.ConnectPoints(extractTraces.InputByName('Stack'), alignStack.OutputByName('Stack'));
             res.ConnectPoints(extractTraces.InputByName('ROI'), edit2DROI.OutputByName('ROI'));
+            res.AddComponent(extractTraces);
             
             res.ConnectPoints(saveTraces.InputByName('Traces'), extractTraces.OutputByName('Traces'));
             res.ConnectPoints(saveTraces.InputByName('ROI'), edit2DROI.OutputByName('ROI'));
+            res.AddComponent(saveTraces);            
         end
     end
 end

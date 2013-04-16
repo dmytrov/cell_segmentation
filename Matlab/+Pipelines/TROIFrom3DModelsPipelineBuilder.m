@@ -27,23 +27,28 @@ classdef TROIFrom3DModelsPipelineBuilder < Core.TPipelineBuilder
             alignStackFunc = Processors.TAlignStack('Align functional stack', res);
             alignStackFunc.Mode = 'SINGLE_REFERENCE';
             make2DROI = Processors.TMakeROIFrom3DModelsAndFunctionalScan('Make ROI', res);
+            edit2DROI = Processors.TEdit2DROI('Edit ROI', res);            
             extractTraces = Processors.TExtractTraces('Extract traces', res);
             saveTraces = Processors.TSave2DROIAndTracesData('Save traces', res);
             
             res.AddProcessorsChain({loadTIFFFunc, alignStackFunc});
-            res.AddComponent(make2DROI);
-            res.AddComponent(extractTraces);
-            res.AddComponent(saveTraces);
             
             res.ConnectPoints(make2DROI.InputByName('Models'), estimateModels.OutputByName('Models'));
             res.ConnectPoints(make2DROI.InputByName('Stack 3D'), alignStack3D.OutputByName('Stack'));
             res.ConnectPoints(make2DROI.InputByName('Stack functional'), alignStackFunc.OutputByName('Stack'));
+            res.AddComponent(make2DROI);
+            
+            res.ConnectPoints(edit2DROI.InputByName('Stack'), alignStackFunc.OutputByName('Stack'));
+            res.ConnectPoints(edit2DROI.InputByName('ROI'), make2DROI.OutputByName('ROI'));
+            res.AddComponent(edit2DROI);            
             
             res.ConnectPoints(extractTraces.InputByName('Stack'), alignStackFunc.OutputByName('Stack'));
-            res.ConnectPoints(extractTraces.InputByName('ROI'), make2DROI.OutputByName('ROI'));
+            res.ConnectPoints(extractTraces.InputByName('ROI'), edit2DROI.OutputByName('ROI'));
+            res.AddComponent(extractTraces);
             
             res.ConnectPoints(saveTraces.InputByName('Traces'), extractTraces.OutputByName('Traces'));
             res.ConnectPoints(saveTraces.InputByName('ROI'), make2DROI.OutputByName('ROI'));
+            res.AddComponent(saveTraces);
             
             settings = Segment3D.TSettings();
             calcConvergence.Settings = settings;
