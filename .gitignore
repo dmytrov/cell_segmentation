@@ -6,7 +6,7 @@ Matlab/out
 CPP/MatlabControllerTest
 IGOR/CellLabRelease
 IGOR/CellLab.pxp
-Java/CellLab/bin
+_Java/CellLab/bin
 Java/OpenGLTest/bin
 Java/JavaInteropStaticTest/bin
 Java/JavaInteropDynamicTest/bin
