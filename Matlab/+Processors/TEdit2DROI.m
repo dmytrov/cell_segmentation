@@ -37,26 +37,7 @@ classdef TEdit2DROI < Core.TProcessor
             this.Img = mean(this.Inputs(this.IN_SCAN).PullData(), 3);
             this.ROI = this.Inputs(this.IN_ROI).PullData();
             this.Outputs(this.OUT_ROI).PushData(this.ROI);
-        end
-        
-        function BindJavaUI(this, ui)
-            BindJavaUI@Core.TComponent(this, ui);
-%             set(this.ExternalUI, 'AutoClassifyCallback', @(h, e)(OnAutoClassify(this, h, e)));
-%             set(this.ExternalUI, 'GetRegionByRayCallback', @(h, e)(OnGetRegionByRay(this, h, e)));
-%             set(this.ExternalUI, 'MarkRegionCallback', @(h, e)(OnMarkRegion(this, h, e)));            
-%             set(this.ExternalUI, 'DeleteRegionCallback', @(h, e)(OnDeleteRegion(this, h, e)));            
-%             set(this.ExternalUI, 'CutRegionCallback', @(h, e)(OnCutRegion(this, h, e)));            
-%             this.PushRegionsDataToUI();
-%             this.ExternalUI.onNewSurfaces();
-        end
-        
-%         function OnAutoClassify(this, sender, event)
-%             this.Pipeline.Run(this, true);
-%             this.PushRegionsDataToUI();
-%             this.ExternalUI.onNewSurfaces();
-%             event.onHandled(); % call java code back
-%         end
-        
+        end                
         
     end
 end

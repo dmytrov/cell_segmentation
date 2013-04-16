@@ -263,8 +263,10 @@ public class ClassifyRegionsUI extends ComponentUI {
 				surface.colorFactor = new float[] {0.2f, 0.2f, 0.8f, 1.0f};
 			}			
 		}
-		scene3D.renderables.clear();
-		scene3D.renderables.addAll(surfaces);
+		synchronized(scene3D.renderables) {
+			scene3D.renderables.clear();
+			scene3D.renderables.addAll(surfaces);
+		}
 		doubleBufferGLJPanel.repaint();
 		System.out.println("New surfaces received");
 	}

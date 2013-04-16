@@ -37,9 +37,11 @@ public class SceneLayer3D extends SceneLayer {
         gl.glColor3f(0.0f, 1.0f, 0.0f); gl.glNormal3d(0.0f, 0.0f, 1.0f); gl.glVertex3f( 0.0f, 1.0f, 1.0f);
         gl.glColor3f(0.0f, 0.0f, 1.0f); gl.glNormal3d(0.0f, 0.0f, 1.0f); gl.glVertex3f( 1.0f, 0.0f, 1.0f);
         gl.glEnd();               
-		for (IRenderable renderable : renderables ) {
-			renderable.render(drawable);
-		}			
+        synchronized(renderables) {
+        	for (IRenderable renderable : renderables ) {
+        		renderable.render(drawable);
+        	}
+        }
 	}
 	
 }
