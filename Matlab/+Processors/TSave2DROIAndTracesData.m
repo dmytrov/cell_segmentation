@@ -23,7 +23,7 @@ classdef TSave2DROIAndTracesData < Core.TProcessor
             
             f = fopen('./out/ROI.txt', 'w');
             try
-                this.WriteMatrixToFile(f, ROI);
+                this.WriteMatrixToFile(f, '%d\t', ROI);
             catch err
                 fclose(f);                        
                 rethrow(err);
@@ -31,7 +31,7 @@ classdef TSave2DROIAndTracesData < Core.TProcessor
             
             f = fopen('./out/Traces.txt', 'w');
             try
-                this.WriteMatrixToFile(f, traces);
+                this.WriteMatrixToFile(f, '%f\t', traces);
             catch err
                 fclose(f);                        
                 rethrow(err);
@@ -39,10 +39,10 @@ classdef TSave2DROIAndTracesData < Core.TProcessor
             
         end
         
-        function WriteMatrixToFile(this, file, data)
+        function WriteMatrixToFile(this, file, formatting, data)
             for k1 = 1:size(data, 1)
                 for k2 = 1:size(data, 2)
-                    fwrite(file, sprintf('%f\t', data(k1, k2)));
+                    fwrite(file, sprintf(formatting, data(k1, k2)));
                 end
                 fwrite(file, sprintf('\r\n'));
             end
