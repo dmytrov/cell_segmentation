@@ -4,10 +4,17 @@ Written by: Dmytro Velychko (mailto:dmytro.velychko@student.uni-tuebingen.de)
 Tuebingen, CIN, AG Euler, AG Bethge, 2012-2013
 =================
 To make it run:
-1. Add pathes to the matlab's classpath.txt:
+1. Matlab treats static and dynamic classpathes differently. 
+It is necessary to add some pathes to the static classpath, 
+which is listed in the classpath.txt file.
+Type 
+  edit classpath.txt
+in the matlab's command prompt.
+Add following pathes to the end of the classpath.txt:
   %CodeRoot%\Java\CellLab\bin\
   %CodeRoot%\Java\CellLab\miglayout15-swing.jar
 where %CodeRoot% is cell_segmentation code root.
+Save the classpath.txt.
 
 2. Restart matlab
 
