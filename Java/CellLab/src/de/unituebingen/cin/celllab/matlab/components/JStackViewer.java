@@ -20,6 +20,7 @@ public class JStackViewer extends JComponent {
 	}
 	protected Axis axis = Axis.Z;
 	protected int slice = 0;
+	protected int maxIntensity = 32;
 	
 	public JStackViewer() {
 		this.enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -94,6 +95,11 @@ public class JStackViewer extends JComponent {
 		repaint();
 	}
 	
+	public void setMaxIntensity(int newMaxIntensity) {
+		maxIntensity = newMaxIntensity;
+		repaint();
+	}
+	
 	protected int[][] makeSlice(int[][][] buffer, Axis aDir, int kSlice) {
 		int[][] res = null;
 		int sx = buffer.length;
@@ -147,7 +153,7 @@ public class JStackViewer extends JComponent {
 			int[] iArray = new int[3];
 			for (int x = 0; x < sx; x++) {
 				for (int y = 0; y < sy; y++) {
-					int pixValue = stackSlice[x][y];
+					int pixValue = (int) (255 * ((float)Math.min(maxIntensity, stackSlice[x][y]) / maxIntensity));
 					iArray[0] = pixValue;
 					iArray[1] = pixValue;
 					iArray[2] = pixValue;
@@ -172,6 +178,8 @@ public class JStackViewer extends JComponent {
 		BufferedImage bi = makeImage();
 		if (bi != null) {
 			Graphics2D g2 = (Graphics2D)g;
+			g2.translate(0, getHeight());
+			g2.scale(1, -1); // invert Y axis
 			g2.drawImage(bi, 0, 0, getWidth(), getHeight(), this);			
 			g2.finalize();
 		}

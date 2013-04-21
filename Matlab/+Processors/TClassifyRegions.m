@@ -127,17 +127,15 @@ classdef TClassifyRegions < Core.TProcessor
             end
             
             stack = this.Inputs(this.IN_STACK).PullData();
-            maxValue = 32;
-            stack(stack >= maxValue) = maxValue;
-            stack = stack - min(stack(:));
-            stack = stack / max(stack(:));
-            stack = 255 * stack;
             this.ExternalUI.stack = stack;
+            stackSize = size(stack);
+            clear stack;
 
-            overlay = zeros(size(stack));
+            overlay = zeros(stackSize);
             pixels = this.Settings.MicronToPix(this.Regions.Pixels);
             overlay(sub2ind(size(overlay), pixels(1, :), pixels(2, :), pixels(3, :))) = this.Regions.PixelID;
             this.ExternalUI.overlay = overlay;
+            clear overlay;
             
             for region = this.Regions.RegionDesc
                 surface = de.unituebingen.cin.celllab.opengl.IndexMesh( ...

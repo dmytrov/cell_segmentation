@@ -23,10 +23,12 @@ public class JStackViewerPanel extends JPanel {
 	public JRadioButton rdbtnX;
 	public JRadioButton rdbtnY;
 	public JRadioButton rdbtnZ;
-	public JSlider slider;
+	public JSlider sliderSlice;
 	public JLabel lblSliceNumber;
 	public int[] stackSize = new int[] {0, 0, 0};
 	public int[] slicePosition = new int[] {0, 0, 0};
+	public JSlider sliderMaxIntensity;
+	public JLabel lblMaxIntensity;
 
 	public JStackViewerPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -40,7 +42,7 @@ public class JStackViewerPanel extends JPanel {
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
-		panel.setLayout(new MigLayout("", "[][][][grow][]", "[]"));
+		panel.setLayout(new MigLayout("", "[][][][grow][40:40:50]", "[][]"));
 		
 		rdbtnX = new JRadioButton("X");
 		rdbtnX.addActionListener(new ActionListener() {
@@ -67,34 +69,49 @@ public class JStackViewerPanel extends JPanel {
 		});
 		panel.add(rdbtnZ, "cell 2 0");
 		
-		slider = new JSlider();
-		slider.addChangeListener(new ChangeListener() {
+		sliderSlice = new JSlider();
+		sliderSlice.setSnapToTicks(true);
+		sliderSlice.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				int newSlice = slider.getValue();
+				int newSlice = sliderSlice.getValue();
 				slicePosition[stackViewer.getAxis().ordinal()] = newSlice; 
 				stackViewer.setSlice(newSlice);
 				lblSliceNumber.setText(Integer.toString(newSlice+1) + "/" + Integer.toString(stackSize[stackViewer.getAxis().ordinal()]));
 			}
 		});
-		panel.add(slider, "flowx,cell 3 0,growx");
+		panel.add(sliderSlice, "flowx,cell 3 0,growx");
 		
-		lblSliceNumber = new JLabel("Slice number");
-		panel.add(lblSliceNumber, "cell 4 0");
-		splitPane.setDividerLocation(40);
+		lblSliceNumber = new JLabel("0/0");
+		panel.add(lblSliceNumber, "cell 4 0,alignx right");
+		splitPane.setDividerLocation(65);
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(rdbtnX);
 		group.add(rdbtnY);
 		group.add(rdbtnZ);
+		
+		lblMaxIntensity = new JLabel("Max intensity:");
+		panel.add(lblMaxIntensity, "cell 0 1 3 1,alignx right");
+		
+		sliderMaxIntensity = new JSlider();
+		sliderMaxIntensity.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				stackViewer.setMaxIntensity(sliderMaxIntensity.getValue());
+			}
+		});
+		sliderMaxIntensity.setValue(32);
+		sliderMaxIntensity.setMinimum(1);
+		sliderMaxIntensity.setMaximum(255);
+		panel.add(sliderMaxIntensity, "cell 3 1,growx");
 
 		this.revalidate();		
 	}
 	
 	public void onAxisChanged(Axis newAxis) {
-		slicePosition[stackViewer.getAxis().ordinal()] = slider.getValue(); 
+		slicePosition[stackViewer.getAxis().ordinal()] = sliderSlice.getValue(); 
 		stackViewer.setAxis(newAxis);		
-		slider.setMaximum(stackSize[stackViewer.getAxis().ordinal()]-1);
-		slider.setValue(slicePosition[stackViewer.getAxis().ordinal()]);
+		sliderSlice.setMaximum(stackSize[stackViewer.getAxis().ordinal()]-1);
+		sliderSlice.setValue(slicePosition[stackViewer.getAxis().ordinal()]);
 	}
 	
 	public int[][][] getStack () {
@@ -110,8 +127,8 @@ public class JStackViewerPanel extends JPanel {
 		}
 		stackViewer.setStack(stack);
 		stackViewer.setSlice(slicePosition[stackViewer.getAxis().ordinal()]);
-		slider.setMinimum(0);
-		slider.setMaximum(stackSize[stackViewer.getAxis().ordinal()]-1);
+		sliderSlice.setMinimum(0);
+		sliderSlice.setMaximum(stackSize[stackViewer.getAxis().ordinal()]-1);
 	}
 	
 	public int[][][] getOverlay() {
