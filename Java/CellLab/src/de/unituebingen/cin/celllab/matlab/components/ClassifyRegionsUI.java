@@ -45,7 +45,8 @@ public class ClassifyRegionsUI extends ComponentUI {
 		public static final int CELL            = 1;
 	}
 	public ArrayList<IndexMesh> surfaces = new ArrayList<IndexMesh>();	
-	public int[][][] stack = new int[64][64][4];
+	public int[][][] stack = new int[1][1][1];
+	public int[][][] overlay = new int[1][1][1];
 	protected ClassifyRegionsSceneLayer3D scene3D;
 	protected SceneLayerMouseRotationControl sceneMouseRot;
 
@@ -266,12 +267,17 @@ public class ClassifyRegionsUI extends ComponentUI {
 	
 	public void onNewSurfaces() {
 		// New surfaces data is available now
+		float[][] overlayColorFactor = new float[surfaces.size()+1][4];
+
+		int k = 1;
 		for (IndexMesh surface : surfaces) {
 			if (surface.tag == RegionType.CELL) {
 				surface.colorFactor = new float[] {0.8f, 0.2f, 0.2f, 1.0f};
 			} else {
 				surface.colorFactor = new float[] {0.2f, 0.2f, 0.8f, 1.0f};
-			}			
+			}
+			overlayColorFactor[k] = surface.colorFactor; 			
+			k++;
 		}
 		synchronized(scene3D.renderables) {
 			scene3D.renderables.clear();
@@ -280,6 +286,10 @@ public class ClassifyRegionsUI extends ComponentUI {
 		doubleBufferGLJPanel.repaint();
 		
 		stackViewerPanel.setStack(stack);
+		stackViewerPanel.setOverlay(overlay);
+		
+		stackViewerPanel.setOverlayColorFactor(overlayColorFactor);
+		
 		System.out.println("New surfaces received");
 	}
 	

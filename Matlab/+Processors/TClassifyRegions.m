@@ -125,6 +125,20 @@ classdef TClassifyRegions < Core.TProcessor
             if (isempty(this.Regions))
                 return;
             end
+            
+            stack = this.Inputs(this.IN_STACK).PullData();
+            maxValue = 32;
+            stack(stack >= maxValue) = maxValue;
+            stack = stack - min(stack(:));
+            stack = stack / max(stack(:));
+            stack = 255 * stack;
+            this.ExternalUI.stack = stack;
+
+            overlay = zeros(size(stack));
+            pixels = this.Settings.MicronToPix(this.Regions.Pixels);
+            overlay(sub2ind(size(overlay), pixels(1, :), pixels(2, :), pixels(3, :))) = this.Regions.PixelID;
+            this.ExternalUI.overlay = overlay;
+            
             for region = this.Regions.RegionDesc
                 surface = de.unituebingen.cin.celllab.opengl.IndexMesh( ...
                     size(region.Surface.lVertices, 2), ...
@@ -134,13 +148,8 @@ classdef TClassifyRegions < Core.TProcessor
                 surface.normals = region.Surface.lNormals';
                 surface.facets = region.Surface.lFacets' - 1;                                
                 surface.tag = region.Type;
-                this.ExternalUI.surfaces.add(surface);
-            end
-            stack = this.Inputs(this.IN_STACK).PullData();
-            stack = stack - min(stack(:));
-            stack = stack / max(stack(:));
-            stack = 255 * stack;
-            this.ExternalUI.stack = stack;
+                this.ExternalUI.surfaces.add(surface);                
+            end            
         end
         
         function PushRegionsMarksToUI(this)

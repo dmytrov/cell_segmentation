@@ -5,7 +5,7 @@
 classdef TRegionDescsList < handle
     properties (Access = public)
         RegionDesc;     % Array of TRegionDesc
-        Pixels;         % 3xN matrix, all pixels (voxels)
+        Pixels;         % 3xN matrix, all pixels (voxels) in microns
         PixelID;        % Array of IDs for all pixels
         SearchStruct;   % KD-tree, contains all pixels
     end
