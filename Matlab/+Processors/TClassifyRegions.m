@@ -1,6 +1,7 @@
 classdef TClassifyRegions < Core.TProcessor
     properties (Constant = true)
-        IN_CONVERGENCE = 1;
+        IN_STACK = 1;
+        IN_CONVERGENCE = 2;
         OUT_REGIONS = 1;
     end
     
@@ -15,7 +16,8 @@ classdef TClassifyRegions < Core.TProcessor
     methods (Access = public)        
         function this = TClassifyRegions(name, pipeline)
             this = this@Core.TProcessor(name, pipeline);
-            this.Inputs = [Core.TInputPoint('Convergence', 'Convergence Stack', this)];
+            this.Inputs = [Core.TInputPoint('Stack', 'Image Stack', this), ...
+                           Core.TInputPoint('Convergence', 'Convergence Stack', this)];
             this.Outputs = [Core.TOutputPoint('Regions', 'Regions 3D', this)];
         end
     
@@ -134,6 +136,11 @@ classdef TClassifyRegions < Core.TProcessor
                 surface.tag = region.Type;
                 this.ExternalUI.surfaces.add(surface);
             end
+            stack = this.Inputs(this.IN_STACK).PullData();
+            stack = stack - min(stack(:));
+            stack = stack / max(stack(:));
+            stack = 255 * stack;
+            this.ExternalUI.stack = stack;
         end
         
         function PushRegionsMarksToUI(this)

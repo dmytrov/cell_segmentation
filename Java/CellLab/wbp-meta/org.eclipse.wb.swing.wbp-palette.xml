@@ -3,5 +3,7 @@
 	<category id="CellLabUniqueId" name="CellLab Custom" description="Category added for project CellLab" open="true">
 		<component class="de.unituebingen.cin.celllab.opengl.DoubleBufferGLJPanel" name="OpenGL JPanel" description="Double buffered OpenGL rendering JPanel"/>
 		<component class="de.unituebingen.cin.celllab.matlab.components.JROIEditor" name="ROI Editor" description="ROI editor component"/>
+		<component class="de.unituebingen.cin.celllab.matlab.components.JStackViewer" name="Stack Viewer" description="Stack viewer component"/>
+		<component class="de.unituebingen.cin.celllab.matlab.components.JStackViewerPanel" name="Stack Viewer Panel" description="Stack viewer panel component"/>
 	</category>
 </palette>

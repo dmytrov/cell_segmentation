@@ -18,22 +18,6 @@ public class AboutUI extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	public JTextPane txtpnCelllabHttpwwwcinunituebingendeAg;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			AboutUI dialog = new AboutUI();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
 	public AboutUI() {
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());

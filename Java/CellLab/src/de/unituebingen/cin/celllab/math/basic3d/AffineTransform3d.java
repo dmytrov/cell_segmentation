@@ -88,7 +88,7 @@ public class AffineTransform3d {
 	
 	public void invert() {
 		// For affine transform X' = AX + B its inverse is:
-		// X = A'X + B'
+		// X = A'X' + B'
 		// A' = A^-1
 		// B' = -A^-1 * B
 		// Because A is an orthogonal transformation, inverse is equal to transposed.

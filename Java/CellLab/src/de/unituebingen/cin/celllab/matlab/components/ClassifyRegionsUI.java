@@ -45,6 +45,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 		public static final int CELL            = 1;
 	}
 	public ArrayList<IndexMesh> surfaces = new ArrayList<IndexMesh>();	
+	public int[][][] stack = new int[64][64][4];
 	protected ClassifyRegionsSceneLayer3D scene3D;
 	protected SceneLayerMouseRotationControl sceneMouseRot;
 
@@ -57,9 +58,6 @@ public class ClassifyRegionsUI extends ComponentUI {
 		
 		splitPane = new JSplitPane();
 		add(splitPane, BorderLayout.CENTER);
-		
-		doubleBufferGLJPanel = new DoubleBufferGLJPanel();
-		splitPane.setRightComponent(doubleBufferGLJPanel);
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
@@ -130,6 +128,16 @@ public class ClassifyRegionsUI extends ComponentUI {
 		
 		btnDeleteRegion = new JButton("Delete region");
 		panel.add(btnDeleteRegion, "cell 0 9,growx");
+		
+		splitPane_1 = new JSplitPane();
+		splitPane_1.setResizeWeight(0.65);
+		splitPane.setRightComponent(splitPane_1);
+		
+		doubleBufferGLJPanel = new DoubleBufferGLJPanel();
+		splitPane_1.setLeftComponent(doubleBufferGLJPanel);
+		
+		stackViewerPanel = new JStackViewerPanel();
+		splitPane_1.setRightComponent(stackViewerPanel);
 		btnDeleteRegion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				deleteCurrentRegion();
@@ -193,6 +201,8 @@ public class ClassifyRegionsUI extends ComponentUI {
 	public JPanel panel_2;
 	public JSlider sliderMinCellVolume;
 	public JLabel lblManualEditing;
+	public JSplitPane splitPane_1;
+	public JStackViewerPanel stackViewerPanel;
 		
 	// Add an event subscription. Used by matlab
 	public synchronized void addIClassifyRegionsUIListener(IClassifyRegionsUIListener lis) {
@@ -268,6 +278,8 @@ public class ClassifyRegionsUI extends ComponentUI {
 			scene3D.renderables.addAll(surfaces);
 		}
 		doubleBufferGLJPanel.repaint();
+		
+		stackViewerPanel.setStack(stack);
 		System.out.println("New surfaces received");
 	}
 	

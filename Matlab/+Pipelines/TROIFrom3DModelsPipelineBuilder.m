@@ -16,7 +16,11 @@ classdef TROIFrom3DModelsPipelineBuilder < Core.TPipelineBuilder
             showModels = Processors.TShowModels('Show models', res);
             save3D = Processors.TSave3DModelAndData('Save 3D models', res);
             
-            res.AddProcessorsChain({loadTIFF3D, alignStack3D, calcConvergence, classifyRegions});
+            res.AddProcessorsChain({loadTIFF3D, alignStack3D, calcConvergence});
+            res.ConnectPoints(classifyRegions.InputByName('Stack'), alignStack3D.OutputByName('Stack'));
+            res.ConnectPoints(classifyRegions.InputByName('Convergence'), calcConvergence.OutputByName('Convergence'));
+            res.AddComponent(classifyRegions);
+            
             res.ConnectPoints(estimateModels.InputByName('Stack'), alignStack3D.OutputByName('Stack'));
             res.ConnectPoints(estimateModels.InputByName('Regions'), classifyRegions.OutputByName('Regions'));
             res.AddProcessorsChain({estimateModels, showModels}); 
