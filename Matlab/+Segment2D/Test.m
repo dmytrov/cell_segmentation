@@ -11,7 +11,7 @@ scan = ImageUtils.LoadTIFF(sScanFileName);
 scan = scan(:, 4:end, 2:end);
 
 scanFiltered = SignalUtils.FilterStack(settings, scan, 0.01, 'high');
-scanAligned = ImageUtils.AlignSlices(scan, 1);
+scanAligned = ImageUtils.AlignSlices(scan, 'SINGLE_REFERENCE', 2);
 scanAlignedFiltered = SignalUtils.FilterStack(settings, scanAligned, 0.01, 'high');
 
 %%
@@ -59,7 +59,8 @@ figure; imagesc(corrMatrixFull.CorrMatrix);
 
 %%
 clc;
-scanAlignedFilteredChunk = scanAlignedFiltered(11:30, 11:30, 1:end);
+close all;
+scanAlignedFilteredChunk = scanAlignedFiltered(10:40, 10:40, 1:end);
 viewerCorrAligned = UI.StackCorrelationViewer(scanAlignedFilteredChunk);
 clear imStack;
 clear likelihoodFunction;
@@ -75,6 +76,39 @@ viewerClustering = UI.StackViewer(clustering);
 % imagesc(regMap);
 % axis 'image';
 % set(gca, 'YDir', 'normal');
+%%
+clustersFinal = clustering(:,:,end);
+minRegionSize = 5;
+nRegions = max(clustersFinal(:));
+lRegionSize = zeros(1, nRegions);
+for k = clustersFinal(:)'
+    lRegionSize(k) = lRegionSize(k) + 1;
+end
+newIDs = zeros(1, nRegions);
+n = 1;
+for k = 1:nRegions
+    if (lRegionSize(k) >= minRegionSize)
+        newIDs(k) = n;
+        n = n + 1;
+    end
+end
+for k = 1:length(clustersFinal(:))
+    clustersFinal(k) = newIDs(clustersFinal(k));
+end
+clustersFinalViewer = UI.StackViewer(clustersFinal);
+
 
 
 %end
+
+
+
+
+
+
+
+
+
+
+
+

@@ -9,8 +9,8 @@ classdef TRegionLikelihood < handle
     methods (Access = public)
         function this = TRegionLikelihood(settings)
             % Priors
-            this.EllipsicityPrior = Bayesian.TGaussianPrior(1, 2);
-            this.SizePrior = Bayesian.TGaussianPrior(10, 5);
+            this.EllipsicityPrior = Bayesian.TGaussianPrior(1, 1);
+            this.SizePrior = Bayesian.TGaussianPrior(20, 5);
             this.CorrelationPrior = Bayesian.TGaussianPrior(1, 1);   % account for all pixels cross-correlations            
         end
         
@@ -19,12 +19,16 @@ classdef TRegionLikelihood < handle
             [vAxes, scale] = MathUtils.GetPrincipalAxes(corrMatrix.Pixels);
             scale = scale + 0.5 * sqrt(2);
             ellipsicity = max(scale) / min(scale);
-            %for 
-            res = (sum(corrMatrix.CorrMatrix(:)) - nPixels) / nPixels;
-            if (nPixels > 25)
-                res = 0;
+            meanCorr = (sum(corrMatrix.CorrMatrix(:)) - nPixels) / (nPixels^2 - nPixels);            
+            minCorr = min(corrMatrix.CorrMatrix(:));
+            if (minCorr <= 0.2)
+                res = 1e-9;
+                return;
             end
-            res = res + 1e-6;
+            res = this.EllipsicityPrior.ValueAt(ellipsicity) * ...
+                  this.CorrelationPrior.ValueAt(meanCorr) * ...
+                  this.SizePrior.ValueAt(nPixels) +  ...
+                  1e-9;
         end
     end
 end
