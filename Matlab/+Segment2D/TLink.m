@@ -1,4 +1,4 @@
-classdef TLink < handle
+classdef TLink < Utils.TDLListNode
     properties (GetAccess = public, SetAccess = protected)
         Region1;            % neighbouring regions
         Region2;            % neighbouring regions
@@ -9,6 +9,7 @@ classdef TLink < handle
     
     methods (Access = public)
         function this = TLink(likelihoodFunction, region1, region2)
+            this = this@Utils.TDLListNode();
             if (nargin == 3)
                 this.LikelihoodFunction = likelihoodFunction;
                 this.Region1 = region1;

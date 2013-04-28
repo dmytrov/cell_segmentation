@@ -126,18 +126,23 @@ classdef TClassifyRegions < Core.TProcessor
                 return;
             end
             
+            fprintf('Getting stack data\n');
             stack = this.Inputs(this.IN_STACK).PullData();
             this.ExternalUI.stack = stack;
             stackSize = size(stack);
             clear stack;
 
+            fprintf('Pushing stack data\n');
             overlay = zeros(stackSize);
             pixels = this.Settings.MicronToPix(this.Regions.Pixels);
             overlay(sub2ind(size(overlay), pixels(1, :), pixels(2, :), pixels(3, :))) = this.Regions.PixelID;
             this.ExternalUI.overlay = overlay;
             clear overlay;
             
+            fprintf('Pushing surfaces\n');
+            k = 1;
             for region = this.Regions.RegionDesc
+                fprintf('Surface %d ', k);
                 surface = de.unituebingen.cin.celllab.opengl.IndexMesh( ...
                     size(region.Surface.lVertices, 2), ...
                     size(region.Surface.lFacets, 2));
@@ -147,6 +152,8 @@ classdef TClassifyRegions < Core.TProcessor
                 surface.facets = region.Surface.lFacets' - 1;                                
                 surface.tag = region.Type;
                 this.ExternalUI.surfaces.add(surface);                
+                fprintf('done\n');
+                k = k + 1;
             end            
         end
         

@@ -77,7 +77,7 @@ viewerClustering = UI.StackViewer(clustering);
 % axis 'image';
 % set(gca, 'YDir', 'normal');
 %%
-clustersFinal = clustering(:,:,end);
+clustersFinal = regionsGraph.BuildMap();
 minRegionSize = 5;
 nRegions = max(clustersFinal(:));
 lRegionSize = zeros(1, nRegions);
