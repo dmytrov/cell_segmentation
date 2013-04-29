@@ -40,9 +40,9 @@ classdef TSettings
         
         % Prior distributions
         RadiusPrior;            % radius, micron
+        CurvaturePrior;         % distance from plane formed by surrounding vertices, micron
         
         % THESE ARE NOT IMPLEMENTED YET
-        %ConvexityPrior;         % local border roughness, convexity
         %BoundaryIntensityPrior; % relative to max/conter of the cell
         %IsosurfacePrior;        % relative to mean lateral boundary intensity
         
@@ -86,14 +86,15 @@ classdef TSettings
             obj.RayStep = obj.PixToMicronXY(1)/4; % micron; 4 steps per pixel
             obj.RayKernelVariance = 1; % micron
             
-            obj.BoundaryEstimationIterations = 3;
+            obj.BoundaryEstimationIterations = 4;
             
             % Priors
             obj.RadiusPrior = ...
                 Bayesian.TGaussianPrior(radius, 0.3 * radius);
+            obj.CurvaturePrior = ...
+                Bayesian.TGaussianPrior(0.1 * radius / obj.TesselationLevel, ...
+                                        0.3 * radius / obj.TesselationLevel);
             % THESE ARE NOT IMPLEMENTED YET
-            % obj.ConvexityPrior = ...
-            %     Bayesian.TGaussianPrior(radius, 0.05 * radius);
             % obj.BoundaryIntensityPrior = ...
             %     Bayesian.TGaussianPrior(0.2, 0.1);
             % obj.IsosurfacePrior = ...

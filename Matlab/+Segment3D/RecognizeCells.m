@@ -5,7 +5,7 @@
 function [models, regions] = RecognizeCells(settings, scanAligned)
 	models = [];
     fprintf('Calculating convergence... ');
-    convergence = CalcConvergence(settings, scanAligned);
+    convergence = Segment3D.CalcConvergence(settings, scanAligned);
     fprintf('done.\n');
     fprintf('Extracting regions... ');
 	regions = Segment3D.FindCellsRegions(settings, convergence);

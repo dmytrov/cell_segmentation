@@ -128,7 +128,9 @@ classdef TModel < handle
                     e3.eOpposite = eOther;
                     e2.eNext = e3;
                     e3.vertex = v3;
+                    v3.lEdges(end+1) = e3;
                     eOther.vertex = v1;
+                    v1.lEdges(end+1) = eOther;
                     eOther.facet = facet;
                     % Add new facet
                     obj.nFacets = obj.nFacets + 1;
@@ -176,6 +178,7 @@ classdef TModel < handle
             obj.nEdges = obj.nEdges + 1;
             eLast = obj.lEdges(obj.nEdges);
             eLast.vertex = vNew;
+            vNew.lEdges(end+1) = eLast;
             e1New = obj.lEdges(obj.nEdges);
             e1New.eNext = e1.eNext;
             e1.eNext = e1New;
@@ -185,6 +188,7 @@ classdef TModel < handle
             obj.nEdges = obj.nEdges + 1;
             eLast = obj.lEdges(obj.nEdges);
             eLast.vertex = vNew;
+            vNew.lEdges(end+1) = eLast;
             e2New = obj.lEdges(obj.nEdges);
             e2New.eNext = e2.eNext;
             e2.eNext = e2New;
