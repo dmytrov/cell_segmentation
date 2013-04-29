@@ -24,3 +24,18 @@ Save the classpath.txt.
 4. Start it by typing 
   CellLab
 in the matlab's command prompt
+
+=================
+If you get "java heap out of memory" errors while processing large stacks,
+change java heap settings for matlab. To change it:
+1. Create java.opts file in matlab's bin folder, e.g.
+  C:\Program Files\MATLAB\R2012b\bin\win64\java.opts
+for Windows x64, with the follwing content: 
+  -Xms128m
+  -Xmx512m
+Xms key is for setting start java heap size,
+Xmx key is for setting max java heap size
+
+2. Restart matlab
+
+3. In case of more errors try to increase the heap size.
