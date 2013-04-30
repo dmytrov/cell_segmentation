@@ -6,7 +6,7 @@ classdef T3DCellData < handle
         fScale;  
         fVolume;
         fArea;
-        fUncertainty;
+        fLogLikelihood;
     end
 
 	methods (Access = public)
@@ -21,9 +21,9 @@ classdef T3DCellData < handle
             pts(isnan(pts)) = 0;
             [this.vAxes, this.fScale] = MathUtils.GetPrincipalAxes(pts);            
             [this.fArea, this.fVolume] = MeshUtils.GetAreaAndVolume(model);
-            this.fUncertainty = nan;
-            if (isfield(model.tag, 'fUncertainty'))
-                this.fUncertainty = model.tag.fUncertainty;
+            this.fLogLikelihood = nan;
+            if (isfield(model.tag, 'logLikelihood'))
+                this.fLogLikelihood = model.tag.logLikelihood;
             end
         end
         
@@ -46,7 +46,7 @@ classdef T3DCellData < handle
                 'PCAWeight3\t', ...
                 'Volume\t', ...
                 'Area\t', ...
-                'Uncertainty\t', ...
+                'LogLikelihood\t', ...
                 ]);
         end
         
@@ -59,7 +59,7 @@ classdef T3DCellData < handle
             s = [s, this.VectorToString(this.fScale)];
             s = [s, sprintf('%f\t', this.fVolume)];
             s = [s, sprintf('%f\t', this.fArea)];
-            s = [s, sprintf('%f\t', this.fUncertainty)];
+            s = [s, sprintf('%f\t', this.fLogLikelihood)];
         end
     end
     
