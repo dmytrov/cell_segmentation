@@ -104,7 +104,6 @@ public class JROIEditor extends JComponent {
 		if (bi != null) {
 			Graphics2D g2 = (Graphics2D)g;
 			g2.drawImage(bi, 0, 0, this);
-			g2.finalize();
 		}
 	}
 	

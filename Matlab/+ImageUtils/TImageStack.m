@@ -1,5 +1,5 @@
 classdef TImageStack < handle
-    properties (GetAccess = public, SetAccess = protected)
+    properties (Access = public)
         Data;
     end
     

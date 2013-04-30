@@ -1,7 +1,7 @@
-classdef TROIFrom3DModelsPipelineBuilder < Core.TPipelineBuilder
+classdef TROIFrom3DModelsProjectionPipelineBuilder < Core.TPipelineBuilder
     methods (Access = public)
-        function this = TROIFrom3DModelsPipelineBuilder()
-            this = this@Core.TPipelineBuilder('ROI from 3D models cut');
+        function this = TROIFrom3DModelsProjectionPipelineBuilder()
+            this = this@Core.TPipelineBuilder('ROI from 3D models projection');
         end
 
         function res = Build(this)            
@@ -30,7 +30,7 @@ classdef TROIFrom3DModelsPipelineBuilder < Core.TPipelineBuilder
             loadTIFFFunc.FileName = '../Data/q1_Ch0.tif';
             alignStackFunc = Processors.TAlignStack('Align functional stack', res);
             alignStackFunc.Mode = 'SINGLE_REFERENCE';
-            make2DROI = Processors.TMakeROIFrom3DModelsAndFunctionalScan('Make ROI by cut', res);
+            make2DROI = Processors.TMakeROIFrom3DModelsProjection('Make ROI projecting', res);
             edit2DROI = Processors.TEdit2DROI('Edit ROI', res);            
             extractTraces = Processors.TExtractTraces('Extract traces', res);
             saveTraces = Processors.TSave2DROIAndTracesData('Save traces', res);
