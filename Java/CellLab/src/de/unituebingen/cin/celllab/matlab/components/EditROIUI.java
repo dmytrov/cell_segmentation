@@ -15,6 +15,8 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 
 public class EditROIUI extends ComponentUI {
 	public class EditROIUIParameters extends ComponentParameters {
@@ -32,6 +34,8 @@ public class EditROIUI extends ComponentUI {
 	public JButton btnAdd;
 	public JButton btnDelete;
 	public JButton btnAuto;
+	public JCheckBox chckbxShowRoiOverlay;
+	public JLabel label;
 	
 	@Override
 	public ComponentParameters getParameters() {
@@ -56,7 +60,7 @@ public class EditROIUI extends ComponentUI {
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
-		panel.setLayout(new MigLayout("", "[]", "[][][][]"));
+		panel.setLayout(new MigLayout("", "[]", "[][][][][][]"));
 		
 		btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
@@ -90,6 +94,18 @@ public class EditROIUI extends ComponentUI {
 		panel.add(btnAdd, "cell 0 2,growx");
 		panel.add(btnDelete, "cell 0 3,growx");
 		
+		chckbxShowRoiOverlay = new JCheckBox("Show ROI overlay");
+		chckbxShowRoiOverlay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editor.setROIVisible(chckbxShowRoiOverlay.isSelected()); 
+			}
+		});
+		
+		label = new JLabel("Visibility options:");
+		panel.add(label, "cell 0 4");
+		chckbxShowRoiOverlay.setSelected(true);
+		panel.add(chckbxShowRoiOverlay, "cell 0 5");
+		
 		panel_1 = new JPanel();
 		splitPane.setRightComponent(panel_1);
 		panel_1.setLayout(new GridLayout(1, 0, 0, 0));
@@ -105,7 +121,7 @@ public class EditROIUI extends ComponentUI {
 		editor = new JROIEditor();
 		editor.setSize(new Dimension(150, 150));
 		panel_2.add(editor);
-		splitPane.setDividerLocation(100);
+		splitPane.setDividerLocation(130);
 		
 		
 	}

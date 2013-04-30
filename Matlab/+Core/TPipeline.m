@@ -16,6 +16,8 @@ classdef TPipeline < handle
         function this = TPipeline(name)
             this.Name = name;
             this.Components = cell(0, 1);
+            this.MessageLog = Core.TMessageLog();
+            this.MessageLog.PrintToConsole = true;
         end
         
         function AddComponent(this, component)
@@ -93,8 +95,10 @@ classdef TPipeline < handle
                 this.MarkChildrenInvalid(component);
                 component.State = Core.TComponentState.RUNNING;
                 this.CallComponentsStateChangeCallback();
+                this.MessageLog.PrintLine(['Running component "', component.Name, '"...']);
                 component.Run();
                 component.State = Core.TComponentState.VALID;
+                this.MessageLog.PrintLine(['Running component "', component.Name, '" has finished']);
                 this.CallComponentsStateChangeCallback();
             end
         end

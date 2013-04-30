@@ -2,7 +2,6 @@ package de.unituebingen.cin.celllab.matlab.components;
 
 import java.awt.AWTEvent;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -16,11 +15,13 @@ public class JROIEditor extends JComponent {
 		Delete
 	}
 	private static final long serialVersionUID = 1L;
-	public int scaleFactor = 5;
+	public int scaleX = 5;
+	public int scaleY = 5;
 	public int[][] img = new int[64][64];
 	public int[][] map = new int[64][64];
 	public Mode mode = Mode.Edit; 
 	protected int currentMarker = -1;
+	protected boolean ROIVisible = true;
 	
 	public JROIEditor() {
 		this.enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -37,34 +38,47 @@ public class JROIEditor extends JComponent {
 		return res;
 	}
 	
+	public boolean getROIVisible() {
+		return ROIVisible;
+	}
+	
+	public void setROIVisible(boolean value) {
+		ROIVisible = value;
+		repaint();
+	}
+	
 	public int[][] getImg() {
 		return matrixCopy(img);
 	}
 	
-	public void setImg(int[][] m) {
+	public synchronized void setImg(int[][] m) {
 		img = matrixCopy(m);
 		repaint();
-		revalidate();
+		//revalidate();
 	}
 	
 	public int[][] getMap() {
 		return matrixCopy(map);
 	}
 	
-	public void setMap(int[][] m) {
+	public synchronized void setMap(int[][] m) {
 		map = matrixCopy(m);
 		repaint();
 		revalidate();
 	}
 	
-	protected BufferedImage makeImage() {
+	protected synchronized BufferedImage makeImage() {
 		if ((img.length != map.length) || (img[0].length != map[0].length)) {
 			return null;
 		}
+		getHeight();
 		int sx = img.length;
 		int sy = img[0].length;
-		BufferedImage res = new BufferedImage(scaleFactor*sx, scaleFactor*sy, BufferedImage.TYPE_INT_RGB);
+		scaleX = getWidth() / sx;
+		scaleY = getHeight() / sy;
+		BufferedImage res = new BufferedImage(scaleX*sx, scaleY*sy, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = res.getRaster();
+		// Draw image
 		int[] iArray = new int[3];
 		for (int x = 0; x < sx; x++) {
 			for (int y = 0; y < sy; y++) {
@@ -72,26 +86,30 @@ public class JROIEditor extends JComponent {
 				iArray[0] = pixValue;
 				iArray[1] = pixValue;
 				iArray[2] = pixValue;
-				for (int k1 = 0; k1 < scaleFactor; k1++) {
-					for (int k2 = 0; k2 < scaleFactor; k2++) {
-						raster.setPixel(scaleFactor*x + k1, scaleFactor*y + k2, iArray);
+				for (int k1 = 0; k1 < scaleX; k1++) {
+					for (int k2 = 0; k2 < scaleY; k2++) {
+						raster.setPixel(scaleX*x + k1, scaleY*y + k2, iArray);
 					}
 				}
 			}
 		}
+		if (!ROIVisible) {
+			return res;
+		}
+		// Draw ROI overlay
 		iArray[0] = 0;
 		iArray[1] = 255;
 		iArray[2] = 0;
 		for (int x = 0; x < sx; x++) {
 			for (int y = 0; y < sy; y++) {
 				if ((x < sx-1) && (map[x][y] != map[x+1][y])) {
-					for (int k = 0; k < scaleFactor; k++) {
-						raster.setPixel(scaleFactor*(x+1), scaleFactor*y+k, iArray);
+					for (int k = 0; k < scaleY; k++) {
+						raster.setPixel(scaleX*(x+1), scaleY*y+k, iArray);
 					}
 				}
 				if ((y < sy-1) && (map[x][y] != map[x][y+1])) {
-					for (int k = 0; k < scaleFactor; k++) {
-						raster.setPixel(scaleFactor*(x)+k, scaleFactor*(y+1), iArray);
+					for (int k = 0; k < scaleX; k++) {
+						raster.setPixel(scaleX*(x)+k, scaleY*(y+1), iArray);
 					}
 				}
 			}
@@ -100,19 +118,19 @@ public class JROIEditor extends JComponent {
 	}
 	public void paint(Graphics g) {
 		super.paint(g);
+		
 		BufferedImage bi = makeImage();
 		if (bi != null) {
-			Graphics2D g2 = (Graphics2D)g;
-			g2.drawImage(bi, 0, 0, this);
-		}
+			g.drawImage(bi, 0, 0, this);
+		}		
 	}
 	
 	protected int getSelectedX(MouseEvent e) {
-		return (int)e.getX() / scaleFactor;
+		return (int)e.getX() / scaleX;
 	}
 	
 	protected int getSelectedY(MouseEvent e) {
-		return (int)e.getY() / scaleFactor;
+		return (int)e.getY() / scaleY;
 	}
 	
 	protected int getSelectedID(MouseEvent e) {
