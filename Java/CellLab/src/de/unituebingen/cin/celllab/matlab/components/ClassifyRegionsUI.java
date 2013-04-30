@@ -64,7 +64,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 		splitPane.setLeftComponent(panel);
 		panel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][]"));
 		
-		lblConvergenceThreshold = new JLabel("Convergence threshold:");
+		lblConvergenceThreshold = new JLabel("Convergence threshold, % max:");
 		panel.add(lblConvergenceThreshold, "cell 0 0");
 		
 		panel_1 = new JPanel();
@@ -72,13 +72,15 @@ public class ClassifyRegionsUI extends ComponentUI {
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
 		sliderConvergenceThreshold = new JSlider();
+		sliderConvergenceThreshold.setMaximum(70);
+		sliderConvergenceThreshold.setMinimum(30);
 		sliderConvergenceThreshold.setPaintTicks(true);
 		sliderConvergenceThreshold.setPaintLabels(true);
 		sliderConvergenceThreshold.setMinorTickSpacing(10);
-		sliderConvergenceThreshold.setMajorTickSpacing(50);
+		sliderConvergenceThreshold.setMajorTickSpacing(10);
 		panel_1.add(sliderConvergenceThreshold);
 		
-		lblMinVolume = new JLabel("Min cell volume:");
+		lblMinVolume = new JLabel("Min cell volume, micron^3:");
 		panel.add(lblMinVolume, "cell 0 2");
 		
 		panel_2 = new JPanel();
@@ -86,10 +88,11 @@ public class ClassifyRegionsUI extends ComponentUI {
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
 		sliderMinCellVolume = new JSlider();
+		sliderMinCellVolume.setMaximum(500);
 		sliderMinCellVolume.setPaintTicks(true);
 		sliderMinCellVolume.setPaintLabels(true);
-		sliderMinCellVolume.setMinorTickSpacing(10);
-		sliderMinCellVolume.setMajorTickSpacing(50);
+		sliderMinCellVolume.setMinorTickSpacing(100);
+		sliderMinCellVolume.setMajorTickSpacing(100);
 		panel_2.add(sliderMinCellVolume, BorderLayout.CENTER);
 		
 		btnAuto = new JButton("Automatic");
@@ -144,7 +147,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 				deleteCurrentRegion();
 			}
 		});
-		splitPane.setDividerLocation(150);
+		splitPane.setDividerLocation(170);
 		
 		build3DScene();
 	}
