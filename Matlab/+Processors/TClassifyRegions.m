@@ -61,7 +61,9 @@ classdef TClassifyRegions < Core.TProcessor
         function OnGetRegionByRay(this, sender, event)
             ptRay = event.data.ptRay;
             vRay = event.data.vRay;
-            event.data.kSelected = this.GetSelectedRegionID(ptRay, vRay)-1;
+            bSelectCells = event.data.selectCells;
+            bSelectNoise = event.data.selectNoise;
+            event.data.kSelected = this.GetSelectedRegionID(ptRay, vRay, bSelectCells, bSelectNoise)-1;
             event.onHandled(); % call java code back
         end
         
@@ -106,15 +108,18 @@ classdef TClassifyRegions < Core.TProcessor
             event.onHandled(); % call java code back
         end
         
-        function res = GetSelectedRegionID(this, ptRay, vRay)
+        function res = GetSelectedRegionID(this, ptRay, vRay, bSelectCells, bSelectNoise)
             res = 0;
             distClosest = Inf;
             k = 1;
             for region = this.Regions.RegionDesc
-                [bHit, ptHit] = region.Surface.RayHit(ptRay, vRay);
-                if (bHit && (norm(ptHit-ptRay) < distClosest))
-                    distClosest = norm(ptHit-ptRay);
-                    res = k;
+                if (((region.Type == Segment3D.TRegionDesc.CELL) && bSelectCells) || ...
+                    ((region.Type ~= Segment3D.TRegionDesc.CELL) && bSelectNoise))
+                    [bHit, ptHit] = region.Surface.RayHit(ptRay, vRay);
+                    if (bHit && (norm(ptHit-ptRay) < distClosest))
+                        distClosest = norm(ptHit-ptRay);
+                        res = k;
+                    end
                 end
                 k = k + 1;
             end

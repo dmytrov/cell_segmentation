@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JSlider;
 import javax.swing.JLabel;
+import javax.swing.JCheckBox;
 
 public class ClassifyRegionsUI extends ComponentUI {
 	public class RegionType {
@@ -62,7 +63,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
-		panel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][][][][]"));
 		
 		lblConvergenceThreshold = new JLabel("Convergence threshold, % max:");
 		panel.add(lblConvergenceThreshold, "cell 0 0");
@@ -132,6 +133,27 @@ public class ClassifyRegionsUI extends ComponentUI {
 		
 		btnDeleteRegion = new JButton("Delete region");
 		panel.add(btnDeleteRegion, "cell 0 9,growx");
+		
+		lblVisibilityOptions = new JLabel("Visibility options:");
+		panel.add(lblVisibilityOptions, "cell 0 10");
+		
+		chckbxShowCells = new JCheckBox("Show cells regions");
+		chckbxShowCells.setSelected(true);
+		chckbxShowCells.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				applyVisibilityOptions();
+			}
+		});
+		panel.add(chckbxShowCells, "cell 0 11");
+		
+		chckbxShowNoise = new JCheckBox("Show noise regions");
+		chckbxShowNoise.setSelected(true);
+		chckbxShowNoise.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				applyVisibilityOptions();
+			}
+		});
+		panel.add(chckbxShowNoise, "cell 0 12");
 		
 		splitPane_1 = new JSplitPane();
 		splitPane_1.setResizeWeight(0.65);
@@ -207,6 +229,9 @@ public class ClassifyRegionsUI extends ComponentUI {
 	public JLabel lblManualEditing;
 	public JSplitPane splitPane_1;
 	public JStackViewerPanel stackViewerPanel;
+	public JLabel lblVisibilityOptions;
+	public JCheckBox chckbxShowCells;
+	public JCheckBox chckbxShowNoise;
 		
 	// Add an event subscription. Used by matlab
 	public synchronized void addIClassifyRegionsUIListener(IClassifyRegionsUIListener lis) {
@@ -269,6 +294,11 @@ public class ClassifyRegionsUI extends ComponentUI {
 	}	
 	
 	public void onNewSurfaces() {
+		pushFurfacesToControls();		
+		System.out.println("New surfaces received");
+	}
+	
+	public void pushFurfacesToControls() {
 		// New surfaces data is available now
 		float[][] overlayColorFactor = new float[surfaces.size()+1][4];
 
@@ -276,10 +306,16 @@ public class ClassifyRegionsUI extends ComponentUI {
 		for (IndexMesh surface : surfaces) {
 			if (surface.tag == RegionType.CELL) {
 				surface.colorFactor = new float[] {0.8f, 0.2f, 0.2f, 1.0f};
+				surface.visible = getCellsVisible();
 			} else {
 				surface.colorFactor = new float[] {0.2f, 0.2f, 0.8f, 1.0f};
+				surface.visible = getNoiseVisible();
 			}
-			overlayColorFactor[k] = surface.colorFactor; 			
+			if (surface.visible) {
+				overlayColorFactor[k] = surface.colorFactor;
+			} else {
+				overlayColorFactor[k] = new float[] {1.0f, 1.0f, 1.0f, 1.0f};
+			}
 			k++;
 		}
 		synchronized(scene3D.renderables) {
@@ -292,8 +328,6 @@ public class ClassifyRegionsUI extends ComponentUI {
 		stackViewerPanel.setOverlay(overlay);
 		
 		stackViewerPanel.setOverlayColorFactor(overlayColorFactor);
-		
-		System.out.println("New surfaces received");
 	}
 	
 	public void setSelectedRegionID(int kSelected) {
@@ -322,6 +356,8 @@ public class ClassifyRegionsUI extends ComponentUI {
 				public void onInit(GetRegionByRayEventData data) {
 					data.ptRay = ptRay.toArray();
 					data.vRay = vRay.toArray();
+					data.selectCells = getCellsVisible();
+					data.selectNoise = getNoiseVisible();
 				}
 				@Override
 				public void onHandled(GetRegionByRayEventData data) {
@@ -352,6 +388,18 @@ public class ClassifyRegionsUI extends ComponentUI {
 				}				
 			}));
 		}
+	}
+	
+	public void applyVisibilityOptions() {
+		pushFurfacesToControls();
+	}
+		
+	protected boolean getCellsVisible() {
+		return chckbxShowCells.isSelected(); 
+	}
+	
+	protected boolean getNoiseVisible() {
+		return chckbxShowNoise.isSelected(); 
 	}
 	
 }

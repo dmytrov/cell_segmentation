@@ -15,6 +15,7 @@ public class IndexMesh implements IRenderable {
 	public float shininess = 20.0f;
 	public int tag = 0;
 	public boolean selected = false;
+	public boolean visible = true;
 	
 	public IndexMesh() {		
 	}
@@ -27,6 +28,9 @@ public class IndexMesh implements IRenderable {
 	
 	@Override
 	public void render(GLAutoDrawable drawable) {
+		if (!visible) {
+			return;
+		}
 		GL gl = drawable.getGL();
 		gl.glBegin(GL.GL_TRIANGLES);
 		float[] colorAmbientCurrent = new float[4];

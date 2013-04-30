@@ -26,6 +26,8 @@ public interface IClassifyRegionsUIListener extends java.util.EventListener{
 	public class GetRegionByRayEventData {
 		public double[] ptRay;
 		public double[] vRay;
+		public boolean selectCells = true;
+		public boolean selectNoise = true;
 		public int kSelected = -1;
 	}
 	
