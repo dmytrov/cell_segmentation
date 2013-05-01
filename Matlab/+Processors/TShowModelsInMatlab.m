@@ -1,4 +1,4 @@
-classdef TShowModels < Core.TProcessor
+classdef TShowModelsInMatlab < Core.TProcessor
     properties (Constant = true)
         IN_MODELS = 1;
     end
@@ -8,7 +8,7 @@ classdef TShowModels < Core.TProcessor
     end
     
     methods (Access = public)
-        function this = TShowModels(name, pipeline)
+        function this = TShowModelsInMatlab(name, pipeline)
             this = this@Core.TProcessor(name, pipeline);
             this.Inputs = [Core.TInputPoint('Models', 'WEMesh List', this)];
             this.Outputs = [];

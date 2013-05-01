@@ -13,7 +13,7 @@ classdef TCreate3DModelsPipelineBuilder < Core.TPipelineBuilder
             calcConvergence = Processors.TCalcConvergence3D('Calculate convergence', res);
             classifyRegions = Processors.TClassifyRegions('Classify regions', res);
             estimateModels = Processors.TEstimateModels('Estimate models', res);
-            showModels = Processors.TShowModels('Show models', res);
+            showModels = Processors.TShowModelsInMatlab('Show models in matlab', res);
             save3D = Processors.TSave3DModelAndData('Save 3D models', res);
             
             res.AddProcessorsChain({loadTIFF, alignStack, calcConvergence});

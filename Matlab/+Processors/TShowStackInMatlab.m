@@ -1,4 +1,4 @@
-classdef TShowStack < Core.TProcessor
+classdef TShowStackInMatlab < Core.TProcessor
     properties (Constant = true)
         IN_STACK = 1;
     end
@@ -8,7 +8,7 @@ classdef TShowStack < Core.TProcessor
     end
     
     methods (Access = public)
-        function this = TShowStack(name, pipeline)
+        function this = TShowStackInMatlab(name, pipeline)
             this = this@Core.TProcessor(name, pipeline);
             this.Inputs = [Core.TInputPoint('Stack', 'Image Stack', this)];
             this.Outputs = [];

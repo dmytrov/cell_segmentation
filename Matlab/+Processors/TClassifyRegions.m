@@ -112,16 +112,18 @@ classdef TClassifyRegions < Core.TProcessor
             res = 0;
             distClosest = Inf;
             k = 1;
-            for region = this.Regions.RegionDesc
-                if (((region.Type == Segment3D.TRegionDesc.CELL) && bSelectCells) || ...
-                    ((region.Type ~= Segment3D.TRegionDesc.CELL) && bSelectNoise))
-                    [bHit, ptHit] = region.Surface.RayHit(ptRay, vRay);
-                    if (bHit && (norm(ptHit-ptRay) < distClosest))
-                        distClosest = norm(ptHit-ptRay);
-                        res = k;
+            if (~isempty(this.Regions))
+                for region = this.Regions.RegionDesc
+                    if (((region.Type == Segment3D.TRegionDesc.CELL) && bSelectCells) || ...
+                        ((region.Type ~= Segment3D.TRegionDesc.CELL) && bSelectNoise))
+                        [bHit, ptHit] = region.Surface.RayHit(ptRay, vRay);
+                        if (bHit && (norm(ptHit-ptRay) < distClosest))
+                            distClosest = norm(ptHit-ptRay);
+                            res = k;
+                        end
                     end
+                    k = k + 1;
                 end
-                k = k + 1;
             end
         end
         

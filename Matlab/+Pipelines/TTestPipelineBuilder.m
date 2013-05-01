@@ -8,7 +8,7 @@ classdef TTestPipelineBuilder < Core.TPipelineBuilder
             res = Core.TPipeline(this.Name);
             tiffReader = Processors.TLoadTIFF('Functional scan', res);
             tiffReader.FileName = '../Data/Q5 512.tif';
-            visualiser = Processors.TShowStack('Stack UI', res);
+            visualiser = Processors.TShowStackInMatlab('Stack UI in matlab', res);
             res.AddProcessorsChain({tiffReader, visualiser});
         end
     end
