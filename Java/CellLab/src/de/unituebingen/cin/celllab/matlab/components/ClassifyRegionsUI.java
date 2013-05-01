@@ -294,11 +294,11 @@ public class ClassifyRegionsUI extends ComponentUI {
 	}	
 	
 	public void onNewSurfaces() {
-		pushFurfacesToControls();		
+		pushSurfacesToControls();		
 		System.out.println("New surfaces received");
 	}
 	
-	public void pushFurfacesToControls() {
+	public void pushSurfacesToControls() {
 		// New surfaces data is available now
 		float[][] overlayColorFactor = new float[surfaces.size()+1][4];
 
@@ -391,7 +391,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 	}
 	
 	public void applyVisibilityOptions() {
-		pushFurfacesToControls();
+		pushSurfacesToControls();
 	}
 		
 	protected boolean getCellsVisible() {

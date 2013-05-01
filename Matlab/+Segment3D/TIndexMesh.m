@@ -98,7 +98,7 @@ classdef TIndexMesh < handle
             iVertex = 1;
             for k = 1:model.nFacets
                 nFacetEdges = size(model.lFacets(k).lEdges, 2);
-                edgeCurrent = obj.lFacets(k).lEdges(1);
+                edgeCurrent = model.lFacets(k).lEdges(1);
                 for k2 = 1:min(3, nFacetEdges)
                     if (~edgeCurrent.vertex.tag.index)
                         edgeCurrent.vertex.tag.index = iVertex;

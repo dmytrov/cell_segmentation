@@ -13,7 +13,9 @@ classdef TROIFrom3DModelsProjectionPipelineBuilder < Core.TPipelineBuilder
             calcConvergence = Processors.TCalcConvergence3D('Calculate convergence', res);
             classifyRegions = Processors.TClassifyRegions('Classify regions', res);
             estimateModels = Processors.TEstimateModels('Estimate models', res);
-            showModels = Processors.TShowModelsInMatlab('Show models in matlab', res);
+            showModelsInMatlab = Processors.TShowModelsInMatlab('Show models in matlab', res);
+            showModelsInJava = Processors.TShowModelsInJava('Show models in CellLab', res);
+            showStackAndModelsInMatlab = Processors.TShowStackAndModelsSectionsInMatlab('Show models sections', res);
             save3D = Processors.TSave3DModelAndData('Save 3D models', res);
             
             res.AddProcessorsChain({loadTIFF3D, alignStack3D, calcConvergence});
@@ -23,7 +25,8 @@ classdef TROIFrom3DModelsProjectionPipelineBuilder < Core.TPipelineBuilder
             
             res.ConnectPoints(estimateModels.InputByName('Stack'), alignStack3D.OutputByName('Stack'));
             res.ConnectPoints(estimateModels.InputByName('Regions'), classifyRegions.OutputByName('Regions'));
-            res.AddProcessorsChain({estimateModels, showModels}); 
+            res.AddProcessorsChain({estimateModels, showModelsInMatlab}); 
+            res.AddProcessorsChain({estimateModels, showModelsInJava}); 
             res.AddProcessorsChain({estimateModels, save3D});
             
             loadTIFFFunc = Processors.TLoadTIFF('Load functional scan', res);
@@ -37,6 +40,10 @@ classdef TROIFrom3DModelsProjectionPipelineBuilder < Core.TPipelineBuilder
             
             res.AddProcessorsChain({loadTIFFFunc, alignStackFunc});
             
+            res.ConnectPoints(showStackAndModelsInMatlab.InputByName('Stack'), alignStackFunc.OutputByName('Stack'));
+            res.ConnectPoints(showStackAndModelsInMatlab.InputByName('Models'), estimateModels.OutputByName('Models'));
+            res.AddComponent(showStackAndModelsInMatlab);
+
             res.ConnectPoints(make2DROI.InputByName('Models'), estimateModels.OutputByName('Models'));
             res.ConnectPoints(make2DROI.InputByName('Stack 3D'), alignStack3D.OutputByName('Stack'));
             res.ConnectPoints(make2DROI.InputByName('Stack functional'), alignStackFunc.OutputByName('Stack'));

@@ -30,6 +30,7 @@ import de.unituebingen.cin.celllab.matlab.MatlabConnector;
 import de.unituebingen.cin.celllab.matlab.components.ClassifyRegionsUI;
 import de.unituebingen.cin.celllab.matlab.components.EditROIUI;
 import de.unituebingen.cin.celllab.matlab.components.LoadTIFFUI;
+import de.unituebingen.cin.celllab.matlab.components.ShowModelsUI;
 
 public class Application {
 	protected MatlabConnector matlab = new MatlabConnector();
@@ -48,6 +49,7 @@ public class Application {
 		componentsBridge.registerComponentUI("Processors.TLoadTIFF", LoadTIFFUI.class);
 		componentsBridge.registerComponentUI("Processors.TClassifyRegions", ClassifyRegionsUI.class);
 		componentsBridge.registerComponentUI("Processors.TEdit2DROI", EditROIUI.class);
+		componentsBridge.registerComponentUI("Processors.TShowModelsInJava", ShowModelsUI.class);
 		
 		componentsDesc = new GetComponentsEventData();
 		cellLabUI = new CellLabUI();
