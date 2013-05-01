@@ -39,6 +39,7 @@ classdef TCreate3DModelsPipelineBuilder < Core.TPipelineBuilder
             calcConvergence.Settings = settings;
             classifyRegions.Settings = settings;
             estimateModels.Settings = settings;
+            alignStack.Settings = settings;
             showStackAndModelsInMatlab.Settings = settings;
         end
     end

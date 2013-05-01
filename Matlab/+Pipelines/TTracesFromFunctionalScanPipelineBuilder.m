@@ -28,7 +28,10 @@ classdef TTracesFromFunctionalScanPipelineBuilder < Core.TPipelineBuilder
             
             res.ConnectPoints(saveTraces.InputByName('Traces'), extractTraces.OutputByName('Traces'));
             res.ConnectPoints(saveTraces.InputByName('ROI'), edit2DROI.OutputByName('ROI'));
-            res.AddComponent(saveTraces);            
+            res.AddComponent(saveTraces);   
+            
+            settings = Segment3D.TSettings();
+            alignStack.Settings = settings;
         end
     end
 end

@@ -31,14 +31,13 @@ classdef TSettings
         
         TesselationLevel;   % number of subdivision for tesselation. Each subdivision increases number of faces 4 times
         
-        % Ray parameters
+        % Ray parameters for final cell model estimations
         RayRadius;          % micron
         RayStep;            % micron
         RayKernelVariance;  % micron
         
+        % Priors and parameters for final cell model estimations
         BoundaryEstimationIterations;
-        
-        % Prior distributions
         RadiusPrior;            % radius, micron
         CurvaturePrior;         % distance from plane formed by surrounding vertices, micron
         
@@ -46,7 +45,10 @@ classdef TSettings
         %BoundaryIntensityPrior; % relative to max/conter of the cell
         %IsosurfacePrior;        % relative to mean lateral boundary intensity
         
-        FrameRate;
+        FrameRate; % functional scan aquisition frame rate
+        
+        % Other parameters
+        EnableStackAlignment;
     end
     
     methods (Access = public)
@@ -101,6 +103,8 @@ classdef TSettings
             %     Bayesian.TGaussianPrior(1, 0.1);
             
             obj.FrameRate = 1000/128;
+            
+            obj.EnableStackAlignment = 0;
         end
         
         %------------------------------------------------------------------
