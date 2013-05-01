@@ -7,6 +7,8 @@ import de.unituebingen.cin.celllab.matlab.ComponentUI;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+
 import de.unituebingen.cin.celllab.opengl.Controller;
 import de.unituebingen.cin.celllab.opengl.DoubleBufferGLJPanel;
 import de.unituebingen.cin.celllab.opengl.IndexMesh;
@@ -86,7 +88,14 @@ public class ShowModelsUI extends ComponentUI {
 			scene3D.renderables.clear();
 			scene3D.renderables.addAll(surfaces);
 		}
-		doubleBufferGLJPanel.repaint();
+		repaintOpenGLControl();		
 	}
 	
+	protected void repaintOpenGLControl() {
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    	doubleBufferGLJPanel.repaint();		      
+		    }
+		});
+	}
 }

@@ -39,6 +39,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JSlider;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
+import javax.swing.SwingUtilities;
 
 public class ClassifyRegionsUI extends ComponentUI {
 	public class RegionType {
@@ -73,12 +74,12 @@ public class ClassifyRegionsUI extends ComponentUI {
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
 		sliderConvergenceThreshold = new JSlider();
-		sliderConvergenceThreshold.setMaximum(70);
-		sliderConvergenceThreshold.setMinimum(30);
+		sliderConvergenceThreshold.setMaximum(60);
+		sliderConvergenceThreshold.setMinimum(40);
 		sliderConvergenceThreshold.setPaintTicks(true);
 		sliderConvergenceThreshold.setPaintLabels(true);
-		sliderConvergenceThreshold.setMinorTickSpacing(10);
-		sliderConvergenceThreshold.setMajorTickSpacing(10);
+		sliderConvergenceThreshold.setMinorTickSpacing(1);
+		sliderConvergenceThreshold.setMajorTickSpacing(5);
 		panel_1.add(sliderConvergenceThreshold);
 		
 		lblMinVolume = new JLabel("Min cell volume, micron^3:");
@@ -322,7 +323,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 			scene3D.renderables.clear();
 			scene3D.renderables.addAll(surfaces);
 		}
-		doubleBufferGLJPanel.repaint();
+		repaintOpenGLControl();
 		
 		stackViewerPanel.setStack(stack);
 		stackViewerPanel.setOverlay(overlay);
@@ -362,7 +363,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 				@Override
 				public void onHandled(GetRegionByRayEventData data) {
 					setSelectedRegionID(data.kSelected);					
-					doubleBufferGLJPanel.repaint();
+					repaintOpenGLControl();
 				}
 			}));
 		}
@@ -402,4 +403,11 @@ public class ClassifyRegionsUI extends ComponentUI {
 		return chckbxShowNoise.isSelected(); 
 	}
 	
+	protected void repaintOpenGLControl() {
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    	doubleBufferGLJPanel.repaint();		      
+		    }
+		});
+	}
 }
