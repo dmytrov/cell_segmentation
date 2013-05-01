@@ -157,7 +157,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 		panel.add(chckbxShowNoise, "cell 0 12");
 		
 		splitPane_1 = new JSplitPane();
-		splitPane_1.setResizeWeight(0.65);
+		splitPane_1.setResizeWeight(1.0);
 		splitPane.setRightComponent(splitPane_1);
 		
 		doubleBufferGLJPanel = new DoubleBufferGLJPanel();
@@ -201,7 +201,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 	@Override
 	public ComponentParameters getParameters() {
 		ClassifyRegionsUIParameters params = new ClassifyRegionsUIParameters();
-		params.convergenceThreshold = (double)sliderConvergenceThreshold.getValue() / sliderConvergenceThreshold.getMaximum();
+		params.convergenceThreshold = (double)sliderConvergenceThreshold.getValue() / 100;
 		params.minCellVolume = (double)sliderMinCellVolume.getValue();
 		return params;		
 	}
@@ -209,7 +209,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 	@Override
 	public void setParameters(ComponentParameters parameters) {
 		ClassifyRegionsUIParameters params = (ClassifyRegionsUIParameters)parameters;
-		sliderConvergenceThreshold.setValue((int)(params.convergenceThreshold * sliderConvergenceThreshold.getMaximum()));
+		sliderConvergenceThreshold.setValue((int)(params.convergenceThreshold * 100));
 		sliderMinCellVolume.setValue((int)params.minCellVolume);
 	}
 	

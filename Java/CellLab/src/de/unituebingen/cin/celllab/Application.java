@@ -211,6 +211,7 @@ public class Application {
 		
 		if (getCurrentComponentDesc() != desc) {
 			setComponentParameters(getCurrentComponentDesc(), currentUI); // flush current component parameters before reopening new
+			bindComponentListener(getCurrentComponentDesc(), null); // unbind current UI
 			openComponentUI(desc);
 			updatePipelinePanel();
 		}

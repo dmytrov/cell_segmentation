@@ -13,10 +13,18 @@ classdef TShowModelsInJava < Core.TProcessor
         function BindJavaUI(this, ui)
             BindJavaUI@Core.TComponent(this, ui);
             this.PushModelsDataToUI();
-            this.ExternalUI.onNewSurfaces();
+        end
+        
+        function Run(this)
+            Run@Core.TProcessor(this);
+            this.PushModelsDataToUI();
         end
         
         function PushModelsDataToUI(this)
+            if (isempty(this.ExternalUI))
+                return;
+            end
+            
             this.ExternalUI.surfaces.clear();
             models = this.Inputs(this.IN_MODELS).PullData();            
             if (isempty(models))
@@ -40,6 +48,7 @@ classdef TShowModelsInJava < Core.TProcessor
                 fprintf('done\n');
                 k = k + 1;
             end            
+            this.ExternalUI.onNewSurfaces();
         end
     end    
 end

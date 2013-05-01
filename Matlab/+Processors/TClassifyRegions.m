@@ -42,13 +42,15 @@ classdef TClassifyRegions < Core.TProcessor
         
         function BindJavaUI(this, ui)
             BindJavaUI@Core.TComponent(this, ui);
-            set(this.ExternalUI, 'AutoClassifyCallback', @(h, e)(OnAutoClassify(this, h, e)));
-            set(this.ExternalUI, 'GetRegionByRayCallback', @(h, e)(OnGetRegionByRay(this, h, e)));
-            set(this.ExternalUI, 'MarkRegionCallback', @(h, e)(OnMarkRegion(this, h, e)));            
-            set(this.ExternalUI, 'DeleteRegionCallback', @(h, e)(OnDeleteRegion(this, h, e)));            
-            set(this.ExternalUI, 'CutRegionCallback', @(h, e)(OnCutRegion(this, h, e)));            
-            this.PushRegionsDataToUI();
-            this.ExternalUI.onNewSurfaces();
+            if (~isempty(this.ExternalUI))
+                set(this.ExternalUI, 'AutoClassifyCallback', @(h, e)(OnAutoClassify(this, h, e)));
+                set(this.ExternalUI, 'GetRegionByRayCallback', @(h, e)(OnGetRegionByRay(this, h, e)));
+                set(this.ExternalUI, 'MarkRegionCallback', @(h, e)(OnMarkRegion(this, h, e)));            
+                set(this.ExternalUI, 'DeleteRegionCallback', @(h, e)(OnDeleteRegion(this, h, e)));            
+                set(this.ExternalUI, 'CutRegionCallback', @(h, e)(OnCutRegion(this, h, e)));            
+                this.PushRegionsDataToUI();
+                this.ExternalUI.onNewSurfaces();
+            end
         end
         
         function OnAutoClassify(this, sender, event)
