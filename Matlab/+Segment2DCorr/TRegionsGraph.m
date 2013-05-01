@@ -4,9 +4,9 @@ classdef TRegionsGraph < handle
     
     properties (Access = protected)
         pStack;         % ImageUtils.TImageStack        
-        lRegions;       % Segment2D.TRegion
+        lRegions;       % Segment2DCorr.TRegion
         %nLinks;         % number of links
-        lLinks;         % Segment2D.TLink
+        lLinks;         % Segment2DCorr.TLink
         LikelihoodFunction; % likelihood provider
 	end
     
@@ -17,29 +17,29 @@ classdef TRegionsGraph < handle
             [sx, sy, sz] = size(this.pStack.Data);
 
             % Construct the full grid of regions
-            aRegions = Segment2D.TRegion.empty;
-            aRegions(sx, sy) = Segment2D.TRegion();                        
+            aRegions = Segment2DCorr.TRegion.empty;
+            aRegions(sx, sy) = Segment2DCorr.TRegion();                        
             for k1 = 1:sx
                 for k2 = 1:sy
-                    aRegions(k1, k2) = Segment2D.TRegion(this.pStack, this.LikelihoodFunction, [k1, k2]');
+                    aRegions(k1, k2) = Segment2DCorr.TRegion(this.pStack, this.LikelihoodFunction, [k1, k2]');
                 end
             end
             
             % Link the regions into a grid
             this.lLinks = Utils.TDLList();
-            %this.lLinks(2*sx*sy - sx - sy) = Segment2D.TLink();
+            %this.lLinks(2*sx*sy - sx - sy) = Segment2DCorr.TLink();
             %this.nLinks = 0;
             for k1 = 1:sx-1
                 for k2 = 1:sy-1
-                    this.AddLink(Segment2D.TLink(this.LikelihoodFunction, aRegions(k1, k2), aRegions(k1+1, k2)));
-                    this.AddLink(Segment2D.TLink(this.LikelihoodFunction, aRegions(k1, k2), aRegions(k1, k2+1)));
+                    this.AddLink(Segment2DCorr.TLink(this.LikelihoodFunction, aRegions(k1, k2), aRegions(k1+1, k2)));
+                    this.AddLink(Segment2DCorr.TLink(this.LikelihoodFunction, aRegions(k1, k2), aRegions(k1, k2+1)));
                 end
             end
             for k1 = 1:sx-1
-                this.AddLink(Segment2D.TLink(this.LikelihoodFunction, aRegions(k1, sy), aRegions(k1+1, sy)));
+                this.AddLink(Segment2DCorr.TLink(this.LikelihoodFunction, aRegions(k1, sy), aRegions(k1+1, sy)));
             end
             for k2 = 1:sy-1
-                this.AddLink(Segment2D.TLink(this.LikelihoodFunction, aRegions(sx, k2), aRegions(sx, k2+1)));
+                this.AddLink(Segment2DCorr.TLink(this.LikelihoodFunction, aRegions(sx, k2), aRegions(sx, k2+1)));
             end
                         
             this.lRegions = aRegions(:)';
@@ -67,7 +67,7 @@ classdef TRegionsGraph < handle
                     linkToMerge = this.lLinks.ByIndex(kMax);
                     regionToMerge1 = linkToMerge.Region1;
                     regionToMerge2 = linkToMerge.Region2;
-                    regionMerged = Segment2D.TRegion(this.pStack, this.LikelihoodFunction, ...
+                    regionMerged = Segment2DCorr.TRegion(this.pStack, this.LikelihoodFunction, ...
                         [regionToMerge1.CorrMatrix.Pixels, regionToMerge2.CorrMatrix.Pixels]);
                     links12 = unique([regionToMerge1.Links, regionToMerge2.Links]);
                     neighbRegions = [];
@@ -84,7 +84,7 @@ classdef TRegionsGraph < handle
                     % Add new links and regions
                     this.lRegions = [this.lRegions, regionMerged];
                     for kRegion = neighbRegions
-                        this.AddLink(Segment2D.TLink(this.LikelihoodFunction, kRegion, regionMerged));
+                        this.AddLink(Segment2DCorr.TLink(this.LikelihoodFunction, kRegion, regionMerged));
                     end
                 else
                     bFinished = 1;

@@ -66,8 +66,8 @@ clear imStack;
 clear likelihoodFunction;
 clear regionsGraph;
 imStack = ImageUtils.TImageStack(scanAlignedFilteredChunk);
-likelihoodFunction = Segment2D.TRegionLikelihood();
-regionsGraph = Segment2D.TRegionsGraph(imStack, likelihoodFunction);
+likelihoodFunction = Segment2DCorr.TRegionLikelihood();
+regionsGraph = Segment2DCorr.TRegionsGraph(imStack, likelihoodFunction);
 
 clustering = regionsGraph.DoClustering();
 viewerClustering = UI.StackViewer(clustering);
@@ -79,22 +79,7 @@ viewerClustering = UI.StackViewer(clustering);
 %%
 clustersFinal = regionsGraph.BuildMap();
 minRegionSize = 5;
-nRegions = max(clustersFinal(:));
-lRegionSize = zeros(1, nRegions);
-for k = clustersFinal(:)'
-    lRegionSize(k) = lRegionSize(k) + 1;
-end
-newIDs = zeros(1, nRegions);
-n = 1;
-for k = 1:nRegions
-    if (lRegionSize(k) >= minRegionSize)
-        newIDs(k) = n;
-        n = n + 1;
-    end
-end
-for k = 1:length(clustersFinal(:))
-    clustersFinal(k) = newIDs(clustersFinal(k));
-end
+clustersFinal = ImageUtils.RemoveRegionsByMinSize(clustersFinal, minRegionSize);
 clustersFinalViewer = UI.StackViewer(clustersFinal);
 
 
