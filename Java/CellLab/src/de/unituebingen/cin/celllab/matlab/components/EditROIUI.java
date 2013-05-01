@@ -36,6 +36,7 @@ public class EditROIUI extends ComponentUI {
 	public JButton btnAuto;
 	public JCheckBox chckbxShowRoiOverlay;
 	public JLabel label;
+	public JButton btnDeleteAll;
 	
 	@Override
 	public ComponentParameters getParameters() {
@@ -60,7 +61,7 @@ public class EditROIUI extends ComponentUI {
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
-		panel.setLayout(new MigLayout("", "[]", "[][][][][][]"));
+		panel.setLayout(new MigLayout("", "[]", "[][][][][][][]"));
 		
 		btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
@@ -101,10 +102,18 @@ public class EditROIUI extends ComponentUI {
 			}
 		});
 		
+		btnDeleteAll = new JButton("Delete all");
+		btnDeleteAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editor.clearMap();
+			}
+		});
+		panel.add(btnDeleteAll, "cell 0 4,growx");
+		
 		label = new JLabel("Visibility options:");
-		panel.add(label, "cell 0 4");
+		panel.add(label, "cell 0 5");
 		chckbxShowRoiOverlay.setSelected(true);
-		panel.add(chckbxShowRoiOverlay, "cell 0 5");
+		panel.add(chckbxShowRoiOverlay, "cell 0 6");
 		
 		panel_1 = new JPanel();
 		splitPane.setRightComponent(panel_1);

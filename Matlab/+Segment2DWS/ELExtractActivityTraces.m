@@ -12,7 +12,7 @@ function res = ELExtractActivityTraces(scan, ROI)
             end
         end
     end
-    for cID = 1:clusterSize
+    for cID = 1:nClusters
         res(:, cID) = res(:, cID) ./ clusterSize(cID);
     end
 end

@@ -29,6 +29,7 @@ classdef TEdit2DROI < Core.TProcessor
         
         function SetParameters(this, params)
             this.ROI = params.map; 
+            this.ROI = ImageUtils.RemoveRegionsByMinSize(this.ROI, 1);
             this.Outputs(this.OUT_ROI).PushData(this.ROI);
         end
         

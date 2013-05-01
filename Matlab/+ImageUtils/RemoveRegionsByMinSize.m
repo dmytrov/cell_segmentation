@@ -1,9 +1,12 @@
 function res = RemoveRegionsByMinSize(img, minRegionSize)
     res = img;
+    res(res < 0) = 0;
     nRegions = max(res(:));
     lRegionSize = zeros(1, nRegions);
     for k = res(:)'
-        lRegionSize(k) = lRegionSize(k) + 1;
+        if (k > 0)
+            lRegionSize(k) = lRegionSize(k) + 1;
+        end
     end
     newIDs = zeros(1, nRegions);
     n = 1;
@@ -14,6 +17,8 @@ function res = RemoveRegionsByMinSize(img, minRegionSize)
         end
     end
     for k = 1:length(res(:))
-        res(k) = newIDs(res(k));
+        if (res(k) > 0)
+            res(k) = newIDs(res(k));
+        end
     end
 end

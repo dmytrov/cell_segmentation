@@ -64,7 +64,18 @@ public class JROIEditor extends JComponent {
 	public synchronized void setMap(int[][] m) {
 		map = matrixCopy(m);
 		repaint();
-		revalidate();
+		//revalidate();
+	}
+	
+	public void clearMap() {
+		int sx = map.length;
+		int sy = map[0].length;
+		for (int x = 0; x < sx; x++) {
+			for (int y = 0; y < sy; y++) {
+				map[x][y] = 0; 
+			}
+		}
+		repaint();
 	}
 	
 	protected synchronized BufferedImage makeImage() {
@@ -97,17 +108,18 @@ public class JROIEditor extends JComponent {
 			return res;
 		}
 		// Draw ROI overlay
-		iArray[0] = 0;
-		iArray[1] = 255;
-		iArray[2] = 0;
+		int[] iArrayEdge = new int[] {0, 255, 0};
+		int[] iArraySelected = new int[] {255, 0, 0};
 		for (int x = 0; x < sx; x++) {
 			for (int y = 0; y < sy; y++) {
 				if ((x < sx-1) && (map[x][y] != map[x+1][y])) {
+					iArray = ((map[x][y] == currentMarker) || (map[x+1][y] == currentMarker) ? iArraySelected : iArrayEdge);
 					for (int k = 0; k < scaleY; k++) {
 						raster.setPixel(scaleX*(x+1), scaleY*y+k, iArray);
 					}
 				}
 				if ((y < sy-1) && (map[x][y] != map[x][y+1])) {
+					iArray = ((map[x][y] == currentMarker) || (map[x][y+1] == currentMarker) ? iArraySelected : iArrayEdge);
 					for (int k = 0; k < scaleX; k++) {
 						raster.setPixel(scaleX*(x)+k, scaleY*(y+1), iArray);
 					}
@@ -187,8 +199,10 @@ public class JROIEditor extends JComponent {
 			case Edit:
 				if (e.getID() == MouseEvent.MOUSE_PRESSED) {
 					currentMarker = getSelectedID(e);
+					repaint();
 				} else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
 					currentMarker = -1;
+					repaint();
 				}
 				break;
 			case Add:
