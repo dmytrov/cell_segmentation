@@ -31,7 +31,7 @@ classdef TTracesFromFunctionalScanPipelineBuilder < Core.TPipelineBuilder
             res.AddComponent(saveTraces);   
             
             settings = Segment3D.TSettings();
-            alignStack.Settings = settings;
+            alignStack.Enabled = settings.EnableFunctionalStackAlignment;
         end
     end
 end

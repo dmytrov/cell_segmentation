@@ -5,9 +5,9 @@ classdef TAlignStack < Core.TProcessor
     end
     
     properties (Access = public)
-        Settings;
         Mode = 'CONTINUOUS';
         StartSlice = 2;
+        Enabled = 1;
     end
     
     methods (Access = public)
@@ -20,7 +20,7 @@ classdef TAlignStack < Core.TProcessor
         function Run(this)
             Run@Core.TProcessor(this);            
             stack = this.Inputs(this.IN_STACK).PullData();
-            if (isempty(this.Settings) || (this.Settings.EnableStackAlignment))
+            if (this.Enabled)
                 stackAligned = ImageUtils.AlignSlices(stack, this.Mode, this.StartSlice, this.Pipeline.MessageLog);
             else
                 stackAligned = stack;

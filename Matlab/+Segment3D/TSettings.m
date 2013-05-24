@@ -48,7 +48,8 @@ classdef TSettings
         FrameRate; % functional scan aquisition frame rate
         
         % Other parameters
-        EnableStackAlignment;
+        EnableFunctionalStackAlignment;
+        EnableMorphologyStackAlignment;
     end
     
     methods (Access = public)
@@ -66,6 +67,7 @@ classdef TSettings
             obj.InvAnisotropy = 1./obj.Anisotropy;
             
             obj.ConvergenceBlurVariance = [2, 2, 0.1]';
+            %obj.ConvergenceKernelVariance = [radius, radius, radius]' / 2.5;
             obj.ConvergenceKernelVariance = [radius, radius, radius]' / 3.5;
             obj.ConvergenceThreshold = 0.5;
             
@@ -104,7 +106,8 @@ classdef TSettings
             
             obj.FrameRate = 1000/128;
             
-            obj.EnableStackAlignment = 0;
+            obj.EnableFunctionalStackAlignment = 1;
+            obj.EnableMorphologyStackAlignment = 0;
         end
         
         %------------------------------------------------------------------

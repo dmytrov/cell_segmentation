@@ -66,8 +66,8 @@ classdef TROIFrom3DModelsPipelineBuilder < Core.TPipelineBuilder
             calcConvergence.Settings = settings;
             classifyRegions.Settings = settings;
             estimateModels.Settings = settings;
-            alignStack3D.Settings = settings;
-            alignStackFunc.Settings = settings;
+            alignStack3D.Enabled = settings.EnableMorphologyStackAlignment;
+            alignStackFunc.Enabled = settings.EnableFunctionalStackAlignment;
             make2DROI.Settings = settings;
         end
     end
