@@ -11,9 +11,10 @@ classdef StackRegressor < handle
         function obj = StackRegressor(stack)
             obj.stack = stack; 
         end
-    end
-    
-    methods (Abstract)
-        res = Value(obj, pt)
+
+        function res = Value(obj, pt)
+	   % dummy function for compatibility with old matlab versions
+	   res = 0;
+	end
     end    
 end

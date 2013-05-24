@@ -8,7 +8,10 @@ classdef (Abstract) TPrior < handle
             % nothing to initialize here
         end
     end
-    methods (Abstract, Access = public)
-        ValueAt(obj, x);
+    methods (Access = public)
+        function res = ValueAt(obj, x)
+	   % dummy function for compatibility with old matlab versions
+	   res = 0;
+	end
     end
 end
