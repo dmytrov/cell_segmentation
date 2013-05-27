@@ -29,6 +29,7 @@ public class JStackViewerPanel extends JPanel {
 	public int[] slicePosition = new int[] {0, 0, 0};
 	public JSlider sliderMaxIntensity;
 	public JLabel lblMaxIntensity;
+	public JLabel lblMaxIntensityIndication;
 
 	public JStackViewerPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -94,15 +95,21 @@ public class JStackViewerPanel extends JPanel {
 		panel.add(lblMaxIntensity, "cell 0 1 3 1,alignx right");
 		
 		sliderMaxIntensity = new JSlider();
-		sliderMaxIntensity.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				stackViewer.setMaxIntensity(sliderMaxIntensity.getValue());
-			}
-		});
 		sliderMaxIntensity.setValue(32);
 		sliderMaxIntensity.setMinimum(1);
 		sliderMaxIntensity.setMaximum(255);
 		panel.add(sliderMaxIntensity, "cell 3 1,growx");
+		
+		lblMaxIntensityIndication = new JLabel("0/0");
+		panel.add(lblMaxIntensityIndication, "cell 4 1,alignx right");
+
+		sliderMaxIntensity.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				int newMaxIntensity = sliderMaxIntensity.getValue();
+				stackViewer.setMaxIntensity(newMaxIntensity);				
+				lblMaxIntensityIndication.setText(Integer.toString(newMaxIntensity) + "/" + Integer.toString(sliderMaxIntensity.getMaximum()));
+			}
+		});
 
 		this.revalidate();		
 	}
@@ -129,6 +136,16 @@ public class JStackViewerPanel extends JPanel {
 		stackViewer.setSlice(slicePosition[stackViewer.getAxis().ordinal()]);
 		sliderSlice.setMinimum(0);
 		sliderSlice.setMaximum(stackSize[stackViewer.getAxis().ordinal()]-1);
+		
+		int stackMax = 1;
+		for (int k1 = 0; k1 < stackSize[0]; k1++) {
+			for (int k2 = 0; k2 < stackSize[1]; k2++) {
+				for (int k3 = 0; k3 < stackSize[2]; k3++) {
+					stackMax = Math.max(stackMax, stack[k1][k2][k3]);
+				}
+			}
+		}			
+		sliderMaxIntensity.setMaximum(stackMax);		
 	}
 	
 	public int[][][] getOverlay() {
