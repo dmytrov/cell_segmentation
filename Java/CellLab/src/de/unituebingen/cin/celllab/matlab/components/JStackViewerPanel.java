@@ -132,20 +132,32 @@ public class JStackViewerPanel extends JPanel {
 		for (int k = 0; k < 3; k++) {
 			slicePosition[k] = Math.min(slicePosition[k], stackSize[k]);
 		}
-		stackViewer.setStack(stack);
-		stackViewer.setSlice(slicePosition[stackViewer.getAxis().ordinal()]);
-		sliderSlice.setMinimum(0);
-		sliderSlice.setMaximum(stackSize[stackViewer.getAxis().ordinal()]-1);
+		
+		int stackMin = Integer.MAX_VALUE;
+		for (int k1 = 0; k1 < stackSize[0]; k1++) {
+			for (int k2 = 0; k2 < stackSize[1]; k2++) {
+				for (int k3 = 0; k3 < stackSize[2]; k3++) {
+					stackMin = Math.min(stackMin, stack[k1][k2][k3]);
+				}
+			}
+		}
 		
 		int stackMax = 1;
 		for (int k1 = 0; k1 < stackSize[0]; k1++) {
 			for (int k2 = 0; k2 < stackSize[1]; k2++) {
 				for (int k3 = 0; k3 < stackSize[2]; k3++) {
+					stack[k1][k2][k3] -= stackMin;
 					stackMax = Math.max(stackMax, stack[k1][k2][k3]);
 				}
 			}
-		}			
-		sliderMaxIntensity.setMaximum(stackMax);		
+		}
+		
+		stackViewer.setStack(stack);
+		stackViewer.setSlice(slicePosition[stackViewer.getAxis().ordinal()]);
+		sliderSlice.setMinimum(0);
+		sliderSlice.setMaximum(stackSize[stackViewer.getAxis().ordinal()]-1);
+		sliderMaxIntensity.setMaximum(stackMax);
+		sliderMaxIntensity.setValue(stackMax);
 	}
 	
 	public int[][][] getOverlay() {
