@@ -1,5 +1,6 @@
 package de.unituebingen.cin.celllab.matlab.components;
 
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 
 import javax.media.opengl.GL;
@@ -71,7 +72,8 @@ public class ClassifyRegionsSceneLayer3D extends SceneLayer3D{
 		switch (mode) {
 		case Select:
 			if (ui != null) {
-				ui.getRegionByRay(ptViewLocal, vViewLocal);
+				boolean bAddRegion = (event.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK;
+				ui.getRegionByRay(ptViewLocal, vViewLocal, bAddRegion);
 			}
 			break;
 		case Cut:

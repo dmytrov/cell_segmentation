@@ -17,6 +17,9 @@ import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MarkRegionEvent;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MarkRegionEventData;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MarkRegionResultHandler;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MergeRegionsEvent;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MergeRegionsEventData;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MergeRegionsResultHandler;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -64,7 +67,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
-		panel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][][][][][][]"));
 		
 		lblConvergenceThreshold = new JLabel("Convergence threshold, % max:");
 		panel.add(lblConvergenceThreshold, "cell 0 0");
@@ -132,20 +135,13 @@ public class ClassifyRegionsUI extends ComponentUI {
 			}
 		});
 		
-		btnDeleteRegion = new JButton("Delete region");
-		panel.add(btnDeleteRegion, "cell 0 9,growx");
-		
-		lblVisibilityOptions = new JLabel("Visibility options:");
-		panel.add(lblVisibilityOptions, "cell 0 10");
-		
-		chckbxShowCells = new JCheckBox("Show cells regions");
-		chckbxShowCells.setSelected(true);
-		chckbxShowCells.addActionListener(new ActionListener() {
+		btnResetRotation = new JButton("Reset rotation");
+		btnResetRotation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				applyVisibilityOptions();
+				sceneMouseRot.transform.rotation.setIdentity();
+				repaintOpenGLControl();
 			}
 		});
-		panel.add(chckbxShowCells, "cell 0 11");
 		
 		chckbxShowNoise = new JCheckBox("Show noise regions");
 		chckbxShowNoise.setSelected(true);
@@ -154,16 +150,36 @@ public class ClassifyRegionsUI extends ComponentUI {
 				applyVisibilityOptions();
 			}
 		});
-		panel.add(chckbxShowNoise, "cell 0 12");
 		
-		btnResetRotation = new JButton("Reset rotation");
-		btnResetRotation.addActionListener(new ActionListener() {
+		chckbxShowCells = new JCheckBox("Show cells regions");
+		chckbxShowCells.setSelected(true);
+		chckbxShowCells.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sceneMouseRot.transform.rotation.setIdentity();
-				repaintOpenGLControl();
+				applyVisibilityOptions();
 			}
 		});
-		panel.add(btnResetRotation, "cell 0 13,growx");
+		
+		btnMergeRegions = new JButton("Merge regions");
+		btnMergeRegions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mergeCurrentRegions();
+			}
+		});
+		panel.add(btnMergeRegions, "cell 0 9,growx");
+		
+		btnDeleteRegion = new JButton("Delete region");
+		panel.add(btnDeleteRegion, "cell 0 10,growx");
+		btnDeleteRegion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				deleteCurrentRegion();
+			}
+		});
+		
+		lblVisibilityOptions = new JLabel("Visibility options:");
+		panel.add(lblVisibilityOptions, "cell 0 11");
+		panel.add(chckbxShowCells, "cell 0 12");
+		panel.add(chckbxShowNoise, "cell 0 13");
+		panel.add(btnResetRotation, "cell 0 14,growx");
 		
 		splitPane_1 = new JSplitPane();
 		splitPane_1.setResizeWeight(1.0);
@@ -174,11 +190,6 @@ public class ClassifyRegionsUI extends ComponentUI {
 		
 		stackViewerPanel = new JStackViewerPanel();
 		splitPane_1.setRightComponent(stackViewerPanel);
-		btnDeleteRegion.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				deleteCurrentRegion();
-			}
-		});
 		splitPane.setDividerLocation(170);
 		
 		build3DScene();
@@ -243,6 +254,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 	public JCheckBox chckbxShowCells;
 	public JCheckBox chckbxShowNoise;
 	public JButton btnResetRotation;
+	public JButton btnMergeRegions;
 		
 	// Add an event subscription. Used by matlab
 	public synchronized void addIClassifyRegionsUIListener(IClassifyRegionsUIListener lis) {
@@ -283,6 +295,22 @@ public class ClassifyRegionsUI extends ComponentUI {
 				public void onInit(MarkRegionEventData data) {
 					data.regionID = kSelected;
 					data.newMark = marker;
+				}
+			}));
+		}
+	}
+	
+	public void mergeCurrentRegions() {
+		if (listeners.isEmpty()) {
+			return;
+		}
+		final int[] selectedRegions = getSelectedRegionsID();
+		if (selectedRegions.length >=0) {
+			listeners.firstElement().mergeRegions(new MergeRegionsEvent(this, 
+					new MergeRegionsResultHandler(){
+				@Override
+				public void onInit(MergeRegionsEventData data) {
+					data.regionIDs = selectedRegions;
 				}
 			}));
 		}
@@ -341,15 +369,17 @@ public class ClassifyRegionsUI extends ComponentUI {
 		stackViewerPanel.setOverlayColorFactor(overlayColorFactor);
 	}
 	
-	public void setSelectedRegionID(int kSelected) {
-		for (IndexMesh surface : surfaces) {
-			surface.selected = false;
+	public void setSelectedRegionID(int kSelected, boolean bAddRegion) {
+		if (!bAddRegion) {
+			for (IndexMesh surface : surfaces) {
+				surface.selected = false;
+			}
 		}
 		if ((kSelected >= 0) && (kSelected < surfaces.size())) {
 			surfaces.get(kSelected).selected = true;
-		}
-		
+		}		
 	}
+	
 	public int getSelectedRegionID() {
 		for (int k = 0; k<surfaces.size(); k++) {
 			if (surfaces.get(k).selected) {
@@ -359,7 +389,25 @@ public class ClassifyRegionsUI extends ComponentUI {
 		return -1;
 	}
 	
-	public void getRegionByRay(final Vector3d ptRay, final Vector3d vRay) {
+	public int[] getSelectedRegionsID() {
+		int n = 0;
+		for (int k = 0; k<surfaces.size(); k++) {
+			if (surfaces.get(k).selected) {
+				n++;
+			}
+		}
+		int[] IDs = new int[n];
+		int i = 0;
+		for (int k = 0; k<surfaces.size(); k++) {
+			if (surfaces.get(k).selected) {
+				IDs[i] = k;
+				i++;
+			}
+		}
+		return IDs;
+	}
+	
+	public void getRegionByRay(final Vector3d ptRay, final Vector3d vRay, final boolean bAddRegion) {
 		if (!listeners.isEmpty()) {
 			listeners.firstElement().getRegionByRay(new GetRegionByRayEvent(this, 
 					new GetRegionByRayResultHandler(){
@@ -372,7 +420,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 				}
 				@Override
 				public void onHandled(GetRegionByRayEventData data) {
-					setSelectedRegionID(data.kSelected);					
+					setSelectedRegionID(data.kSelected, bAddRegion);					
 					repaintOpenGLControl();
 				}
 			}));

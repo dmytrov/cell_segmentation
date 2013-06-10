@@ -48,6 +48,7 @@ classdef TClassifyRegions < Core.TProcessor
                 set(this.ExternalUI, 'MarkRegionCallback', @(h, e)(OnMarkRegion(this, h, e)));            
                 set(this.ExternalUI, 'DeleteRegionCallback', @(h, e)(OnDeleteRegion(this, h, e)));            
                 set(this.ExternalUI, 'CutRegionCallback', @(h, e)(OnCutRegion(this, h, e)));            
+                set(this.ExternalUI, 'MergeRegionsCallback', @(h, e)(OnMergeRegions(this, h, e)));            
                 this.PushRegionsDataToUI();
                 this.ExternalUI.onNewSurfaces();
             end
@@ -105,6 +106,28 @@ classdef TClassifyRegions < Core.TProcessor
                 end
             end
            
+            this.PushRegionsDataToUI();
+            this.ExternalUI.onNewSurfaces();
+            event.onHandled(); % call java code back
+        end
+        
+        function OnMergeRegions(this, sender, event)
+            regionIDs = event.data.regionIDs + 1;
+            pixels = [];
+            for k = 1:length(regionIDs)
+                regionID = regionIDs(k);
+                [oldRegionDesc, pix] = this.Regions.RemoveRegionDesc(regionID);
+                pixels = [pixels, pix];
+                regionIDs(regionIDs > regionID) = regionIDs(regionIDs > regionID) - 1;
+            end
+            
+            surface = Segment3D.CreateSurfaceMesh(this.Settings, this.Settings.MicronToPix(pixels));
+            this.Regions.AddRegionDesc( ...
+            	pixels, ...
+                mean(pixels, 2), ...
+                surface, ...
+                oldRegionDesc.Type);                        
+            
             this.PushRegionsDataToUI();
             this.ExternalUI.onNewSurfaces();
             event.onHandled(); % call java code back

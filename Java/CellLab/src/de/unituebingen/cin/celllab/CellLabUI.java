@@ -45,7 +45,7 @@ public class CellLabUI extends JFrame{
 	
 	public CellLabUI() {
 		setTitle("CellLab");
-		setBounds(100, 100, 1200, 550);
+		setBounds(100, 100, 1200, 570);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		menuBar = new JMenuBar();
