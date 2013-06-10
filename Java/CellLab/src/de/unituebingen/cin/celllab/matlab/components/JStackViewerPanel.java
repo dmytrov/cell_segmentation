@@ -157,7 +157,7 @@ public class JStackViewerPanel extends JPanel {
 		sliderSlice.setMinimum(0);
 		sliderSlice.setMaximum(stackSize[stackViewer.getAxis().ordinal()]-1);
 		sliderMaxIntensity.setMaximum(stackMax);
-		sliderMaxIntensity.setValue(stackMax);
+		//sliderMaxIntensity.setValue(stackMax);
 	}
 	
 	public int[][][] getOverlay() {

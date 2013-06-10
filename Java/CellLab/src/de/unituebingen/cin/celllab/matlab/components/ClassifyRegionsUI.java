@@ -64,7 +64,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
-		panel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][][][][][]"));
 		
 		lblConvergenceThreshold = new JLabel("Convergence threshold, % max:");
 		panel.add(lblConvergenceThreshold, "cell 0 0");
@@ -156,6 +156,15 @@ public class ClassifyRegionsUI extends ComponentUI {
 		});
 		panel.add(chckbxShowNoise, "cell 0 12");
 		
+		btnResetRotation = new JButton("Reset rotation");
+		btnResetRotation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sceneMouseRot.transform.rotation.setIdentity();
+				repaintOpenGLControl();
+			}
+		});
+		panel.add(btnResetRotation, "cell 0 13,growx");
+		
 		splitPane_1 = new JSplitPane();
 		splitPane_1.setResizeWeight(1.0);
 		splitPane.setRightComponent(splitPane_1);
@@ -233,6 +242,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 	public JLabel lblVisibilityOptions;
 	public JCheckBox chckbxShowCells;
 	public JCheckBox chckbxShowNoise;
+	public JButton btnResetRotation;
 		
 	// Add an event subscription. Used by matlab
 	public synchronized void addIClassifyRegionsUIListener(IClassifyRegionsUIListener lis) {
