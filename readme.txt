@@ -50,3 +50,10 @@ TODO list:
 1. Add a fast space partitioning search structure for 3D geometry.
 2. Add editing of regions (paintin) on the stack view panel.
 3. Add Save/Load of the pipeline object.
+
+=================
+Development environment used:
+-----------------
+Matlab 2012b with Java remote debugging enabled
+Eclipse IDE for Java Developers
+WindowBuilder plugin for Eclipse 
