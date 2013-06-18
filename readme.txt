@@ -38,11 +38,11 @@ for Windows x64, with the follwing content:
   -Xms128m
   -Xmx512m
 Xms key is for setting start java heap size,
-Xmx key is for setting max java heap size (-Xmx1024m e.g.)
+Xmx key is for setting max java heap size 
 
 2. Restart matlab
 
-3. In case of more errors try to increase the heap size.
+3. In case of more errors try to increase the heap size (-Xmx1024m e.g.).
 
 =================
 TODO list:
