@@ -4,7 +4,7 @@ Written by: Dmytro Velychko (mailto:dmytro.velychko@student.uni-tuebingen.de)
 Tuebingen, CIN, AG Euler, AG Bethge, 2012-2013
 http://www.cin.uni-tuebingen.de/
 =================
-To make it run:
+How to install and run:
 -----------------
 1. Matlab treats static and dynamic classpathes differently. 
 It is necessary to add some pathes to the static classpath, 
@@ -28,7 +28,7 @@ Save the classpath.txt.
 in the matlab's command prompt
 
 =================
-Conwn issues:
+Known issues:
 -----------------
 If you get "java heap out of memory" errors while processing large stacks,
 change java heap settings for matlab. To change it:
@@ -38,7 +38,7 @@ for Windows x64, with the follwing content:
   -Xms128m
   -Xmx512m
 Xms key is for setting start java heap size,
-Xmx key is for setting max java heap size
+Xmx key is for setting max java heap size (-Xmx1024m e.g.)
 
 2. Restart matlab
 
