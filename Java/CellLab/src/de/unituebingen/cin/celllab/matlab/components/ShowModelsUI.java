@@ -74,6 +74,14 @@ public class ShowModelsUI extends ComponentUI {
 		
 	//-------------------------------------------------------------------
 	public void onNewSurfaces() {
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    	onNewSurfacesThreadMethod();		      
+		    }
+		});
+	}
+	
+	private void onNewSurfacesThreadMethod() {
 		pushSurfacesToControls();		
 		System.out.println("New surfaces received");
 	}
@@ -88,14 +96,7 @@ public class ShowModelsUI extends ComponentUI {
 			scene3D.renderables.clear();
 			scene3D.renderables.addAll(surfaces);
 		}
-		repaintOpenGLControl();		
+		doubleBufferGLJPanel.repaint();		
 	}
-	
-	protected void repaintOpenGLControl() {
-		SwingUtilities.invokeLater(new Runnable() {
-		    public void run() {
-		    	doubleBufferGLJPanel.repaint();		      
-		    }
-		});
-	}
+		
 }

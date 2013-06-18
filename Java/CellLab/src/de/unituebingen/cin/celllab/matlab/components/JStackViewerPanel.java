@@ -3,6 +3,7 @@ package de.unituebingen.cin.celllab.matlab.components;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+
 import java.awt.BorderLayout;
 import javax.swing.JRadioButton;
 import net.miginfocom.swing.MigLayout;
@@ -125,7 +126,7 @@ public class JStackViewerPanel extends JPanel {
 		return stackViewer.getStack();
 	}
 	
-	public void setStack(int[][][] stack) {
+	protected void setStack(final int[][][] stack) {
 		stackSize[0] = stack.length;
 		stackSize[1] = stack[0].length;
 		stackSize[2] = stack[0][0].length;

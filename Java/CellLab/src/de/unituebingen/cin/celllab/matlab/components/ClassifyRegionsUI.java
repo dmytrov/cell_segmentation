@@ -139,7 +139,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 		btnResetRotation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sceneMouseRot.transform.rotation.setIdentity();
-				repaintOpenGLControl();
+				doubleBufferGLJPanel.repaint();
 			}
 		});
 		
@@ -333,6 +333,14 @@ public class ClassifyRegionsUI extends ComponentUI {
 	}	
 	
 	public void onNewSurfaces() {
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    	onNewSurfacesThreadMethod();		      
+		    }
+		});		
+	}
+	
+	public void onNewSurfacesThreadMethod() {
 		pushSurfacesToControls();		
 		System.out.println("New surfaces received");
 	}
@@ -361,7 +369,7 @@ public class ClassifyRegionsUI extends ComponentUI {
 			scene3D.renderables.clear();
 			scene3D.renderables.addAll(surfaces);
 		}
-		repaintOpenGLControl();
+		doubleBufferGLJPanel.repaint();
 		
 		stackViewerPanel.setStack(stack);
 		stackViewerPanel.setOverlay(overlay);
