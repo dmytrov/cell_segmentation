@@ -33,6 +33,7 @@ classdef TJavaConnector < handle
         end
         
         function FillComponentsDescsList(this, descs)
+            descs.pipelineName = this.Application.Pipeline.Name;
             for k = this.Application.Pipeline.Components'
                 component = k{1};
                 desc = descs.createComponentDescription();
@@ -62,7 +63,6 @@ classdef TJavaConnector < handle
         end
         
         function OnGetComponents(this, sender, event)
-            event.data.pipelineName = this.Application.Pipeline.Name;
             this.FillComponentsDescsList(event.data);
             event.onHandled(); % call java code back
         end
