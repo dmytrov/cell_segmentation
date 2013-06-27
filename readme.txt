@@ -2,8 +2,10 @@ cell_segmentation
 A tool for basic processing of 2-photon retina scans.
 Written by: Dmytro Velychko (mailto:dmytro.velychko@student.uni-tuebingen.de)
 Tuebingen, CIN, AG Euler, AG Bethge, 2012-2013
+http://www.cin.uni-tuebingen.de/
 =================
-To make it run:
+How to install and run:
+-----------------
 1. Matlab treats static and dynamic classpathes differently. 
 It is necessary to add some pathes to the static classpath, 
 which is listed in the classpath.txt file.
@@ -26,6 +28,8 @@ Save the classpath.txt.
 in the matlab's command prompt
 
 =================
+Known issues:
+-----------------
 If you get "java heap out of memory" errors while processing large stacks,
 change java heap settings for matlab. To change it:
 1. Create java.opts file in matlab's bin folder, e.g.
@@ -34,8 +38,22 @@ for Windows x64, with the follwing content:
   -Xms128m
   -Xmx512m
 Xms key is for setting start java heap size,
-Xmx key is for setting max java heap size
+Xmx key is for setting max java heap size 
 
 2. Restart matlab
 
-3. In case of more errors try to increase the heap size.
+3. In case of more errors try to increase the heap size (-Xmx1024m e.g.).
+
+=================
+TODO list:
+-----------------
+1. Add a fast space partitioning search structure for 3D geometry.
+2. Add editing of regions (paintin) on the stack view panel.
+3. Add Save/Load of the pipeline object.
+
+=================
+Development environment used:
+-----------------
+Matlab 2012b with Java remote debugging enabled
+Eclipse IDE for Java Developers
+WindowBuilder plugin for Eclipse 
