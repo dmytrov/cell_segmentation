@@ -24,7 +24,7 @@ classdef TComponent < handle
             this.Inputs = Core.TInputPoint.empty;
             this.Outputs = Core.TOutputPoint.empty;
         end
-        
+                
         function res = InputByName(this, name)
             for input = this.Inputs
                 if (strcmp(input.Name, name))
@@ -92,6 +92,19 @@ classdef TComponent < handle
         function BindJavaUI(this, ui)
             this.ExternalUI = ui;
         end
+        
+        % Prototype
+        function res = UnbindUI(this)
+            res = {this.ExternalUI};
+            this.ExternalUI = [];
+        end
+        
+        % Prototype
+        function res = BindUI(this, callBacks)
+            this.ExternalUI = callBacks{1};
+            res = callBacks(2:end);
+        end
+        
     end
         
     

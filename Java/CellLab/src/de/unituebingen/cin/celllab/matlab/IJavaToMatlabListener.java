@@ -62,6 +62,25 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
     void runPipeline(RunPipelineEvent event);
     
     //---------------------------------------------------------------------------------------
+    public class SaveLoadPipelineEventData {
+    	public String fileName;
+    	public boolean save;
+    }
+    
+    public class SaveLoadPipelineResultHandler extends EventResultHandler<SaveLoadPipelineEventData> {		
+	}
+	
+    public class SaveLoadPipelineEvent extends JavaToMatlabEvent<SaveLoadPipelineEventData> {
+        private static final long serialVersionUID = 1L;
+        
+        public SaveLoadPipelineEvent(Object source, SaveLoadPipelineResultHandler erh) {
+            super(source, new SaveLoadPipelineEventData(), erh);
+        }
+    }
+    
+    void saveLoadPipeline(SaveLoadPipelineEvent event);
+    
+    //---------------------------------------------------------------------------------------
     public class ComponentState {
     	static final int VALID = 0;
     	static final int INVALID = 1;
@@ -88,6 +107,7 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
     
     public class GetComponentsEventData extends java.util.ArrayList<ComponentDescription>{
 		private static final long serialVersionUID = 1L;
+		public String pipelineName;
 		public ComponentDescription createComponentDescription() {
 			return new ComponentDescription();
 		}

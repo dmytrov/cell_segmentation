@@ -27,7 +27,7 @@ public class AboutUI extends JDialog {
 		txtpnCelllabHttpwwwcinunituebingendeAg = new JTextPane();
 		txtpnCelllabHttpwwwcinunituebingendeAg.setBackground(SystemColor.control);
 		txtpnCelllabHttpwwwcinunituebingendeAg.setEditable(false);
-		txtpnCelllabHttpwwwcinunituebingendeAg.setText("CellLab\r\nhttp://www.cin.uni-tuebingen.de/\r\nAG Euler, AG Bethge\r\nMain development: Dmytro Velychko\r\nmailto:dmytro.velychko@student.uni-tuebingen.de\r\n2012-2013\r\n[TODO: Add license info here]\r\n[TODO: Add repository link]");
+		txtpnCelllabHttpwwwcinunituebingendeAg.setText("CellLab - a tool for 2-photon scans processing.\r\nhttp://www.cin.uni-tuebingen.de/\r\nAG Euler, AG Bethge\r\nMain development: Dmytro Velychko\r\nmailto:dmytro.velychko@student.uni-tuebingen.de\r\n2012-2013\r\n[TODO: Add license info here]\r\n[TODO: Add repository link]");
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)

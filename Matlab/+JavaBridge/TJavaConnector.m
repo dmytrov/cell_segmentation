@@ -18,6 +18,7 @@ classdef TJavaConnector < handle
             set(ji, 'GetComponentsCallback', @(h, e)(OnGetComponents(this, h, e)));
             set(ji, 'RunComponentCallback', @(h, e)(OnRunComponent(this, h, e)));
             set(ji, 'RunPipelineCallback', @(h, e)(OnRunPipeline(this, h, e)));
+            set(ji, 'SaveLoadPipelineCallback', @(h, e)(OnSaveLoadPipeline(this, h, e)));
             set(ji, 'GetComponentParametersCallback', @(h, e)(OnGetComponentParameters(this, h, e)));
             set(ji, 'SetComponentParametersCallback', @(h, e)(OnSetComponentParameters(this, h, e)));             
             set(ji, 'ComponentNativeUICallback', @(h, e)(OnComponentNativeUI(this, h, e)));             
@@ -61,6 +62,7 @@ classdef TJavaConnector < handle
         end
         
         function OnGetComponents(this, sender, event)
+            event.data.pipelineName = this.Application.Pipeline.Name;
             this.FillComponentsDescsList(event.data);
             event.onHandled(); % call java code back
         end
@@ -76,6 +78,22 @@ classdef TJavaConnector < handle
         function OnRunPipeline(this, sender, event)
             this.Application.Pipeline.RunAll();
             event.onHandled(); % call java code back
+        end
+        
+        function OnSaveLoadPipeline(this, sender, event)
+            pipeline = this.Application.Pipeline;
+            if (event.data.save)
+                uiBindings = this.Application.Pipeline.UnbindUI();
+                save(char(event.data.fileName), 'pipeline');
+                this.Application.Pipeline.BindUI(uiBindings);
+            else
+                load(char(event.data.fileName), 'pipeline');
+                this.Application.Pipeline = pipeline;
+                this.Application.Pipeline.OnComponentsStateChangeCallback = @()(this.OnComponentsStateChange());
+                this.Application.Pipeline.MessageLog = this.Application.MessageLog;
+                this.OnComponentsStateChange();
+            end
+            event.onHandled();
         end
                 
         function OnGetComponentParameters(this, sender, event)

@@ -2,9 +2,11 @@ package de.unituebingen.cin.celllab;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 
@@ -20,6 +22,7 @@ import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.GetComponentPara
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.GetComponentParametersResultHandler;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.RunComponentEventData;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.RunComponentResultHandler;
+import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.SaveLoadPipelineEventData;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.SetComponentParametersEventData;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.SetComponentParametersResultHandler;
 import de.unituebingen.cin.celllab.matlab.IJavaToMatlabListener.GetComponentsEventData;
@@ -34,6 +37,9 @@ import de.unituebingen.cin.celllab.matlab.components.ShowModelsUI;
 
 public class Application {
 	protected MatlabConnector matlab = new MatlabConnector();
+	protected File currentFile = null;
+	protected File currentPath = null;
+	
 	public CellLabUI cellLabUI;
 	public String[] pipelines;
 	public ComponentsBridge componentsBridge;
@@ -77,8 +83,46 @@ public class Application {
 			}
 		});
 		
+		cellLabUI.mntmSavePipelineAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onSaveLoadPipeline(true);
+			}
+		});
+		
+		cellLabUI.mntmLoadPipeline.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onSaveLoadPipeline(false);
+			}
+		});
+		
 		cellLabUI.setVisible(true);
 	}
+	
+	public void onSaveLoadPipeline(final boolean bSave) {
+		JFileChooser fileChooser = new JFileChooser();
+		if ((currentFile != null) && (currentPath != null)) {
+			fileChooser.setCurrentDirectory(currentPath);
+			fileChooser.setSelectedFile(currentFile);
+		}
+		int rVal; 
+		if (bSave) {
+			rVal = fileChooser.showSaveDialog(cellLabUI);
+		} else {
+			rVal = fileChooser.showOpenDialog(cellLabUI);
+		}
+		if (rVal == JFileChooser.APPROVE_OPTION) {
+			setComponentParameters(getCurrentComponentDesc(), currentUI);
+			currentPath = fileChooser.getCurrentDirectory();
+			currentFile = fileChooser.getSelectedFile();
+			matlab.saveLoadPipeline(new IJavaToMatlabListener.SaveLoadPipelineResultHandler() {
+				@Override
+				public void onInit(SaveLoadPipelineEventData data) {
+					data.save = bSave;
+					data.fileName = currentFile.toString(); 
+				}
+			});
+	    }
+	}	
 	
 	public void runCurrentComponent() {
 		setComponentParameters(getCurrentComponentDesc(), currentUI);
@@ -182,6 +226,7 @@ public class Application {
 	}
 	
 	public void updatePipelinePanel() {
+		cellLabUI.setTitle("CellLab - [" + componentsDesc.pipelineName + "]");
 		cellLabUI.panelPipeline.removeAll();
 		int k = 0;
 		for (ComponentDescription desc : componentsDesc) {

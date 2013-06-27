@@ -35,6 +35,10 @@ public class MatlabConnector {
     	listeners.firstElement().runPipeline(new IJavaToMatlabListener.RunPipelineEvent(this, resultHandler));    	
 	}
     
+    public void saveLoadPipeline(IJavaToMatlabListener.SaveLoadPipelineResultHandler resultHandler) {
+    	listeners.firstElement().saveLoadPipeline(new IJavaToMatlabListener.SaveLoadPipelineEvent(this, resultHandler));    	
+	}
+    
     public void getComponentParameters(IJavaToMatlabListener.GetComponentParametersResultHandler resultHandler) {
     	listeners.firstElement().getComponentParameters(new IJavaToMatlabListener.GetComponentParametersEvent(this, resultHandler));    	
 	}

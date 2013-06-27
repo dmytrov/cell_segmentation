@@ -42,6 +42,8 @@ public class CellLabUI extends JFrame{
 	public JScrollPane scrollPane;
 	public JMenu mnView;
 	public JCheckBoxMenuItem chckbxmntmShowDataComponents;
+	public JMenuItem mntmSavePipelineAs;
+	public JMenuItem mntmLoadPipeline;
 	
 	public CellLabUI() {
 		setTitle("CellLab");
@@ -60,6 +62,12 @@ public class CellLabUI extends JFrame{
 				CellLabUI.this.setVisible(false);
 			}
 		});
+		
+		mntmSavePipelineAs = new JMenuItem("Save pipeline as...");
+		mnFile.add(mntmSavePipelineAs);
+		
+		mntmLoadPipeline = new JMenuItem("Load pipeline...");
+		mnFile.add(mntmLoadPipeline);
 		mnFile.add(mntmExit);
 		
 		mnView = new JMenu("View");

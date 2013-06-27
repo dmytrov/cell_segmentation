@@ -20,6 +20,28 @@ classdef TPipeline < handle
             this.MessageLog.PrintToConsole = true;
         end
         
+        function res = UnbindUI(this)
+            res = {this.OnComponentsStateChangeCallback, this.MessageLog};
+            this.OnComponentsStateChangeCallback = [];
+            this.MessageLog = [];
+            for k = this.Components'
+                component = k{1};
+                handles = component.UnbindUI();
+                res = [res, handles];
+            end
+        end
+        
+        function res = BindUI(this, callBacks)
+            this.OnComponentsStateChangeCallback = callBacks{1};
+            this.MessageLog = callBacks{2};
+            callBacks = callBacks(3:end);
+            for k = this.Components'
+                component = k{1};
+                callBacks = component.BindUI(callBacks);
+            end
+            res = callBacks;
+        end
+        
         function AddComponent(this, component)
             if (isempty(this.ComponentByName(component.Name)))
                 this.Components = [this.Components; {component}];
