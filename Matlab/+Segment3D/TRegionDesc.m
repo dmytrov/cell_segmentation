@@ -6,9 +6,9 @@ classdef TRegionDesc < handle
     properties (Constant = true)
         UNCLASSIFIED    = 0;
         CELL            = 1;
-        VESSEL          = 2;
-        AXON            = 3;
-        NOISE           = 4;
+        NOISE           = 2;
+        VESSEL          = 3;
+        AXON            = 4;
     end
     
     properties (Access = public)

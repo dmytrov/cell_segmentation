@@ -65,6 +65,7 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
     public class SaveLoadPipelineEventData {
     	public String fileName;
     	public boolean save;
+    	public boolean successfull;
     }
     
     public class SaveLoadPipelineResultHandler extends EventResultHandler<SaveLoadPipelineEventData> {		

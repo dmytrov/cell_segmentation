@@ -9,6 +9,7 @@ import java.util.Calendar;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 
 import de.unituebingen.cin.celllab.matlab.ComponentUI;
 import de.unituebingen.cin.celllab.matlab.ComponentsBridge;
@@ -120,8 +121,20 @@ public class Application {
 					data.save = bSave;
 					data.fileName = currentFile.toString(); 
 				}
+				@Override
+				public void onHandled(SaveLoadPipelineEventData data) {
+					if ((!bSave) && (data.successfull)) {
+						SwingUtilities.invokeLater(new Runnable() {
+						    public void run() {
+								currentComponent = -1;
+						    	openComponentUI(null);
+						    	updatePipelinePanel();								
+						    }
+						});
+					}
+				}
 			});
-	    }
+	    }		
 	}	
 	
 	public void runCurrentComponent() {

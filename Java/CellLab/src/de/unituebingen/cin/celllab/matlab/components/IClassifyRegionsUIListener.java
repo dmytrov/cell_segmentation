@@ -125,4 +125,25 @@ public interface IClassifyRegionsUIListener extends java.util.EventListener{
 	}
 
 	void mergeRegions(MergeRegionsEvent event);
+	
+	// -------------------------------------------------------------------------------
+	public class SetRegionsEventData {
+		public int[] regionsType;
+		public int[][][] regionsMap;
+	}
+
+	public class SetRegionsResultHandler extends
+		EventResultHandler<SetRegionsEventData> {
+	}
+
+	public class SetRegionsEvent extends
+			JavaToMatlabEvent<SetRegionsEventData> {
+		private static final long serialVersionUID = 1L;
+
+		public SetRegionsEvent(Object source, SetRegionsResultHandler erh) {
+			super(source, new SetRegionsEventData(), erh);
+		}
+	}
+
+	void setRegions(SetRegionsEvent event);
 }

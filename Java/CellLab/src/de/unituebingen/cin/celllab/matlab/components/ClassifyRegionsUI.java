@@ -20,6 +20,9 @@ import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MergeRegionsEvent;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MergeRegionsEventData;
 import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.MergeRegionsResultHandler;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.SetRegionsEvent;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.SetRegionsEventData;
+import de.unituebingen.cin.celllab.matlab.components.IClassifyRegionsUIListener.SetRegionsResultHandler;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -45,10 +48,6 @@ import javax.swing.JCheckBox;
 import javax.swing.SwingUtilities;
 
 public class ClassifyRegionsUI extends ComponentUI {
-	public class RegionType {
-		public static final int UNCLASSIFIED    = 0;
-		public static final int CELL            = 1;
-	}
 	public ArrayList<IndexMesh> surfaces = new ArrayList<IndexMesh>();	
 	public int[][][] stack = new int[1][1][1];
 	public int[][][] overlay = new int[1][1][1];
@@ -191,6 +190,18 @@ public class ClassifyRegionsUI extends ComponentUI {
 		stackViewerPanel = new JStackViewerPanel();
 		splitPane_1.setRightComponent(stackViewerPanel);
 		splitPane.setDividerLocation(170);
+		
+		stackViewerPanel.btnApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pushStackViewerDataToMatlab();
+			}
+		});
+		
+		stackViewerPanel.btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pushSurfacesToControls();
+			}
+		});
 		
 		build3DScene();
 	}
@@ -348,9 +359,11 @@ public class ClassifyRegionsUI extends ComponentUI {
 	public void pushSurfacesToControls() {
 		// New surfaces data is available now
 		float[][] overlayColorFactor = new float[surfaces.size()+1][4];
+		int [] regionType = new int[surfaces.size()+1]; 
 
 		int k = 1;
 		for (IndexMesh surface : surfaces) {
+			regionType[k] = surface.tag; 
 			if (surface.tag == RegionType.CELL) {
 				surface.colorFactor = new float[] {0.8f, 0.2f, 0.2f, 1.0f};
 				surface.visible = getCellsVisible();
@@ -374,7 +387,13 @@ public class ClassifyRegionsUI extends ComponentUI {
 		stackViewerPanel.setStack(stack);
 		stackViewerPanel.setOverlay(overlay);
 		
-		stackViewerPanel.setOverlayColorFactor(overlayColorFactor);
+		stackViewerPanel.stackViewer.setRegionType(regionType);
+		stackViewerPanel.stackViewer.regionTypeColorFactor[RegionType.UNCLASSIFIED] =  new float[] {1.0f, 1.0f, 1.0f, 1.0f};
+		stackViewerPanel.stackViewer.regionTypeColorFactor[RegionType.CELL] = 
+				(getCellsVisible()? new float[] {0.8f, 0.2f, 0.2f, 1.0f} : new float[] {1.0f, 1.0f, 1.0f, 1.0f});
+		stackViewerPanel.stackViewer.regionTypeColorFactor[RegionType.NOISE] = 
+				(getNoiseVisible()? new float[] {0.2f, 0.2f, 0.8f, 1.0f} : new float[] {1.0f, 1.0f, 1.0f, 1.0f});
+
 	}
 	
 	public void setSelectedRegionID(int kSelected, boolean bAddRegion) {
@@ -475,5 +494,18 @@ public class ClassifyRegionsUI extends ComponentUI {
 		    	doubleBufferGLJPanel.repaint();		      
 		    }
 		});
+	}
+	
+	protected void pushStackViewerDataToMatlab() {
+		if (!listeners.isEmpty()) {
+			listeners.firstElement().setRegions(new SetRegionsEvent(this, 
+					new SetRegionsResultHandler(){
+				@Override
+				public void onInit(SetRegionsEventData data) {
+					data.regionsMap = stackViewerPanel.stackViewer.getOverlay();					
+					data.regionsType = stackViewerPanel.stackViewer.getRegionType();
+				}
+			}));
+		}
 	}
 }

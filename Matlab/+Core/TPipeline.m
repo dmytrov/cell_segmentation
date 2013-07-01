@@ -4,6 +4,7 @@ classdef TPipeline < handle
         Components;
         OnComponentsStateChangeCallback;
         MessageLog;
+        Version;
     end
     
     methods (Access = protected)

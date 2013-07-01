@@ -12,6 +12,10 @@ classdef TRegionDescsList < handle
     
     methods (Access = public)
         function this = TRegionDescsList()
+            this.Clear();
+        end
+        
+        function Clear(this)
             this.RegionDesc = [];
             this.Pixels = nan(3, 0);
             this.PixelID = [];

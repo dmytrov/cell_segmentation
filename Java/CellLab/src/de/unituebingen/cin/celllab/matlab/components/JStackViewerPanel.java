@@ -13,8 +13,11 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
 import de.unituebingen.cin.celllab.matlab.components.JStackViewer.Axis;
+import de.unituebingen.cin.celllab.matlab.components.JStackViewer.Mode;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class JStackViewerPanel extends JPanel {
@@ -31,6 +34,14 @@ public class JStackViewerPanel extends JPanel {
 	public JSlider sliderMaxIntensity;
 	public JLabel lblMaxIntensity;
 	public JLabel lblMaxIntensityIndication;
+	public JLabel lblMarkerSizeIndication;
+	public JButton btnEdit;
+	public JButton btnAddCell;
+	public JButton btnAddNoise;
+	public JSlider sliderMarkerSize;
+	public JLabel lblMarkerSize;
+	public JButton btnApply;
+	public JButton btnCancel;
 
 	public JStackViewerPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -44,7 +55,7 @@ public class JStackViewerPanel extends JPanel {
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
-		panel.setLayout(new MigLayout("", "[][][][grow][40:40:50]", "[][]"));
+		panel.setLayout(new MigLayout("", "[][][][grow][40:40:50]", "[][][][]"));
 		
 		rdbtnX = new JRadioButton("X");
 		rdbtnX.addActionListener(new ActionListener() {
@@ -85,7 +96,7 @@ public class JStackViewerPanel extends JPanel {
 		
 		lblSliceNumber = new JLabel("0/0");
 		panel.add(lblSliceNumber, "cell 4 0,alignx right");
-		splitPane.setDividerLocation(65);
+		splitPane.setDividerLocation(125);
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(rdbtnX);
@@ -102,8 +113,53 @@ public class JStackViewerPanel extends JPanel {
 		panel.add(sliderMaxIntensity, "cell 3 1,growx");
 		
 		lblMaxIntensityIndication = new JLabel("0/0");
-		panel.add(lblMaxIntensityIndication, "cell 4 1,alignx right");
-
+		panel.add(lblMaxIntensityIndication, "cell 4 1,alignx right");		
+		
+		lblMarkerSize = new JLabel("Marker size:");
+		panel.add(lblMarkerSize, "cell 0 2 3 1,align right");
+		
+		sliderMarkerSize = new JSlider();
+		sliderMarkerSize.setValue(1);
+		sliderMarkerSize.setSnapToTicks(true);
+		sliderMarkerSize.setMinimum(1);
+		panel.add(sliderMarkerSize, "cell 3 2,growx");		
+		
+		lblMarkerSizeIndication = new JLabel("0/0");
+		panel.add(lblMarkerSizeIndication, "cell 4 2,alignx right");
+		sliderMarkerSize.setMaximum(20);
+		
+		btnEdit = new JButton("Edit");
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				stackViewer.mode = Mode.Edit; 
+			}
+		});
+		panel.add(btnEdit, "cell 0 3,flowx,span,split 5");
+		
+		btnAddCell = new JButton("Add cell");
+		btnAddCell.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				stackViewer.mode = Mode.Add; 
+				stackViewer.newRegionType = RegionType.CELL;
+			}
+		});
+		panel.add(btnAddCell);
+		
+		btnAddNoise = new JButton("Add noise");
+		btnAddNoise.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				stackViewer.mode = Mode.Add; 
+				stackViewer.newRegionType = RegionType.NOISE;
+			}
+		});
+		panel.add(btnAddNoise);
+		
+		btnApply = new JButton("Apply");
+		panel.add(btnApply);
+		
+		btnCancel = new JButton("Cancel");
+		panel.add(btnCancel);
+		
 		sliderMaxIntensity.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				int newMaxIntensity = sliderMaxIntensity.getValue();
@@ -112,7 +168,16 @@ public class JStackViewerPanel extends JPanel {
 			}
 		});
 
+		sliderMarkerSize.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				int newMarkerSize = sliderMarkerSize.getValue();
+				lblMarkerSizeIndication.setText(Integer.toString(newMarkerSize) + "/" + Integer.toString(sliderMarkerSize.getMaximum()));
+				stackViewer.markerSize = newMarkerSize;
+			}
+		});
+		
 		this.revalidate();		
+		sliderMarkerSize.setValue(5);
 	}
 	
 	public void onAxisChanged(Axis newAxis) {
@@ -169,12 +234,4 @@ public class JStackViewerPanel extends JPanel {
 		stackViewer.setOverlay(overlay);
 	}
 	
-	public float[][] getOverlayColorFactor() {
-		return stackViewer.getOverlayColorFactor();
-	}
-	
-	public void setOverlayColorFactor(float[][] m) {
-		stackViewer.setOverlayColorFactor(m);
-	}
-
 }

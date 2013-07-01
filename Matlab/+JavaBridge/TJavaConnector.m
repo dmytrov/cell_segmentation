@@ -2,6 +2,7 @@ classdef TJavaConnector < handle
     properties (Access = public)
         Application;
         JavaApplication;
+        Version = 2;
     end
     
     methods (Access = public)
@@ -58,7 +59,7 @@ classdef TJavaConnector < handle
             this.Application.BuildPipelineByName(event.data.name);
             this.Application.Pipeline.OnComponentsStateChangeCallback = @()(this.OnComponentsStateChange());
             this.Application.Pipeline.MessageLog = this.Application.MessageLog;
-
+            this.Application.Pipeline.Version = this.Version;
             event.onHandled(); % call java code back
         end
         
@@ -82,18 +83,31 @@ classdef TJavaConnector < handle
         
         function OnSaveLoadPipeline(this, sender, event)
             pipeline = this.Application.Pipeline;
+            event.data.successfull = 0;
             if (event.data.save)
                 uiBindings = this.Application.Pipeline.UnbindUI();
                 save(char(event.data.fileName), 'pipeline');
                 this.Application.Pipeline.BindUI(uiBindings);
+                event.data.successfull = 1;
+                this.Application.MessageLog.PrintLine(['File ', char(event.data.fileName), ' is saved']);
             else
                 load(char(event.data.fileName), 'pipeline');
-                this.Application.Pipeline = pipeline;
-                this.Application.Pipeline.OnComponentsStateChangeCallback = @()(this.OnComponentsStateChange());
-                this.Application.Pipeline.MessageLog = this.Application.MessageLog;
-                this.OnComponentsStateChange();
+                if (isempty(pipeline.Version))
+                    pipeline.Version = 1;
+                end
+                if (pipeline.Version == this.Version)
+                    this.Application.Pipeline = pipeline;
+                    this.Application.Pipeline.OnComponentsStateChangeCallback = @()(this.OnComponentsStateChange());
+                    this.Application.Pipeline.MessageLog = this.Application.MessageLog;
+                    this.OnComponentsStateChange();
+                    event.data.successfull = 1;
+                    this.Application.MessageLog.PrintLine(['File ', char(event.data.fileName), ' is loaded']);
+                else
+                    message = sprintf('Pipeline version mismatch. Current CellLab version: %d, saved pipeline version: %d', this.Version, pipeline.Version);
+                    this.Application.MessageLog.PrintLine(message);
+                end
             end
-            event.onHandled();
+            event.onHandled(); % call java code back
         end
                 
         function OnGetComponentParameters(this, sender, event)

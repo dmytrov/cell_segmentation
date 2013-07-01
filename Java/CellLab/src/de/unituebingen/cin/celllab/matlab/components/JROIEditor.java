@@ -54,7 +54,6 @@ public class JROIEditor extends JComponent {
 	public synchronized void setImg(int[][] m) {
 		img = matrixCopy(m);
 		repaint();
-		//revalidate();
 	}
 	
 	public int[][] getMap() {
@@ -64,7 +63,6 @@ public class JROIEditor extends JComponent {
 	public synchronized void setMap(int[][] m) {
 		map = matrixCopy(m);
 		repaint();
-		//revalidate();
 	}
 	
 	public void clearMap() {

@@ -3,6 +3,7 @@ package de.unituebingen.cin.celllab.matlab.components;
 import java.awt.AWTEvent;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
@@ -12,15 +13,29 @@ public class JStackViewer extends JComponent {
 	private static final long serialVersionUID = 1L;
 	protected int[][][] stack = new int[64][64][4];
 	protected int[][][] overlay = new int[64][64][4];
-	protected float[][] overlayColorFactor = new float[1][3]; // array Nx3
+	protected int[][] overlaySlice = new int[64][64];
+	protected int[] regionType = new int[1];
+	public float[][] regionTypeColorFactor = new float[3][4]; 
 	public enum Axis {
 		X,
 		Y,
 		Z
 	}
+	public enum Mode {
+		Idle,
+		Edit,
+		Add,
+		Delete
+	}
 	protected Axis axis = Axis.Z;
+	public Mode mode = Mode.Edit;
+	public int markerSize = 3;
+	public int newRegionType = RegionType.CELL; 
 	protected int slice = 0;
 	protected int maxIntensity = 32;
+	protected int currentMarker = -1;
+	protected int sx = 0;
+	protected int sy = 0;
 	
 	public JStackViewer() {
 		this.enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -68,14 +83,16 @@ public class JStackViewer extends JComponent {
 		repaint();
 	}
 	
-	public float[][] getOverlayColorFactor() {
-		return matrixCopy(overlayColorFactor);
+	public int[] getRegionType() {
+		int[] res = new int [regionType.length];
+		System.arraycopy(regionType, 0, res, 0, regionType.length);
+		return res;
 	}
 	
-	public void setOverlayColorFactor(float[][] m) {
-		overlayColorFactor = matrixCopy(m);
-		repaint();
-	}
+	public void setRegionType(int[] regionType) {
+		this.regionType = new int [regionType.length];
+		System.arraycopy(regionType, 0, this.regionType, 0, regionType.length);
+	}	
 	
 	public Axis getAxis() {
 		return axis;
@@ -138,9 +155,42 @@ public class JStackViewer extends JComponent {
 		return res;
 	}
 	
+	protected void pushSliceToBuffer(int[][][] buffer, Axis aDir, int kSlice, int[][] slice) {
+		int sx = buffer.length;
+		int sy = buffer[0].length;
+		int sz = buffer[0][0].length;
+		int[] size = new int[] {sx, sy, sz};
+		if (kSlice > size[aDir.ordinal()]-1) {
+			return;
+		}
+		switch (aDir) {
+		case X:
+			for (int x = 0; x<sy; x++) {
+				for (int y = 0; y<sz; y++) {
+					buffer[kSlice][x][y] = slice[x][y];
+				}
+			}
+			break;
+		case Y:
+			for (int x = 0; x<sx; x++) {
+				for (int y = 0; y<sz; y++) {
+					buffer[x][kSlice][y] = slice[x][y];
+				}
+			}
+			break;
+		case Z:
+			for (int x = 0; x<sx; x++) {
+				for (int y = 0; y<sy; y++) {
+					buffer[x][y][kSlice] = slice[x][y];
+				}
+			}
+			break;
+		}
+	}
+	
 	protected BufferedImage makeImage() {
 		int [][] stackSlice = makeSlice(stack, axis, slice);
-		int [][] overlaySlice = makeSlice(overlay, axis, slice);
+		overlaySlice = makeSlice(overlay, axis, slice);
 		int sx = stackSlice.length;
 		int sy = stackSlice[0].length;
 		if ((overlaySlice != null) && ((overlaySlice.length != stackSlice.length) || (overlaySlice[0].length != stackSlice[0].length))) {
@@ -157,10 +207,20 @@ public class JStackViewer extends JComponent {
 					iArray[0] = pixValue;
 					iArray[1] = pixValue;
 					iArray[2] = pixValue;
+					if (overlaySlice[x][y] >= regionType.length)
+					{
+						overlaySlice = null;
+						return null;
+					}
 					if ((overlaySlice != null) && (overlaySlice[x][y] != 0)) {
-						iArray[0] = Math.min(255, (int)(overlayColorFactor[overlaySlice[x][y]][0] * iArray[0]));
-						iArray[1] = Math.min(255, (int)(overlayColorFactor[overlaySlice[x][y]][1] * iArray[1]));
-						iArray[2] = Math.min(255, (int)(overlayColorFactor[overlaySlice[x][y]][2] * iArray[2]));
+						for (int k = 0; k<3; k++) {
+							iArray[k] = Math.min(255, (int)(regionTypeColorFactor[regionType[overlaySlice[x][y]]][k] * iArray[k]));
+						}
+					}
+					if (currentMarker == overlaySlice[x][y]) {
+						for (int k = 0; k<3; k++) {
+							iArray[k] = Math.min(255, iArray[k] * 2);
+						}
 					}
 					raster.setPixel(x, y, iArray);
 				}
@@ -177,11 +237,104 @@ public class JStackViewer extends JComponent {
 		super.paint(g);
 		BufferedImage bi = makeImage();
 		if (bi != null) {
+			sx = bi.getWidth();
+			sy = bi.getHeight();
+			
 			Graphics2D g2 = (Graphics2D)g;
 			g2.translate(0, getHeight());
 			g2.scale(1, -1); // invert Y axis
 			g2.drawImage(bi, 0, 0, getWidth(), getHeight(), this);			
 			g2.finalize();
+		}
+	}
+	
+	protected int getSelectedX(MouseEvent e) {
+		return (int)(sx * e.getX() / getWidth());
+	}
+	
+	protected int getSelectedY(MouseEvent e) {
+		return (int)(sy - sy * e.getY() / getHeight() - 1);
+	}
+	
+	protected int getOverlaySliceValue(int x, int y) {
+		if ((x >= 0) && (x < overlaySlice.length) && (y >= 0) && (y < overlaySlice[0].length)) {
+			return overlaySlice[x][y];
+		} else {
+			return -1;
+		}
+	}
+	
+	protected void setOverlaySliceValue(int x, int y, int value) {
+		for (int kx = x-markerSize; kx <= x+markerSize; kx++) {
+			for (int ky = y-markerSize; ky <= y+markerSize; ky++) {
+				if ((kx >= 0) && (kx < overlaySlice.length) && (ky >= 0) && (ky < overlaySlice[0].length) && 
+						( Math.sqrt((kx-x)*(kx-x) + (ky-y)*(ky-y)) <= markerSize-0.5)) {
+					overlaySlice[kx][ky] = value;
+				}
+			}
+		}
+	}
+	
+	protected int getSelectedID(MouseEvent e) {
+		int x = getSelectedX(e); 
+		int y = getSelectedY(e);
+		return getOverlaySliceValue(x, y);
+	}
+	
+	protected int getFreeID() {
+		return regionType.length;
+	}
+	
+	@Override
+	protected void processMouseEvent(MouseEvent e) {
+		switch (mode) {
+			case Idle:
+				break;
+			case Edit:
+				if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+					currentMarker = getSelectedID(e);
+				} else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
+					currentMarker = -1;
+				}
+				repaint();
+				break;
+			case Add:
+				if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+					currentMarker = getFreeID();
+					int[] regionTypeNew = new int[regionType.length+1]; 
+					System.arraycopy(regionType, 0, regionTypeNew, 0, regionType.length);
+					regionTypeNew[regionTypeNew.length-1] = newRegionType;
+					regionType = regionTypeNew;
+					setOverlaySliceValue(getSelectedX(e), getSelectedY(e), currentMarker);
+					pushSliceToBuffer(overlay, axis, slice, overlaySlice);
+					mode = Mode.Edit;
+					repaint();
+				}	
+				break;
+			case Delete:
+				if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+					int id = getSelectedID(e);
+					if (id > 0) {
+						//deleteID(id);
+						repaint();
+					}
+				}
+				break;
+		}		
+	}
+	
+	@Override
+	protected void processMouseMotionEvent(MouseEvent e) {
+		switch (mode) {
+			case Edit:
+				if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
+					if (currentMarker >= 0) {
+						setOverlaySliceValue(getSelectedX(e), getSelectedY(e), currentMarker);
+						pushSliceToBuffer(overlay, axis, slice, overlaySlice);
+						repaint();
+					}
+				}
+			default:
 		}
 	}
 	
