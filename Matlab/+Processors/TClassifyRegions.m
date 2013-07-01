@@ -72,6 +72,8 @@ classdef TClassifyRegions < Core.TProcessor
         end
         
         function OnMarkRegion(this, sender, event)
+            this.Pipeline.MarkChildrenInvalid(this);
+            this.Pipeline.CallComponentsStateChangeCallback();
             regionID = event.data.regionID + 1;
             newMark =  event.data.newMark;
             this.Regions.RegionDesc(regionID).Type = newMark;
@@ -81,6 +83,8 @@ classdef TClassifyRegions < Core.TProcessor
         end
         
         function OnDeleteRegion(this, sender, event)
+            this.Pipeline.MarkChildrenInvalid(this);
+            this.Pipeline.CallComponentsStateChangeCallback();
             regionID = event.data.regionID + 1;
             this.Regions.RemoveRegionDesc(regionID);
             this.PushRegionsDataToUI();
@@ -89,6 +93,8 @@ classdef TClassifyRegions < Core.TProcessor
         end
         
         function OnCutRegion(this, sender, event)
+            this.Pipeline.MarkChildrenInvalid(this);
+            this.Pipeline.CallComponentsStateChangeCallback();
             regionID = event.data.regionID + 1;
             ptPlane = event.data.ptPlane;
             vnPlane = event.data.vnPlane;
@@ -113,6 +119,8 @@ classdef TClassifyRegions < Core.TProcessor
         end
         
         function OnMergeRegions(this, sender, event)
+            this.Pipeline.MarkChildrenInvalid(this);
+            this.Pipeline.CallComponentsStateChangeCallback();
             regionIDs = event.data.regionIDs + 1;
             pixels = [];
             for k = 1:length(regionIDs)
@@ -135,18 +143,20 @@ classdef TClassifyRegions < Core.TProcessor
         end
         
         function OnSetRegions(this, sender, event)
+            this.Pipeline.MarkChildrenInvalid(this);
+            this.Pipeline.CallComponentsStateChangeCallback();
             regionsType = event.data.regionsType(2:end);
             regionsMap = event.data.regionsMap;
             nRegions = length(regionsType);
-            regions = Segment3D.TRegionDescsList();
+            this.Regions.Clear();
             for k = 1:nRegions
                 [k1, k2, k3] = ind2sub(size(regionsMap), find(regionsMap == k));
                 if (~isempty(k1))
                     pixels = [k1, k2, k3]';
                     pixelsInMicrons = this.Settings.PixToMicron(pixels);
-                    center = mean(pixels, 2);
+                    center = mean(pixelsInMicrons, 2);
                     surface = Segment3D.CreateSurfaceMesh(this.Settings, pixels);
-                    regions.AddRegionDesc( ...
+                    this.Regions.AddRegionDesc( ...
                         pixelsInMicrons, ...
                         center, ...
                         surface, ...
@@ -154,7 +164,6 @@ classdef TClassifyRegions < Core.TProcessor
                 end
             end
     
-            this.Regions = regions;
             this.PushRegionsDataToUI();
             this.ExternalUI.onNewSurfaces();
             event.onHandled(); % call java code back
