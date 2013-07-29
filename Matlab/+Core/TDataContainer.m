@@ -15,6 +15,13 @@ classdef TDataContainer < Core.TComponent
             this.Outputs(1).Type = this.Inputs(1).Type;
         end
         
+        function OnStateChanged(this)            
+            if (this.State == Core.TComponentState.INVALID)
+                % Clear the invalid data
+                this.Data = [];
+            end
+        end
+        
         function Run(this)
             % Nothing to do here, it is just a passive data container
         end

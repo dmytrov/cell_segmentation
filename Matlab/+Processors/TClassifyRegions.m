@@ -5,8 +5,14 @@ classdef TClassifyRegions < Core.TProcessor
         OUT_REGIONS = 1;
     end
     
+    properties (Access = public, Constant = true)
+        RETINAL = 'RETINAL';
+        CORTICAL = 'CORTICAL';
+    end
+    
     properties (Access = public)
-        Settings;        
+        Settings;   
+        ScanType; % Cortical or Retinal
     end
     
     properties (Access = protected)
@@ -19,6 +25,7 @@ classdef TClassifyRegions < Core.TProcessor
             this.Inputs = [Core.TInputPoint('Stack', 'Image Stack', this), ...
                            Core.TInputPoint('Convergence', 'Convergence Stack', this)];
             this.Outputs = [Core.TOutputPoint('Regions', 'Regions 3D', this)];
+            this.ScanType = this.RETINAL;
         end
     
         function GetParameters(this, params)
@@ -36,7 +43,7 @@ classdef TClassifyRegions < Core.TProcessor
             convergence = this.Inputs(this.IN_CONVERGENCE).PullData();            
             regions = Segment3D.FindCellsRegions(this.Settings, convergence);
             this.Regions = regions;
-            Segment3D.ClassifyRegions(this.Settings, regions);
+            Segment3D.ClassifyRegions(this.Settings, regions, this.ScanType);
             this.Outputs(this.OUT_REGIONS).PushData(regions);
         end
         
@@ -202,7 +209,7 @@ classdef TClassifyRegions < Core.TProcessor
 
             fprintf('Pushing stack data\n');
             overlay = zeros(stackSize);
-            pixels = this.Settings.MicronToPix(this.Regions.Pixels);
+            pixels = round(this.Settings.MicronToPix(this.Regions.Pixels));
             overlay(sub2ind(size(overlay), pixels(1, :), pixels(2, :), pixels(3, :))) = this.Regions.PixelID;
             this.ExternalUI.overlay = overlay;
             clear overlay;

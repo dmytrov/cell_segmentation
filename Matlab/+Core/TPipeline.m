@@ -143,10 +143,10 @@ classdef TPipeline < handle
         function MarkChildrenInvalid(this, component)
             for output = component.Outputs
                 for input = output.Others
-                    if (input.Component.State ~= Core.TComponentState.INVALID)
+                    %if (input.Component.State ~= Core.TComponentState.INVALID)
                         input.Component.State = Core.TComponentState.INVALID;
                         this.MarkChildrenInvalid(input.Component);
-                    end
+                    %end
                 end
             end
         end

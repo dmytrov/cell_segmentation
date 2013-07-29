@@ -19,9 +19,14 @@ classdef TLoadTIFF < Core.TProcessor
             Run@Core.TProcessor(this);
             
             data = ImageUtils.LoadTIFF(this.FileName);            
-            %data = data(10:40, 10:40, 1:end);
-            %data = data(1:end/4, 1:end/4, :);
+            data = this.FilterData(data);
             this.Outputs(this.OUT_STACK).PushData(data);
+        end
+        
+        function res = FilterData(this, data)
+            res = data;
+            % Use just a small part of the data
+            %res = res(1:end/2, 1:end/2, 1:end/4);
         end
         
         function GetParameters(this, params)

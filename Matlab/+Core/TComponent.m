@@ -16,6 +16,13 @@ classdef TComponent < handle
         ExternalUI;
     end
     
+    methods
+        function set.State(this, value)
+            this.State = value;
+            this.OnStateChanged();
+        end
+    end
+    
     methods (Access = public)
         function this = TComponent(name, pipeline)
             this.Name = name;
@@ -23,6 +30,10 @@ classdef TComponent < handle
             this.State = Core.TComponentState.INVALID;
             this.Inputs = Core.TInputPoint.empty;
             this.Outputs = Core.TOutputPoint.empty;
+        end        
+        
+        function OnStateChanged(this)
+            % Empty
         end
                 
         function res = InputByName(this, name)

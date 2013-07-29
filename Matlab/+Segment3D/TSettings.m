@@ -2,11 +2,17 @@
 %   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
 %   mailto:dmytro.velychko@student.uni-tuebingen.de
 
-classdef TSettings
+classdef TSettings < handle
+    properties (Constant = true)
+        RETINAL     = 0;
+        CORTICAL    = 1;
+    end
+    
     properties (Access = public)
         IsDebug;
         
         % General scanned stack parameters
+        ScanType;   % RETINAL or CORTICAL
         Resolution; % um/pixel
         Anisotropy; % scaling
         InvAnisotropy; %inverse scaling
@@ -16,18 +22,20 @@ classdef TSettings
         ConvergenceKernelVariance; % vector, micron
         ConvergenceThreshold; % [0-1], fraction of maxConvergenceValue
         
-        % Classification criteria (rough)
+        % Classification criteria  for retinal scan (rough)
         CellMinPixVolumeRough; % pixels, rough estimation
         CellMaxPixVolumeRough; % pixels, rough estimation
         CellMaxZAxisAngleRough; % cos of 1-st principal component and Z-axis
         
-        % Classification criteria (fine)
+        % Classification criteria for retinal scan (fine)
         CellMinPixVolumeFine;  % pixels, fine estimation
         CellMaxPixVolumeFine;  % pixels, fine estimation
         CellMaxZAxisAngleFine; % cos of 1-st principal component and Z-axis
         CellMaxElongation;     % max/min principal components ratio 
         CellVolumeToBoundingVolumeRatio;
         CellMaxDistanceToCellPlane;        
+        
+        % Classification criteria for cortiacal scan
         
         TesselationLevel;   % number of subdivision for tesselation. Each subdivision increases number of faces 4 times
         
@@ -57,11 +65,16 @@ classdef TSettings
         % Constructor
         
         function obj = TSettings()
+            obj.InitForRetinalScan()
+        end
+        
+        function InitForRetinalScan(obj)
             obj.IsDebug = 0;
             
             % Main parameter of the segmentation
             radius = 6.5; % typical cell raduis, micron
             
+            obj.ScanType = obj.RETINAL;            
             obj.Resolution = [110/512, 110/512, 1]';
             obj.Anisotropy = [1, 1, obj.Resolution(1)/obj.Resolution(3)]';
             obj.InvAnisotropy = 1./obj.Anisotropy;
@@ -71,7 +84,7 @@ classdef TSettings
             obj.ConvergenceKernelVariance = [radius, radius, radius]' / 3.5;
             obj.ConvergenceThreshold = 0.5;
             
-            % Lots of magic munbers because they are parametrised by radius
+            % Lots of magic numbers because they are parametrised by radius
             pixInCell = prod(radius ./ obj.Resolution);
             obj.CellMinPixVolumeRough = round(0.0336 * pixInCell); 
             obj.CellMaxPixVolumeRough = round(0.6723 * pixInCell); 
@@ -82,7 +95,7 @@ classdef TSettings
             obj.CellMaxZAxisAngleFine = 0.9; % range: [0, 1] - dot prod
             obj.CellVolumeToBoundingVolumeRatio = 0.001;
             obj.CellMaxElongation = 5;
-            obj.CellMaxDistanceToCellPlane = 1.5 * radius;        
+            obj.CellMaxDistanceToCellPlane = 1.5 * radius;      
             
             obj.TesselationLevel = 1;
             
@@ -98,11 +111,50 @@ classdef TSettings
             obj.CurvaturePrior = ...
                 Bayesian.TGaussianPrior(0.1 * radius / obj.TesselationLevel, ...
                                         0.3 * radius / obj.TesselationLevel);
-            % THESE ARE NOT IMPLEMENTED YET
-            % obj.BoundaryIntensityPrior = ...
-            %     Bayesian.TGaussianPrior(0.2, 0.1);
-            % obj.IsosurfacePrior = ...
-            %     Bayesian.TGaussianPrior(1, 0.1);
+            
+            obj.FrameRate = 1000/128;
+            
+            obj.EnableFunctionalStackAlignment = 1;
+            obj.EnableMorphologyStackAlignment = 0;
+        end
+        
+        function InitForCorticalScan(obj)
+            obj.IsDebug = 0;
+            
+            % Main parameter of the segmentation
+            radius = 10; % typical cell raduis, micron
+            
+            obj.ScanType = obj.CORTICAL;            
+            obj.Resolution = [560/1024, 560/1024, 0.8]';
+            obj.Anisotropy = [1, 1, obj.Resolution(1)/obj.Resolution(3)]';
+            obj.InvAnisotropy = 1./obj.Anisotropy;
+            
+            obj.ConvergenceBlurVariance = [2, 2, 0.1]';
+            obj.ConvergenceKernelVariance = [radius, radius, radius]' / 2.5;
+            %obj.ConvergenceKernelVariance = [radius, radius, radius]' / 3.5;
+            obj.ConvergenceThreshold = 0.5;
+            
+            % Lots of magic numbers because they are parametrised by radius
+            pixInCell = prod(radius ./ obj.Resolution);            
+            obj.CellMinPixVolumeFine = round(0.0336 * pixInCell);
+            obj.CellMaxPixVolumeFine = round(0.6723 * pixInCell); 
+            obj.CellMaxElongation = 10;
+            obj.CellVolumeToBoundingVolumeRatio = 0.05;
+            
+            obj.TesselationLevel = 1;
+            
+            obj.RayRadius = 1.5 * radius;
+            obj.RayStep = obj.PixToMicronXY(1)/4; % micron; 4 steps per pixel
+            obj.RayKernelVariance = 1; % micron
+            
+            obj.BoundaryEstimationIterations = 4;
+            
+            % Priors
+            obj.RadiusPrior = ...
+                Bayesian.TGaussianPrior(radius, 0.3 * radius);
+            obj.CurvaturePrior = ...
+                Bayesian.TGaussianPrior(0.1 * radius / obj.TesselationLevel, ...
+                                        0.3 * radius / obj.TesselationLevel);
             
             obj.FrameRate = 1000/128;
             

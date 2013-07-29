@@ -54,6 +54,7 @@ public class Application {
 		// Register UI classes for matlab components
 		componentsBridge = new ComponentsBridge();
 		componentsBridge.registerComponentUI("Processors.TLoadTIFF", LoadTIFFUI.class);
+		componentsBridge.registerComponentUI("Processors.TLoadTIFFHighPass", LoadTIFFUI.class);
 		componentsBridge.registerComponentUI("Processors.TClassifyRegions", ClassifyRegionsUI.class);
 		componentsBridge.registerComponentUI("Processors.TEdit2DROI", EditROIUI.class);
 		componentsBridge.registerComponentUI("Processors.TShowModelsInJava", ShowModelsUI.class);

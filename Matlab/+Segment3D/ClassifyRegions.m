@@ -2,7 +2,10 @@
 %   Dmytro Velychko - created. Euler AG, CIN, Tuebingen, 2012-2013
 %   mailto:dmytro.velychko@student.uni-tuebingen.de
 
-function ClassifyRegions(settings, cellsRegions)
+function ClassifyRegions(settings, cellsRegions, scanType)
+    if (nargin < 3)
+        scanType = 'RETINAL';
+    end
     % Compute features
     featZAxisAngle      = nan(length(cellsRegions.RegionDesc), 1);
     featVolume          = nan(length(cellsRegions.RegionDesc), 1);
@@ -22,44 +25,63 @@ function ClassifyRegions(settings, cellsRegions)
         k = k + 1;
     end
     
-    % Rough estimation
-    isCell = (featVolume > settings.CellMinPixVolumeRough) & ...
-             (featVolume < settings.CellMaxPixVolumeRough) & ...
-             (featZAxisAngle < settings.CellMaxZAxisAngleRough);
-    cellsPixels = nan(3, 0);
-    k = 1;
-    for region = cellsRegions.RegionDesc
-        if (isCell(k))
-            region.Type = Segment3D.TRegionDesc.CELL;
-            cellsPixels = [cellsPixels, region.Pixels];
-        else
-            region.Type = Segment3D.TRegionDesc.NOISE;
+    if (strcmp(scanType, 'RETINAL'))
+        % Rough estimation
+        isCell = (featVolume > settings.CellMinPixVolumeRough) & ...
+                 (featVolume < settings.CellMaxPixVolumeRough) & ...
+                 (featZAxisAngle < settings.CellMaxZAxisAngleRough);
+        cellsPixels = nan(3, 0);
+        k = 1;
+        for region = cellsRegions.RegionDesc
+            if (isCell(k))
+                region.Type = Segment3D.TRegionDesc.CELL;
+                cellsPixels = [cellsPixels, region.Pixels];
+            else
+                region.Type = Segment3D.TRegionDesc.NOISE;
+            end
+            k = k + 1;
         end
-        k = k + 1;
-    end
-    
-    % Find cells plane
-    [planeAxes, axesScale] = MathUtils.GetPrincipalAxes(cellsPixels);
-    vnPlane = planeAxes(:, 3);
-    ptPlane = mean(cellsPixels, 2);
-    
-    % Re-run the classification with cells plane information
-    cellsPixels = nan(3, 0);
-    k = 1;
-    for region = cellsRegions.RegionDesc
-        isCell(k) = (featVolume(k) > settings.CellMinPixVolumeFine) & ...
-                    (featVolume(k) < settings.CellMaxPixVolumeFine) & ...
-                    (featZAxisAngle(k) < settings.CellMaxZAxisAngleFine) & ...
-                    (featVolume(k) / featBoundingVolume(k) > settings.CellVolumeToBoundingVolumeRatio) & ...
-                    (featElongation(k) < settings.CellMaxElongation) & ...
-                    (abs(Collision.PointPlaneDist(region.Center, ptPlane, vnPlane)) < settings.CellMaxDistanceToCellPlane);
-        if (isCell(k))
-            region.Type = Segment3D.TRegionDesc.CELL;
-            cellsPixels = [cellsPixels, region.Pixels];
-        else
-            region.Type = Segment3D.TRegionDesc.NOISE;
+
+        % Find cells plane
+        [planeAxes, axesScale] = MathUtils.GetPrincipalAxes(cellsPixels);
+        vnPlane = planeAxes(:, 3);
+        ptPlane = mean(cellsPixels, 2);
+
+        % Re-run the classification with cells plane information
+        cellsPixels = nan(3, 0);
+        k = 1;
+        for region = cellsRegions.RegionDesc
+            isCell(k) = (featVolume(k) > settings.CellMinPixVolumeFine) & ...
+                        (featVolume(k) < settings.CellMaxPixVolumeFine) & ...
+                        (featZAxisAngle(k) < settings.CellMaxZAxisAngleFine) & ...
+                        (featVolume(k) / featBoundingVolume(k) > settings.CellVolumeToBoundingVolumeRatio) & ...
+                        (featElongation(k) < settings.CellMaxElongation) & ...
+                        (abs(Collision.PointPlaneDist(region.Center, ptPlane, vnPlane)) < settings.CellMaxDistanceToCellPlane);
+            if (isCell(k))
+                region.Type = Segment3D.TRegionDesc.CELL;
+                cellsPixels = [cellsPixels, region.Pixels];
+            else
+                region.Type = Segment3D.TRegionDesc.NOISE;
+            end
+            k = k + 1;
         end
-        k = k + 1;
+    elseif (strcmp(scanType, 'CORTICAL'))        
+        isCell = (featVolume > settings.CellMinPixVolumeFine) & ...
+                 (featVolume < settings.CellMaxPixVolumeFine) & ...
+                 (featElongation < settings.CellMaxElongation) & ...
+                 (featVolume ./ featBoundingVolume > settings.CellVolumeToBoundingVolumeRatio);
+             
+        cellsPixels = nan(3, 0);
+        k = 1;
+        for region = cellsRegions.RegionDesc            
+            if (isCell(k))
+                region.Type = Segment3D.TRegionDesc.CELL;
+                cellsPixels = [cellsPixels, region.Pixels];
+            else
+                region.Type = Segment3D.TRegionDesc.NOISE;
+            end
+            k = k + 1;
+        end
     end
         
     if (settings.IsDebug)
