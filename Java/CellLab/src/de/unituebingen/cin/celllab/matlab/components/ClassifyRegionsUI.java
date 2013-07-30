@@ -36,6 +36,8 @@ import de.unituebingen.cin.celllab.opengl.SceneLayer;
 import de.unituebingen.cin.celllab.opengl.SceneLayerBackground;
 import de.unituebingen.cin.celllab.opengl.SceneLayerLight;
 import de.unituebingen.cin.celllab.opengl.SceneLayerMouseRotationControl;
+import de.unituebingen.cin.celllab.opengl.SceneLayerMouseTranslationControl;
+import de.unituebingen.cin.celllab.opengl.SceneLayerMouseZoomControl;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -210,9 +212,11 @@ public class ClassifyRegionsUI extends ComponentUI {
 		SceneLayer sceneRoot = new SceneLayer("Root", null);
 		SceneLayerLight sceneLight = new SceneLayerLight("Light", sceneRoot);
 		sceneLight.lightPos = new float[] {-50, 100, 20, 1};
-		sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneLight);
+		SceneLayerMouseZoomControl sceneMouseZoom = new SceneLayerMouseZoomControl("Mouse zoom", sceneLight); 
+		sceneMouseRot = new SceneLayerMouseRotationControl("Mouse rotation", sceneMouseZoom);
 		sceneMouseRot.transform.translation.z = - 160;
-		scene3D = new ClassifyRegionsSceneLayer3D("3D", sceneMouseRot, this);
+		SceneLayerMouseTranslationControl sceneMouseTranslation = new SceneLayerMouseTranslationControl("Mouse translation", sceneMouseRot); 
+		scene3D = new ClassifyRegionsSceneLayer3D("3D", sceneMouseTranslation, this);
 		scene3D.transform.translation.x = - 50; 
 		scene3D.transform.translation.y = - 50;
 		scene3D.transform.translation.z = - 25;

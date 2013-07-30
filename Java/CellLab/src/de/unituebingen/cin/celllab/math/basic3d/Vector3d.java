@@ -22,5 +22,23 @@ public class Vector3d extends javax.vecmath.Vector3d {
 	public double[] toArray() {
 		return new double[] {x, y, z};
 	}
+	
+	public Vector3d mult(double x) {
+		Vector3d res = new Vector3d();
+		res.scale(x, this);
+		return res;
+	}
+	
+	public Vector3d plus(Vector3d x) {
+		Vector3d res = new Vector3d();
+		res.add(this, x);
+		return res;
+	}
+	
+	public Vector3d minus(Vector3d x) {
+		Vector3d res = new Vector3d();
+		res.sub(this, x);
+		return res;
+	}
 
 }

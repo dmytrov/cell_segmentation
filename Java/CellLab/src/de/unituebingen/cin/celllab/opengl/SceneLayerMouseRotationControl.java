@@ -27,17 +27,7 @@ public class SceneLayerMouseRotationControl extends SceneLayer {
 			return true;
 		}
 		return false;
-	}
-	
-	protected Vector3d getParentVViewLocal(Vector3d vView) {
-		Vector3d res;
-		if (parentLayer != null) {
-			res = parentLayer.getVViewLocal(vView);
-		} else {
-			res = new Vector3d(vView);
-		}
-		return res;
-	}
+	}	
 	
 	@Override
 	protected boolean handleMouseMoveBeforeChildren(MouseEvent event, Vector3d ptView, Vector3d vView, Vector3d ptViewLocal, Vector3d vViewLocal) {

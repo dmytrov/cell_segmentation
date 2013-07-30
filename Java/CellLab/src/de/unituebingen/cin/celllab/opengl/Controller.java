@@ -43,7 +43,7 @@ public class Controller implements GLEventListener, MouseListener, MouseMotionLi
 		this.component = component;
 		component.addMouseListener(this);
 		component.addMouseWheelListener(this);
-		component.addMouseMotionListener(this);
+		component.addMouseMotionListener(this);		
 	}
 	
 	public void invalidateScene()
@@ -109,8 +109,11 @@ public class Controller implements GLEventListener, MouseListener, MouseMotionLi
 	// MouseWheelListener implementation
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		// TODO Auto-generated method stub
-
+		if (scene != null) {
+			Vector3d ptView = new Vector3d(0d, 0d ,0d);
+			Vector3d vView = camera.unProject(e.getX(), e.getY());
+			scene.handleMouseWheelMoved(e, ptView, vView);
+		}
 	}
 
 	@Override

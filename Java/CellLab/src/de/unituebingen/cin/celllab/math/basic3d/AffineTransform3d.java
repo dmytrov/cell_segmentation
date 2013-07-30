@@ -91,7 +91,7 @@ public class AffineTransform3d {
 		// X = A'X' + B'
 		// A' = A^-1
 		// B' = -A^-1 * B
-		// Because A is an orthogonal transformation, inverse is equal to transposed.
+		// As A is an orthogonal transformation, inverse is equal to transposed.
 		rotation.transpose(); 
 		translation = rotation.mul(translation);
 		translation.negate();

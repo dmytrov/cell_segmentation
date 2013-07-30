@@ -5,6 +5,7 @@
 package de.unituebingen.cin.celllab.opengl;
 
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.*;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -28,22 +29,9 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 	public void render(GLAutoDrawable drawable) {
 		GL gl = drawable.getGL();
 		gl.glMatrixMode(GL.GL_MODELVIEW);
-		gl.glPushMatrix();
-		/*AffineTransform3d fullTransform = getFullTransform();
-		double dx = fullTransform.translation.x;
-		double dy = fullTransform.translation.y;
-		double dz = fullTransform.translation.z;
-		fullTransform.translation.x = 0;
-		fullTransform.translation.y = 0;
-		fullTransform.translation.z = 0;
-		double[] mRot = fullTransform.getArray();
-		gl.glLoadMatrixd(mRot, 0);
-		gl.glTranslated(dx, dy, dz);
-		*/
+		gl.glPushMatrix();		
 		gl.glMultMatrixd(transform.getArray(), 0);
-		//double[] mRotLoaded = new double[16];
-		//gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, mRotLoaded, 0);
-		//System.out.println(Arrays.toString(mRotLoaded));
+		
 		renderBeforeChildren(drawable);
 		renderChildrenReverseOrder(drawable);
 		renderAfterChildren(drawable);
@@ -91,6 +79,26 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 		return transformInv.transformVector(vView);
 	}
 	
+	protected Vector3d getParentVViewLocal(Vector3d vView) {
+		Vector3d res;
+		if (parentLayer != null) {
+			res = parentLayer.getVViewLocal(vView);
+		} else {
+			res = new Vector3d(vView);
+		}
+		return res;
+	}
+	
+	protected Vector3d getParentPtViewLocal(Vector3d ptView) {
+		Vector3d res;
+		if (parentLayer != null) {
+			res = parentLayer.getPtViewLocal(ptView);
+		} else {
+			res = new Vector3d(ptView);
+		}
+		return res;
+	}
+	
 	public boolean handleMousePressed(MouseEvent event, Vector3d ptView, Vector3d vView) {
 		AffineTransform3d transformInv = getFullInvertTransform();
 		Vector3d ptViewLocal = transformInv.transformPoint(ptView);
@@ -135,6 +143,22 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 		}
 		return false;
 	}
+	
+	public boolean handleMouseWheelMoved(MouseWheelEvent event, Vector3d ptView, Vector3d vView)
+	{
+		AffineTransform3d transformInv = getFullInvertTransform();
+		Vector3d ptViewLocal = transformInv.transformPoint(ptView);
+		Vector3d vViewLocal = transformInv.transformVector(vView);
+		if (handleMouseWheelMovedBeforeChildren(event, ptView, vView, ptViewLocal, vViewLocal)) {
+			return true;
+		}
+		for (SceneLayer childLayer : childLayers) {
+			if (childLayer.handleMouseWheelMoved(event,ptView, vView)) {
+				return true;
+			}			
+		}
+		return false;
+	}
 
 	protected boolean handleMousePressedBeforeChildren(MouseEvent event, Vector3d ptView, Vector3d vView, Vector3d ptViewLocal, Vector3d vViewLocal) {
 		return false;
@@ -148,6 +172,9 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 		return false;
 	}
 
+	protected boolean handleMouseWheelMovedBeforeChildren(MouseWheelEvent event, Vector3d ptView, Vector3d vView, Vector3d ptViewLocal, Vector3d vViewLocal) {
+		return false;
+	}
 }
 
 

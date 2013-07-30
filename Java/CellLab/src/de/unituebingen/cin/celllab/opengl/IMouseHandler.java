@@ -5,6 +5,8 @@
 package de.unituebingen.cin.celllab.opengl;
 
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+
 import de.unituebingen.cin.celllab.math.basic3d.*;
 
 public interface IMouseHandler {
@@ -12,5 +14,5 @@ public interface IMouseHandler {
 	boolean handleMouseMove(MouseEvent event, Vector3d ptView, Vector3d vView);
 	boolean handleMousePressed(MouseEvent event, Vector3d ptView, Vector3d vView);
 	boolean handleMouseReleased(MouseEvent event, Vector3d ptView, Vector3d vView);
-	
+	boolean handleMouseWheelMoved(MouseWheelEvent event, Vector3d ptView, Vector3d vView);
 }
