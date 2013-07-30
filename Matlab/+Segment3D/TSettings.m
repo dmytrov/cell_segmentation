@@ -97,7 +97,7 @@ classdef TSettings < handle
             obj.CellMaxElongation = 5;
             obj.CellMaxDistanceToCellPlane = 1.5 * radius;      
             
-            obj.TesselationLevel = 1;
+            obj.TesselationLevel = 2;
             
             obj.RayRadius = 1.5 * radius;
             obj.RayStep = obj.PixToMicronXY(1)/4; % micron; 4 steps per pixel
@@ -131,7 +131,6 @@ classdef TSettings < handle
             
             obj.ConvergenceBlurVariance = [2, 2, 0.1]';
             obj.ConvergenceKernelVariance = [radius, radius, radius]' / 2.5;
-            %obj.ConvergenceKernelVariance = [radius, radius, radius]' / 3.5;
             obj.ConvergenceThreshold = 0.5;
             
             % Lots of magic numbers because they are parametrised by radius
@@ -141,7 +140,7 @@ classdef TSettings < handle
             obj.CellMaxElongation = 10;
             obj.CellVolumeToBoundingVolumeRatio = 0.05;
             
-            obj.TesselationLevel = 1;
+            obj.TesselationLevel = 2;
             
             obj.RayRadius = 1.5 * radius;
             obj.RayStep = obj.PixToMicronXY(1)/4; % micron; 4 steps per pixel
