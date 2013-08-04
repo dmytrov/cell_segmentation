@@ -80,6 +80,7 @@ classdef TClassifyRegions < Core.TProcessor
         
         function OnMarkRegion(this, sender, event)
             this.Pipeline.MarkChildrenInvalid(this);
+            this.Outputs(this.OUT_REGIONS).PushData(this.Regions);
             this.Pipeline.CallComponentsStateChangeCallback();
             regionID = event.data.regionID + 1;
             newMark =  event.data.newMark;
@@ -91,6 +92,7 @@ classdef TClassifyRegions < Core.TProcessor
         
         function OnDeleteRegion(this, sender, event)
             this.Pipeline.MarkChildrenInvalid(this);
+            this.Outputs(this.OUT_REGIONS).PushData(this.Regions);
             this.Pipeline.CallComponentsStateChangeCallback();
             regionID = event.data.regionID + 1;
             this.Regions.RemoveRegionDesc(regionID);
@@ -101,6 +103,7 @@ classdef TClassifyRegions < Core.TProcessor
         
         function OnCutRegion(this, sender, event)
             this.Pipeline.MarkChildrenInvalid(this);
+            this.Outputs(this.OUT_REGIONS).PushData(this.Regions);
             this.Pipeline.CallComponentsStateChangeCallback();
             regionID = event.data.regionID + 1;
             ptPlane = event.data.ptPlane;
@@ -127,6 +130,7 @@ classdef TClassifyRegions < Core.TProcessor
         
         function OnMergeRegions(this, sender, event)
             this.Pipeline.MarkChildrenInvalid(this);
+            this.Outputs(this.OUT_REGIONS).PushData(this.Regions);
             this.Pipeline.CallComponentsStateChangeCallback();
             regionIDs = event.data.regionIDs + 1;
             pixels = [];
@@ -151,6 +155,7 @@ classdef TClassifyRegions < Core.TProcessor
         
         function OnSetRegions(this, sender, event)
             this.Pipeline.MarkChildrenInvalid(this);
+            this.Outputs(this.OUT_REGIONS).PushData(this.Regions);
             this.Pipeline.CallComponentsStateChangeCallback();
             regionsType = event.data.regionsType(2:end);
             regionsMap = event.data.regionsMap;

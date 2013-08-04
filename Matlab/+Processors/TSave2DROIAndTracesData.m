@@ -21,6 +21,7 @@ classdef TSave2DROIAndTracesData < Core.TProcessor
             traces = this.Inputs(this.IN_TRACES).PullData();
             ROI =  this.Inputs(this.IN_ROI).PullData();
             
+            mkdir('./out');
             f = fopen('./out/ROI.txt', 'w');
             try
                 this.WriteMatrixToFile(f, '%d\t', ROI);

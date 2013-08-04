@@ -22,6 +22,7 @@ classdef TAlignStack < Core.TProcessor
             stack = this.Inputs(this.IN_STACK).PullData();
             if (this.Enabled)
                 stackAligned = ImageUtils.AlignSlices(stack, this.Mode, this.StartSlice, this.Pipeline.MessageLog);
+                %UI.StackViewer(stackAligned);
             else
                 stackAligned = stack;
             end

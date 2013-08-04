@@ -34,9 +34,10 @@ function res = AlignSlices(scan, sMode, kReferenceSlice, messageLog)
     [imgGridX, imgGridY] = meshgrid(1:sx, 1:sy);
     displFullX = 0;
     displFullY = 0;
+    window = MakeWindow2D(sx, sy, 8);
     for k = alignOrder
         messageLog.PrintLine(sprintf('Aligning slice %d of %d', k, sz));	
-        sliceCorr = ImageCorrelation(scan(:,:,alignReference(k)), scan(:,:,k), corrSize);
+        sliceCorr = ImageCorrelation(scan(:,:,alignReference(k)).*window, scan(:,:,k).*window, corrSize);
         
         %maxBorder = max([sliceCorr(1, :), sliceCorr(end, :), sliceCorr(:, 1)', sliceCorr(:, end)']);
         %sliceCorr = sliceCorr - maxBorder;
@@ -66,6 +67,7 @@ function res = AlignSlices(scan, sMode, kReferenceSlice, messageLog)
 end
 
 function res = ImageCorrelation(img1, img2, corrSize)
+    
     [gx, gy] = gradient(img1);
     img1 = abs(gx) + abs(gy);
     [gx, gy] = gradient(img2);
@@ -91,3 +93,29 @@ function res = ImageCorrelation(img1, img2, corrSize)
     c = vectors1' * vectors2;
     res = reshape(c, corrSize, corrSize)';    
 end
+
+function res = MakeWindow2D(sizeX, sizeY, decayFraction)
+    if (nargin < 3) 
+        decayFraction = 6;
+    end
+    
+    res = ones(sizeX, sizeY);
+    decaySizeX = sizeX/decayFraction;
+    decaySizeY = sizeY/decayFraction;
+    
+    k = 1:decaySizeX;
+    decayX = (1-cos(pi*k/decaySizeX))/2;
+    res(k,:) = res(k,:) .* repmat(decayX', 1, sizeY);
+    
+    k = sizeX:-1:(sizeX-decaySizeX+1);
+    res(k,:) = res(k,:) .* repmat(decayX', 1, sizeY);
+    
+    k = 1:decaySizeY;
+    decayY = (1-cos(pi*k/decaySizeY))/2;
+    res(:,k) = res(:,k) .* repmat(decayY, sizeX, 1);
+    
+    k = sizeY:-1:(sizeY-decaySizeY+1);
+    res(:,k) = res(:,k) .* repmat(decayY, sizeX, 1);    
+end
+
+

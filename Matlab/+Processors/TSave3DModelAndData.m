@@ -22,6 +22,7 @@ classdef TSave3DModelAndData < Core.TProcessor
                 lCellData = [lCellData, Segment3D.T3DCellData(model)];
             end
             
+            mkdir('./out');
             f = fopen('./out/cells.txt', 'w');
             try
                 fwrite(f, [sprintf('CellID\t'), lCellData(1).FieldsDesc(), sprintf('\r\n')]);
