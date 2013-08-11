@@ -8,7 +8,7 @@ classdef TTracesFromFunctionalScanCorrPipelineBuilder < Core.TPipelineBuilder
             res = Core.TPipeline(this.Name);
             
             loadTIFF = Processors.TLoadTIFF('Load functional scan', res);
-            loadTIFF.FileName = '../Data/q1_Ch0.tif';
+            loadTIFF.FileName = '../Data/Q5 FF2.tif';
             alignStack = Processors.TAlignStack('Align stack', res);
             alignStack.Mode = 'SINGLE_REFERENCE';
             make2DROI = Processors.TMake2DROICorr('Make ROI by correlations', res);

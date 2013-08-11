@@ -13,7 +13,7 @@ function clusterID = ELWatershed(scan, Neighbors, cellDiameterHint)
     order(wi*he).y = 0;
     for k1 = 1:length(sortOrder)
         order(k1).x = floor((sortOrder(k1)+wi-1)/wi);
-        order(k1).y = mod(sortOrder(k1),wi) + 1;
+        order(k1).y = mod(sortOrder(k1)-1,wi)+1;
     end
 
     % A bit modified "Watershed" clustering

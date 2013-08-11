@@ -138,6 +138,10 @@ public class Application {
 	    }		
 	}	
 	
+	public void setSurrentComponentParameters() {
+		setComponentParameters(getCurrentComponentDesc(), currentUI);
+	}
+	
 	public void runCurrentComponent() {
 		setComponentParameters(getCurrentComponentDesc(), currentUI);
 		runComponent(getCurrentComponentDesc());

@@ -8,7 +8,7 @@ classdef TCreate3DModelsCorticalPipelineBuilder < Core.TPipelineBuilder
             res = Core.TPipeline(this.Name);
             
             loadTIFF = Processors.TLoadTIFFHighPass('Load 3D scan, Hi-Pass', res);
-            %loadTIFF.FileName = '../Data/Q5 512.tif';
+            %loadTIFF.FileName = '';
             loadTIFF.FileName = 'D:\EulersLab\Data\Cortical scan\chunk_green.tif';            
             alignStack = Processors.TAlignStack('Align stack', res);
             calcConvergence = Processors.TCalcConvergence3D('Calculate convergence', res);

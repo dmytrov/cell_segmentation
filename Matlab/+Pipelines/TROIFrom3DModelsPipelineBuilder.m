@@ -31,7 +31,7 @@ classdef TROIFrom3DModelsPipelineBuilder < Core.TPipelineBuilder
             res.AddProcessorsChain({estimateModels, save3D});
             
             loadTIFFFunc = Processors.TLoadTIFF('Load functional scan', res);
-            loadTIFFFunc.FileName = '../Data/q1_Ch0.tif';
+            loadTIFFFunc.FileName = '../Data/Q5 FF2.tif';
             alignStackFunc = Processors.TAlignStack('Align functional stack', res);
             alignStackFunc.Mode = 'SINGLE_REFERENCE';
             make2DROI = Processors.TMakeROIFrom3DModelsAndFunctionalScan('Make ROI by cut', res);
