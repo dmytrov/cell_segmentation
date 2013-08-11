@@ -4,6 +4,7 @@
 
 package de.unituebingen.cin.celllab.opengl;
 
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.*;
@@ -153,7 +154,19 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 			return true;
 		}
 		for (SceneLayer childLayer : childLayers) {
-			if (childLayer.handleMouseWheelMoved(event,ptView, vView)) {
+			if (childLayer.handleMouseWheelMoved(event, ptView, vView)) {
+				return true;
+			}			
+		}
+		return false;
+	}
+
+	public boolean handleKeyPressed(KeyEvent event) {
+		if (handleKeyPressedBeforeChildren(event)) {
+			return true;
+		}
+		for (SceneLayer childLayer : childLayers) {
+			if (childLayer.handleKeyPressed(event)) {
 				return true;
 			}			
 		}
@@ -175,6 +188,12 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 	protected boolean handleMouseWheelMovedBeforeChildren(MouseWheelEvent event, Vector3d ptView, Vector3d vView, Vector3d ptViewLocal, Vector3d vViewLocal) {
 		return false;
 	}
+	
+	protected boolean handleKeyPressedBeforeChildren(KeyEvent event)
+	{
+		return false;
+	}
+
 }
 
 

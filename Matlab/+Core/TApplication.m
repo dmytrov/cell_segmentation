@@ -20,9 +20,7 @@ classdef TApplication < handle
         
         function BuildPipelineByName(this, name)
             builder = Utils.CellArray.FindByName(this.PipelineBuilders, name);
-            if (isvalid(this.Pipeline))
-                delete(this.Pipeline);
-            end
+            delete(this.Pipeline);
             this.Pipeline = builder.Build();
         end
         
