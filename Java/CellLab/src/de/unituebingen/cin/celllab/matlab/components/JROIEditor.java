@@ -90,6 +90,7 @@ public class JROIEditor extends JComponent {
 		BufferedImage res = new BufferedImage(scaleX*sx, scaleY*sy, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = res.getRaster();
 		// Draw image
+		float[] fRegionColorFactor = new float[] {1.1f, 1.1f, 0.8f};
 		int[] iArray = new int[3];
 		for (int x = 0; x < sx; x++) {
 			for (int y = 0; y < sy; y++) {
@@ -97,6 +98,11 @@ public class JROIEditor extends JComponent {
 				iArray[0] = pixValue;
 				iArray[1] = pixValue;
 				iArray[2] = pixValue;
+				if (ROIVisible && (map[x][y] > 0)) {
+					for (int k = 0; k<3; k++) {
+						iArray[k] = Math.min(255, (int)(fRegionColorFactor[k] * iArray[k])); 
+					}
+				}
 				for (int k1 = 0; k1 < scaleX; k1++) {
 					for (int k2 = 0; k2 < scaleY; k2++) {
 						raster.setPixel(scaleX*x + k1, scaleY*y + k2, iArray);
@@ -108,18 +114,18 @@ public class JROIEditor extends JComponent {
 			return res;
 		}
 		// Draw ROI overlay
-		int[] iArrayEdge = new int[] {0, 255, 0};
-		int[] iArraySelected = new int[] {255, 0, 0};
+		int[] iArrayEdgeUnselected = new int[] {0, 255, 0};
+		int[] iArrayEdgeSelected = new int[] {255, 0, 0};
 		for (int x = 0; x < sx; x++) {
-			for (int y = 0; y < sy; y++) {
+			for (int y = 0; y < sy; y++) {				
 				if ((x < sx-1) && (map[x][y] != map[x+1][y])) {
-					iArray = ((map[x][y] == currentMarker) || (map[x+1][y] == currentMarker) ? iArraySelected : iArrayEdge);
+					iArray = ((map[x][y] == currentMarker) || (map[x+1][y] == currentMarker) ? iArrayEdgeSelected : iArrayEdgeUnselected);
 					for (int k = 0; k < scaleY; k++) {
 						raster.setPixel(scaleX*(x+1), scaleY*y+k, iArray);
 					}
 				}
 				if ((y < sy-1) && (map[x][y] != map[x][y+1])) {
-					iArray = ((map[x][y] == currentMarker) || (map[x][y+1] == currentMarker) ? iArraySelected : iArrayEdge);
+					iArray = ((map[x][y] == currentMarker) || (map[x][y+1] == currentMarker) ? iArrayEdgeSelected : iArrayEdgeUnselected);
 					for (int k = 0; k < scaleX; k++) {
 						raster.setPixel(scaleX*(x)+k, scaleY*(y+1), iArray);
 					}
