@@ -149,6 +149,17 @@ classdef TPipeline < handle
                     %end
                 end
             end
-        end
+        end        
     end
+    
+    methods
+    	function delete(this)
+            this.UnbindUI();
+            for k = this.Components'
+                component = k{1};
+                delete(component);
+            end
+            %disp('Pipeline is deleted');
+        end
+	end
 end

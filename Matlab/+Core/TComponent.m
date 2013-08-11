@@ -118,5 +118,9 @@ classdef TComponent < handle
         
     end
         
-    
+    methods
+    	function delete(this)
+            %disp(['Component "', this.Name, '" is deleted']);
+        end
+	end
 end
