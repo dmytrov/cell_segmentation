@@ -27,6 +27,8 @@ Save the classpath.txt.
   CellLab
 in the matlab's command prompt
 
+5. Open Matlab/+Segment3D/TSettings.m file and familiarize yourself with the settings adjustments. 
+
 =================
 Known issues:
 -----------------
@@ -48,8 +50,6 @@ Xmx key is for setting max java heap size
 TODO list:
 -----------------
 1. Add a fast space partitioning search structure for 3D geometry.
-2. Add editing of regions (paintin) on the stack view panel.
-3. Add Save/Load of the pipeline object.
 
 =================
 Development environment used:
