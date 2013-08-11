@@ -2,6 +2,7 @@ package de.unituebingen.cin.celllab.matlab.components;
 
 import java.awt.AWTEvent;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -17,11 +18,14 @@ public class JROIEditor extends JComponent {
 	private static final long serialVersionUID = 1L;
 	public int scaleX = 5;
 	public int scaleY = 5;
+	//protected int sx = 0;
+	//protected int sy = 0;
 	public int[][] img = new int[64][64];
 	public int[][] map = new int[64][64];
 	public Mode mode = Mode.Edit; 
 	protected int currentMarker = -1;
 	protected boolean ROIVisible = true;
+	
 	
 	public JROIEditor() {
 		this.enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -131,8 +135,15 @@ public class JROIEditor extends JComponent {
 		
 		BufferedImage bi = makeImage();
 		if (bi != null) {
-			g.drawImage(bi, 0, 0, this);
-		}		
+			//sx = bi.getWidth();
+			//sy = bi.getHeight();
+			
+			Graphics2D g2 = (Graphics2D)g;
+			g2.translate(0, getHeight());
+			g2.scale(1, -1); // invert Y axis
+			g2.drawImage(bi, 0, 0, this);			
+			g2.finalize();
+		}
 	}
 	
 	protected int getSelectedX(MouseEvent e) {
@@ -140,7 +151,7 @@ public class JROIEditor extends JComponent {
 	}
 	
 	protected int getSelectedY(MouseEvent e) {
-		return (int)e.getY() / scaleY;
+		return img[0].length - (int)e.getY() / scaleY;
 	}
 	
 	protected int getSelectedID(MouseEvent e) {
