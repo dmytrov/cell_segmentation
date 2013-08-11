@@ -18,8 +18,6 @@ public class JROIEditor extends JComponent {
 	private static final long serialVersionUID = 1L;
 	public int scaleX = 5;
 	public int scaleY = 5;
-	//protected int sx = 0;
-	//protected int sy = 0;
 	public int[][] img = new int[64][64];
 	public int[][] map = new int[64][64];
 	public Mode mode = Mode.Edit; 
@@ -135,9 +133,6 @@ public class JROIEditor extends JComponent {
 		
 		BufferedImage bi = makeImage();
 		if (bi != null) {
-			//sx = bi.getWidth();
-			//sy = bi.getHeight();
-			
 			Graphics2D g2 = (Graphics2D)g;
 			g2.translate(0, getHeight());
 			g2.scale(1, -1); // invert Y axis
@@ -151,7 +146,7 @@ public class JROIEditor extends JComponent {
 	}
 	
 	protected int getSelectedY(MouseEvent e) {
-		return img[0].length - (int)e.getY() / scaleY;
+		return (getHeight() - (int)e.getY()) / scaleY;
 	}
 	
 	protected int getSelectedID(MouseEvent e) {
