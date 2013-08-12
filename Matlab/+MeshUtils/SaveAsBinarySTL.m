@@ -36,5 +36,6 @@ function SaveAsBinarySTL(model, sFilename)
         fclose(f);
         rethrow(err);
     end
+    fclose(f);
 end
 

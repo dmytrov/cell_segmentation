@@ -248,5 +248,20 @@ public class JROIEditor extends JComponent {
 			default:
 		}
 	}
+
+	public void moveROI(int dx, int dy) {		
+		int[][] newMap = matrixCopy(map);
+		int sx = map.length;
+		int sy = map[0].length;
+		for (int x = Math.max(0, dx); x < Math.min(sx, sx+dx); x++) {
+			for (int y = Math.max(0, dy); y < Math.min(sy, sy+dy); y++) {
+				newMap[x][y] = map[x-dx][y-dy];
+			}				
+		}
+		map = newMap;
+		repaint();
+	}
+
+	
 	
 }

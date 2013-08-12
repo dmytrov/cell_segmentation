@@ -38,6 +38,10 @@ public class EditROIUI extends ComponentUI {
 	public JLabel label;
 	public JButton btnDeleteAll;
 	private JButton btnApply;
+	private JButton btnMoveUp;
+	private JButton btnMoveDown;
+	private JButton btnMoveLeft;
+	private JButton btnMoveRight;
 	
 	@Override
 	public ComponentParameters getParameters() {
@@ -62,7 +66,36 @@ public class EditROIUI extends ComponentUI {
 		
 		panel = new JPanel();
 		splitPane.setLeftComponent(panel);
-		panel.setLayout(new MigLayout("", "[]", "[][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[]", "[][][][][][][][][][][][]"));
+		
+		btnAuto = new JButton("Auto");
+		btnAuto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				application.runCurrentComponent();
+			}
+		});
+		panel.add(btnAuto, "cell 0 0,growx");
+		
+		btnApply = new JButton("Apply");
+		btnApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				application.setSurrentComponentParameters();
+			}
+		});
+		
+		chckbxShowRoiOverlay = new JCheckBox("Show ROI overlay");
+		chckbxShowRoiOverlay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editor.setROIVisible(chckbxShowRoiOverlay.isSelected()); 
+			}
+		});
+		
+		btnDeleteAll = new JButton("Delete all");
+		btnDeleteAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editor.clearMap();
+			}
+		});
 		
 		btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
@@ -85,44 +118,48 @@ public class EditROIUI extends ComponentUI {
 			}
 		});
 		
-		btnAuto = new JButton("Auto");
-		btnAuto.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				application.runCurrentComponent();
+		btnMoveUp = new JButton("Move up");
+		btnMoveUp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				editor.moveROI(0, 1);
 			}
 		});
-		panel.add(btnAuto, "cell 0 0,growx");
-		panel.add(btnEdit, "cell 0 1,growx");
-		panel.add(btnAdd, "cell 0 2,growx");
-		panel.add(btnDelete, "cell 0 3,growx");
+		panel.add(btnMoveUp, "cell 0 1,growx");
 		
-		chckbxShowRoiOverlay = new JCheckBox("Show ROI overlay");
-		chckbxShowRoiOverlay.addActionListener(new ActionListener() {
+		btnMoveDown = new JButton("Move down");
+		btnMoveDown.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				editor.moveROI(0, -1);
+			}
+		});
+		panel.add(btnMoveDown, "cell 0 2,growx");
+		
+		btnMoveLeft = new JButton("Move left");
+		btnMoveLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				editor.setROIVisible(chckbxShowRoiOverlay.isSelected()); 
+				editor.moveROI(-1, 0);
+			}
+		});
+		panel.add(btnMoveLeft, "cell 0 3,growx");
+		
+		btnMoveRight = new JButton("Move right");
+		btnMoveRight.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editor.moveROI(1, 0);
 			}
 		});
 		
-		btnDeleteAll = new JButton("Delete all");
-		btnDeleteAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				editor.clearMap();
-			}
-		});
-		panel.add(btnDeleteAll, "cell 0 4,growx");
+		panel.add(btnMoveRight, "cell 0 4,growx");
+		panel.add(btnEdit, "cell 0 5,growx");
+		panel.add(btnAdd, "cell 0 6,growx");
+		panel.add(btnDelete, "cell 0 7,growx");
+		panel.add(btnDeleteAll, "cell 0 8,growx");
 		
 		label = new JLabel("Visibility options:");
-		panel.add(label, "cell 0 5");
+		panel.add(label, "cell 0 9");
 		chckbxShowRoiOverlay.setSelected(true);
-		panel.add(chckbxShowRoiOverlay, "cell 0 6");
-		
-		btnApply = new JButton("Apply");
-		btnApply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				application.setSurrentComponentParameters();
-			}
-		});
-		panel.add(btnApply, "cell 0 7,growx");
+		panel.add(chckbxShowRoiOverlay, "cell 0 10");
+		panel.add(btnApply, "cell 0 11,growx");
 		
 		panel_1 = new JPanel();
 		splitPane.setRightComponent(panel_1);

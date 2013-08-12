@@ -80,8 +80,8 @@ classdef TSettings < handle
             obj.InvAnisotropy = 1./obj.Anisotropy;
             
             obj.ConvergenceBlurVariance = [2, 2, 0.1]';
-            obj.ConvergenceKernelVariance = [radius, radius, radius]' / 2.5;
-            %obj.ConvergenceKernelVariance = [radius, radius, radius]' / 3.5;
+            %obj.ConvergenceKernelVariance = [radius, radius, radius]' / 2.5;
+            obj.ConvergenceKernelVariance = [radius, radius, radius]' / 3.5;
             obj.ConvergenceThreshold = 0.5;
             
             % Lots of magic numbers because they are parametrised by radius

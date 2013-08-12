@@ -54,9 +54,13 @@ classdef TPipeline < handle
             this.AddComponent(procPrev);
             for kProcessor = 2:numel(processors)
                 processor = processors{kProcessor};
-                dataContainer = Core.TDataContainer(this.DataContainerName(procPrev.Outputs(1)), this);
-                this.AddComponent(dataContainer);
-                dataContainer.ConnectInputsTo(procPrev);
+                if (~isempty(procPrev.Outputs(1).Others))
+                    dataContainer = procPrev.Outputs(1).Others(1).Component;
+                else
+                    dataContainer = Core.TDataContainer(this.DataContainerName(procPrev.Outputs(1)), this);
+                    this.AddComponent(dataContainer);
+                    dataContainer.ConnectInputsTo(procPrev);
+                end
                 this.AddComponent(processor);
                 processor.ConnectInputsTo(dataContainer);
                 procPrev = processor;

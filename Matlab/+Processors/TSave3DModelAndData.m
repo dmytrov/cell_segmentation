@@ -37,7 +37,7 @@ classdef TSave3DModelAndData < Core.TProcessor
                 fclose(f);                        
                 rethrow(err);
             end
-            
+            fclose(f);                                    
         end
     end
 end

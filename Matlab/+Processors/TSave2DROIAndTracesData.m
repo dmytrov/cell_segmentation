@@ -29,6 +29,7 @@ classdef TSave2DROIAndTracesData < Core.TProcessor
                 fclose(f);                        
                 rethrow(err);
             end
+            fclose(f);                        
             
             f = fopen('./out/Traces.txt', 'w');
             try
@@ -37,7 +38,7 @@ classdef TSave2DROIAndTracesData < Core.TProcessor
                 fclose(f);                        
                 rethrow(err);
             end
-            
+            fclose(f);                                    
         end
         
         function WriteMatrixToFile(this, file, formatting, data)
