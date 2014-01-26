@@ -13,7 +13,7 @@ clear currentFilePath;
 clear dirDelimiters;
 
 % Setup the java classpath helper
-javaaddpath([currentDir, '..\Java\CellLab\export\MatlabClassPathHelper.jar']);
+javaaddpath([currentDir, '..\Java\MatlabClassPathHelper\export\matlabclasspathhelper.jar']);
 
 % Add java libraries to the system classpath. WARNING: ORDER IS IMPORTANT!
 de.tuebingen.cin.celllab.MatlabClassPathHelper.addFileToClassPath([currentDir, '..\Java\lib\vecmath-1.5.1.jar']);

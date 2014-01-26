@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="WINDOWS-1251" standalone="no"?>
 <jardesc>
-    <jar path="CellLab/export/matlabclasspathhelper.jar"/>
+    <jar path="MatlabClassPathHelper/export/matlabclasspathhelper.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/MatlabClassPathHelper/MatlabClassPathHelperJarExport.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
