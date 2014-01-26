@@ -74,10 +74,6 @@ public class Controller implements GLEventListener, MouseListener, MouseMotionLi
     	}        
     }
     
-    @Override
-    public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
-    }
-
  	// MouseListener implementation
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -159,6 +155,12 @@ public class Controller implements GLEventListener, MouseListener, MouseMotionLi
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dispose(GLAutoDrawable arg0) {
 		// TODO Auto-generated method stub
 		
 	}

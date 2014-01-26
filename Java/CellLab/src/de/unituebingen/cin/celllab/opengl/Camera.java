@@ -5,6 +5,7 @@
 package de.unituebingen.cin.celllab.opengl;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
 import de.unituebingen.cin.celllab.math.basic3d.*;
@@ -38,18 +39,18 @@ public class Camera {
 		viewportWidth = width;
 		viewportHeight = height;
 		
-		GL gl = drawable.getGL();
+		GL2 gl = drawable.getGL().getGL2();
 		
 		setPerspectiveProjection(drawable, 45.0);
 		        
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
         gl.glViewport(0, 0, viewportWidth, viewportHeight);
         
         // Read the OpenGL parameters back
-        gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, mModelView, 0);
-        gl.glGetDoublev(GL.GL_PROJECTION_MATRIX, mProjection, 0);
+        gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, mModelView, 0);
+        gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, mProjection, 0);
         gl.glGetIntegerv(GL.GL_VIEWPORT, mViewport, 0);
 	}
 	
@@ -62,19 +63,19 @@ public class Camera {
 		return res;
 	}
 	
-	public static void pushProjection(GL gl) {
-		gl.glMatrixMode(GL.GL_PROJECTION);
+	public static void pushProjection(GL2 gl) {
+		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
 	}
 	
-	public static void popProjection(GL gl) {
-		gl.glMatrixMode(GL.GL_PROJECTION);
+	public static void popProjection(GL2 gl) {
+		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPopMatrix();
 	}
 	
 	public static void setPerspectiveProjection(GLAutoDrawable drawable, double fovAngle) {
-		GL gl = drawable.getGL();		
-		gl.glMatrixMode(GL.GL_PROJECTION);
+		GL2 gl = drawable.getGL().getGL2();		
+		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		float aspect = (float)drawable.getWidth() / drawable.getHeight();
 		float zNear = 0.1f;
@@ -83,8 +84,8 @@ public class Camera {
 	}
 	
 	public static void setOrthogonalProjection(GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();		
-		gl.glMatrixMode(GL.GL_PROJECTION);
+		GL2 gl = drawable.getGL().getGL2();		
+		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		glu.gluOrtho2D(0.0f, drawable.getWidth(), 0.0f, drawable.getHeight());		
 	}

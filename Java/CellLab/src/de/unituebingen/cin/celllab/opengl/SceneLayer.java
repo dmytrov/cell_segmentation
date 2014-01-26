@@ -8,7 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.*;
-import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import de.unituebingen.cin.celllab.math.basic3d.*;
 
@@ -28,8 +28,8 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 	}
 	
 	public void render(GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();
-		gl.glMatrixMode(GL.GL_MODELVIEW);
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glPushMatrix();		
 		gl.glMultMatrixd(transform.getArray(), 0);
 		
@@ -37,7 +37,7 @@ public class SceneLayer implements IRenderable, IMouseHandler {
 		renderChildrenReverseOrder(drawable);
 		renderAfterChildren(drawable);
 		
-		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glPopMatrix();
 	}
 	

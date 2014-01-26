@@ -4,7 +4,7 @@
 
 package de.unituebingen.cin.celllab.opengl;
 
-import javax.media.opengl.GLJPanel;
+import javax.media.opengl.awt.GLJPanel;
 
 public class GLRendererFactory {
 	

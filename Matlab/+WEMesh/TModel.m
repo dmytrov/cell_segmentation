@@ -11,14 +11,16 @@ classdef TModel < handle
         nEdges;
         lFacets;
         nFacets;
-        ptCenter = [0, 0, 0]';
+        ptCenter = [0, 0, 0]'; % mean of the vertices
+        boundingSphereCenter = [0, 0, 0]';
+        boundingSphereRadius = 0;
         tag;
     end
     
     methods
         function obj = TModel(verticesPreallocate)
             obj.nVerticesPreallocate = verticesPreallocate;
-            Init(obj)
+            Init(obj);
         end
         
         function Init(obj)
@@ -201,17 +203,23 @@ classdef TModel < handle
             e1New.eOpposite = e2;
         end
         
-        function plot(obj, canvas)
+        function plot(obj, canvas, displacement, drawVertices)
             if (nargin < 2)
                 canvas = gca;
             end
-            axes(canvas);
-            lPts = nan(3, obj.nVertices);
-            for k = 1:obj.nVertices
-                lPts(:, k) = obj.lVertices(k).pt;
+            if (nargin < 3)
+                displacement = 0;
             end
-            plot3(lPts(1, :), lPts(2, :), lPts(3, :), '.r', 'MarkerSize', 5);
-            hold on;
+            if (nargin < 4)
+                drawVertices = 0;
+            end
+            axes(canvas);
+            if (drawVertices)
+                lPts = [obj.lVertices(1:obj.nVertices).pt];
+                plot3(lPts(1, :), lPts(2, :), lPts(3, :), '.r', 'MarkerSize', 5);
+                hold on;
+            end
+            lLines = nan(4, obj.nFacets, 3);
             for k = 1:obj.nFacets
                 nFacetEdges = size(obj.lFacets(k).lEdges, 2);
                 lPts = nan(3, nFacetEdges+1);
@@ -221,14 +229,17 @@ classdef TModel < handle
                     edgeCurrent = edgeCurrent.eNext;
                 end
                 lPts(:, end) = lPts(:, 1);
-                vn = cross((lPts(:, 3) - lPts(:, 2)), (lPts(:, 1) - lPts(:, 2)));
-                vn = vn / norm(vn);
-                if (any(isnan(vn)))
-                    vn = [0, 0, 0]';
+                if (displacement ~= 0)
+                    vn = cross((lPts(:, 3) - lPts(:, 2)), (lPts(:, 1) - lPts(:, 2)));
+                    vn = vn / norm(vn);
+                    if (any(isnan(vn)))
+                        vn = [0, 0, 0]';
+                    end
+                    lPts = lPts + displacement * repmat(vn, 1, nFacetEdges + 1);
                 end
-                lPts = lPts + 0.05 * repmat(vn, 1, nFacetEdges + 1);
-                plot3(lPts(1, :), lPts(2, :), lPts(3, :));
+                lLines(:, k, :) = lPts';
             end
+            plot3(lLines(:, :, 1), lLines(: ,: ,2), lLines(: ,: ,3), 'b');
         end
     end
 end

@@ -1,6 +1,7 @@
 package de.unituebingen.cin.celllab.opengl;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 public class IndexMesh implements IRenderable {
@@ -31,7 +32,7 @@ public class IndexMesh implements IRenderable {
 		if (!visible) {
 			return;
 		}
-		GL gl = drawable.getGL();
+		GL2 gl = drawable.getGL().getGL2();
 		gl.glBegin(GL.GL_TRIANGLES);
 		float[] colorAmbientCurrent = new float[4];
 		float[] colorDiffuseCurrent = new float[4];
@@ -49,10 +50,10 @@ public class IndexMesh implements IRenderable {
 				colorSpecularCurrent[k] = colorSpecularCurrent[k] * colorFactorSelected[k];
 			}
 		}
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, colorAmbientCurrent, 0);		
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, colorDiffuseCurrent, 0);
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, colorSpecularCurrent, 0);
-        gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, shininess);
+		gl.glMaterialfv(GL.GL_FRONT, GL2.GL_AMBIENT, colorAmbientCurrent, 0);		
+		gl.glMaterialfv(GL.GL_FRONT, GL2.GL_DIFFUSE, colorDiffuseCurrent, 0);
+        gl.glMaterialfv(GL.GL_FRONT, GL2.GL_SPECULAR, colorSpecularCurrent, 0);
+        gl.glMaterialf(GL.GL_FRONT, GL2.GL_SHININESS, shininess);
 
         
         double[] ve;

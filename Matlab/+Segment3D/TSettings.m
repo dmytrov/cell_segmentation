@@ -125,7 +125,7 @@ classdef TSettings < handle
             radius = 10; % typical cell raduis, micron
             
             obj.ScanType = obj.CORTICAL;            
-            obj.Resolution = [560/1024, 560/1024, 0.8]';
+            obj.Resolution = [200/512, 200/512, 100/375]';
             obj.Anisotropy = [1, 1, obj.Resolution(1)/obj.Resolution(3)]';
             obj.InvAnisotropy = 1./obj.Anisotropy;
             

@@ -4,7 +4,7 @@
 
 package de.unituebingen.cin.celllab.opengl;
 
-import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 
@@ -19,22 +19,22 @@ public class SceneLayerLight extends SceneLayer {
 		super(name, parentLayer);
 	}
 	
-	public void setupLight(GL gl)
+	public void setupLight(GL2 gl)
 	{
         // Enable lighting
-        gl.glEnable(GL.GL_LIGHTING);
-        gl.glEnable(GL.GL_LIGHT1);
+        gl.glEnable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_LIGHT1);
 
         // Setup the lights
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPos, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, lightColorAmbient, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, lightColorDiffuse, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, lightColorSpecular, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, lightPos, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, lightColorAmbient, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, lightColorDiffuse, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, lightColorSpecular, 0);
 	}
 
 	@Override
 	public void renderBeforeChildren(GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();
+		GL2 gl = drawable.getGL().getGL2();
 		setupLight(gl);
 	}	
 }

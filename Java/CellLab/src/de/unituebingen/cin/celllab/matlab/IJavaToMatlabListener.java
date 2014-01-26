@@ -100,8 +100,22 @@ public interface IJavaToMatlabListener extends java.util.EventListener {
     			case ComponentState.RUNNING :
     				return new Color(100, 100, 100);
     			default :
-    				// TODO: throw an exception
+    				// TODO: throw an exception ?
     				return new Color(0, 0, 0);
+    		}
+    	}
+    	
+    	public String getSateString() {
+    		switch (state) {
+				case ComponentState.VALID :
+					return "[\u2713]";
+				case ComponentState.INVALID :
+					return "[\u2717]";
+				case ComponentState.RUNNING :
+					return "[\u25BA]";
+				default :
+					// TODO: throw an exception ?
+					return "[UNKNOWN]";
     		}
     	}
     }

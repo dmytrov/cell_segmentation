@@ -1,4 +1,5 @@
 *.asv
+*.class
 Matlab/Delaunay
 Matlab/CellImages
 Matlab/GUILayout-v1p10
@@ -6,9 +7,15 @@ Matlab/out
 CPP/MatlabControllerTest
 IGOR/CellLabRelease
 IGOR/CellLab.pxp
-_Java/CellLab/bin
 Java/OpenGLTest/bin
 Java/JavaInteropStaticTest/bin
 Java/JavaInteropDynamicTest/bin
-Java/lib
 Data
+/Java/MatlabControl/src/matlabcontrol-demo/nbproject/private/
+/Java/MatlabControl/src/jmistub/nbproject/private/
+/Java/MatlabControl/src/matlabcontrol/build/
+/Java/MatlabControl/src/jmistub/build/
+/Java/MatlabControl/src/jmistub/dist/
+/Java/MatlabControl/src/matlabcontrol-demo/build/
+/Java/MatlabControl/src/matlabcontrol/dist/
+/Java/MatlabControl/src/matlabcontrol-demo/dist/

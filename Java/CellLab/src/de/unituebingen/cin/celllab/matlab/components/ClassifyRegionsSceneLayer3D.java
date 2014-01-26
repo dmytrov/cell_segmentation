@@ -4,6 +4,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.vecmath.Vector2d;
 
@@ -99,7 +100,7 @@ public class ClassifyRegionsSceneLayer3D extends SceneLayer3D{
 	public void renderAfterChildren(GLAutoDrawable drawable) {
 		super.renderAfterChildren(drawable);
 		
-		GL gl = drawable.getGL();
+		GL2 gl = drawable.getGL().getGL2();
 		switch (mode) {
 		case Select:
 			break;
@@ -108,12 +109,12 @@ public class ClassifyRegionsSceneLayer3D extends SceneLayer3D{
 				Camera.pushProjection(gl);
 				Camera.setOrthogonalProjection(drawable);
 
-				gl.glMatrixMode(GL.GL_MODELVIEW);
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
 				gl.glPushMatrix();
 				gl.glLoadIdentity();
 
 				// gl.glDisable(GL.GL_DEPTH_TEST);
-				gl.glDisable(GL.GL_LIGHTING);
+				gl.glDisable(GL2.GL_LIGHTING);
 				gl.glLineWidth(1f);
 				gl.glBegin(GL.GL_LINES);
 				gl.glColor3f(1.0f, 0.0f, 0.0f);
@@ -121,7 +122,7 @@ public class ClassifyRegionsSceneLayer3D extends SceneLayer3D{
 				gl.glVertex2d(ptCutEnd.x, ptCutEnd.y);
 				gl.glEnd();
 
-				gl.glMatrixMode(GL.GL_MODELVIEW);
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
 				gl.glPopMatrix();
 
 				Camera.popProjection(gl);

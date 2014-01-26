@@ -51,13 +51,9 @@ public class Application {
 	
 	
 	public Application() {
-		// Register UI classes for matlab components
 		componentsBridge = new ComponentsBridge();
-		componentsBridge.registerComponentUI("Processors.TLoadTIFF", LoadTIFFUI.class);
-		componentsBridge.registerComponentUI("Processors.TLoadTIFFHighPass", LoadTIFFUI.class);
-		componentsBridge.registerComponentUI("Processors.TClassifyRegions", ClassifyRegionsUI.class);
-		componentsBridge.registerComponentUI("Processors.TEdit2DROI", EditROIUI.class);
-		componentsBridge.registerComponentUI("Processors.TShowModelsInJava", ShowModelsUI.class);
+		// Register UI classes for matlab components
+		registerCompinentUIs();
 		
 		componentsDesc = new GetComponentsEventData();
 		cellLabUI = new CellLabUI();
@@ -98,6 +94,14 @@ public class Application {
 		});
 		
 		cellLabUI.setVisible(true);
+	}
+	
+	protected void registerCompinentUIs() {
+		componentsBridge.registerComponentUI("Processors.TLoadTIFF", LoadTIFFUI.class);
+		componentsBridge.registerComponentUI("Processors.TLoadTIFFHighPass", LoadTIFFUI.class);
+		componentsBridge.registerComponentUI("Processors.TClassifyRegions", ClassifyRegionsUI.class);
+		componentsBridge.registerComponentUI("Processors.TEdit2DROI", EditROIUI.class);
+		componentsBridge.registerComponentUI("Processors.TShowModelsInJava", ShowModelsUI.class);
 	}
 	
 	public void onSaveLoadPipeline(final boolean bSave) {
@@ -199,7 +203,7 @@ public class Application {
 			@Override
 			public void onHandled(GetPipelineBuildersEventData data) {
 				pipelines = data.names.clone();
-				System.out.println("GetPipelineBuildersEvent is handled. Returned:");
+				System.out.println("Available pipelines:");
 				cellLabUI.mnPipeline.removeAll();
 	        	for (String name : pipelines) {
 	        		System.out.println("\t" + name);
@@ -249,7 +253,7 @@ public class Application {
 		int k = 0;
 		for (ComponentDescription desc : componentsDesc) {
 			if (bShowDataComponents || (desc.name.indexOf("->") == -1)) {
-				JToggleButton btn = new JToggleButton(desc.name);
+				JToggleButton btn = new JToggleButton(desc.getSateString() + " " + desc.name);
 				btn.setBackground(desc.getColor());
 				btn.setSelected(desc == getCurrentComponentDesc());
 				btn.putClientProperty("description", desc);

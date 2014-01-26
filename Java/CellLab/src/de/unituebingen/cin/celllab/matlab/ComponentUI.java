@@ -17,6 +17,6 @@ public abstract class ComponentUI extends JPanel{
 		return new ComponentParameters();
 	}
 	
-	public void setParameters(ComponentParameters parameters) {		
+	public void setParameters(ComponentParameters parameters) {
 	}	
 }
