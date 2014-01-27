@@ -23,7 +23,7 @@ If you get "java heap out of memory" errors while processing large stacks,
 change java heap settings for matlab. To change it:
 1. Create java.opts file in Matlab's bin folder, e.g.
   C:\Program Files\MATLAB\R2012b\bin\win64\java.opts
-for Windows x64, with the follwing content: 
+for Windows x64, with the follwing content (see .\Java\java.opts e.g.): 
 
 ----------java.opts file----------
   -Xms128m
