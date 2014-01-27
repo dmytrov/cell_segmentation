@@ -1,59 +1,50 @@
-cell_segmentation
-A tool for basic processing of 2-photon retina scans.
+			== CellLab ==
+CellLab is a tool for basic processing of 2-photon retina scans.
 Written by: Dmytro Velychko (mailto:dmytro.velychko@student.uni-tuebingen.de)
-Tuebingen, CIN, AG Euler, AG Bethge, 2012-2013
+Tuebingen, CIN, AG Euler, AG Bethge, 2012-2014
 http://www.cin.uni-tuebingen.de/
-=================
+
+==================================
 How to install and run:
------------------
-1. Matlab treats static and dynamic classpathes differently. 
-It is necessary to add some pathes to the static classpath, 
-which is listed in the classpath.txt file.
-Type 
-  edit classpath.txt
-in the matlab's command prompt.
-Add following pathes to the end of the classpath.txt:
-  %CodeRoot%\Java\CellLab\bin\
-  %CodeRoot%\Java\CellLab\miglayout15-swing.jar
-where %CodeRoot% is cell_segmentation code root.
-Save the classpath.txt.
-
-2. Restart matlab
-
-3. In matlab go to 
+----------------------------------
+1. In Matlab go to 
   %CodeRoot%\Matlab
  
-4. Start it by typing 
+2. Start it by typing 
   CellLab
 in the matlab's command prompt
 
-5. Open Matlab/+Segment3D/TSettings.m file and familiarize yourself with the settings adjustments. 
+3. Open Matlab/+Segment3D/TSettings.m file and familiarize yourself with the settings adjustments.
 
-=================
+==================================
 Known issues:
------------------
+----------------------------------
 If you get "java heap out of memory" errors while processing large stacks,
 change java heap settings for matlab. To change it:
-1. Create java.opts file in matlab's bin folder, e.g.
+1. Create java.opts file in Matlab's bin folder, e.g.
   C:\Program Files\MATLAB\R2012b\bin\win64\java.opts
 for Windows x64, with the follwing content: 
+
+----------java.opts file----------
   -Xms128m
   -Xmx512m
-Xms key is for setting start java heap size,
-Xmx key is for setting max java heap size 
+----------------------------------
+Here
+-Xms key is for setting start java heap size,
+-Xmx key is for setting max java heap size 
 
 2. Restart matlab
 
 3. In case of more errors try to increase the heap size (-Xmx1024m e.g.).
 
-=================
+==================================
 TODO list:
------------------
+----------------------------------
 1. Add a fast space partitioning search structure for 3D geometry.
 
-=================
+==================================
 Development environment used:
------------------
+----------------------------------
 Matlab 2012b with Java remote debugging enabled
 Eclipse IDE for Java Developers
 WindowBuilder plugin for Eclipse 
